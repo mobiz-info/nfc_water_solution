@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block title %}Custody Custom Detail{% endblock %}
+{% block content %}
+{% load static %}
+
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Custody Custom Detail</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Reports</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Custody Custom Detail</li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <div class="card custom-card">
+            <div class="card-header">
+                <h5 class="card-title">Custody Details</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <tr>
+                        <th>Created Date</th>
+                        <td>{{ custody_record.created_date|date:'d-m-Y' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Customer Name</th>
+                        <td>{{ custody_record.customer.customer_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Custom ID</th>
+                        <td>{{ custody_record.customer.custom_id }}</td>
+                    </tr>
+                    <tr>
+                        <th>Customer Address</th>
+                        <td>{{ custody_record.customer.building_name }}/{{ custody_record.customer.door_house_no }}/{{ custody_record.customer.floor_no }}</td>
+                    </tr>
+                    <tr>
+                        <th>Customer Mobile Number</th>
+                        <td>{{ custody_record.customer.mobile_no }}</td>
+                    </tr>
+                    <tr>
+                        <th>Agreement No</th>
+                        <td>{{ custody_record.agreement_no }}</td>
+                    </tr>
+                    <tr>
+                        <th>Total Amount</th>
+                        <td>{{ custody_record.total_amount }}</td>
+                    </tr>
+                    <tr>
+                        <th>Deposit Type</th>
+                        <td>{{ custody_record.get_deposit_type_display }}</td>
+                    </tr>
+                    <tr>
+                        <th>Reference No</th>
+                        <td>{{ custody_record.reference_no }}</td>
+                    </tr>
+                    <tr>
+                        <th>Amount Collected</th>
+                        <td>{{ custody_record.amount_collected }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="card custom-card mt-3">
+            <div class="card-header">
+                <h5 class="card-title">Custody Items</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Sl.No</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Serial Number</th>
+                            <th>Amount</th>
+                            <th>Can Deposit Charge</th>
+                            <th>Five Gallon Water Charge</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in custody_items %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ item.product.product_name }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td>{{ item.serialnumber }}</td>
+                                <td>{{ item.amount }}</td>
+                                <td>{{ item.can_deposite_chrge }}</td>
+                                <td>{{ item.five_gallon_water_charge }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center text-muted">No items available.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

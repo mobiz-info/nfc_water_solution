@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product RouteWise Sales Report</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles for printing */
+        @media print {
+            .no-print { display: none !important; }
+            body { margin: 0; padding: 10px; }
+            .table { width: 100%; border-collapse: collapse; }
+            .table-bordered th, .table-bordered td { border: 1px solid #dee2e6; }
+        }
+    </style>
+</head>
+<body onload="window.print()">
+    <div class="container">
+        <table class="table table-bordered text-wrap">
+            <thead>
+                <tr>
+                    <th style="text-align:center; width:5%;">Sl No</th>
+                    <th style="text-align:center;">Time of Supply</th>
+                    <th style="text-align:center;">Ref/Invoice No</th>
+                    <th style="text-align:center;">Route Name</th>
+                    <th style="text-align:center;">Customer Name</th>
+                    <th style="text-align:center;">Customer ID</th>
+                    <th style="text-align:center;">Mode of Supply</th>
+                    <th style="text-align:center;">Quantity</th>
+                    <th style="text-align:center;">Empty Bottle Collected</th>
+                    <th style="text-align:center;">Coupon Collected</th>
+                    <th style="text-align:center;">Amount Collected</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for customersupplyitem in customersupplyitems %}
+                <tr>
+                    <td style="text-align:center;">{{ forloop.counter }}</td>
+                    <td style="text-align:center;">{{ customersupplyitem.customer_supply.created_date|date:"d/m/Y" }}</td>
+                    <td style="text-align:center;">{{ customersupplyitem.customer_supply.reference_number }}</td>
+                    <td>{{ customersupplyitem.customer_supply.customer.routes.route_name }}</td>
+                    <td>{{ customersupplyitem.customer_supply.customer.customer_name }}</td>
+                    <td>{{ customersupplyitem.customer_supply.customer.custom_id }}</td>
+                    <td>{{ customersupplyitem.customer_supply.customer.sales_type }}</td>
+                    <td style="text-align:right;">{{ customersupplyitem.quantity }}</td>
+                    <td style="text-align:right;">{{ customersupplyitem.customer_supply.collected_empty_bottle }}</td>
+                    <td style="text-align:right;">{{ customersupplyitem.leaf_count }}</td>
+                    <td style="text-align:right;">{{ customersupplyitem.amount }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="7" style="text-align:right;">Total:</th>
+                    <th style="text-align:right;">{{ totals.total_quantity|default:0 }}</th>
+                    <th style="text-align:right;">{{ totals.total_empty_bottle|default:0 }}</th>
+                    <th style="text-align:right;">{{ totals.total_coupon_collected|default:0 }}</th>
+                    <th style="text-align:right;">{{ totals.total_amount_collected|default:0 }}</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

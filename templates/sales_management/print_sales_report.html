@@ -1,0 +1,52 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load sales_templatetags %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print Sales Report</title>
+    <style>
+        @media print {
+            .no-print { display: none; }
+        }
+    </style>
+</head>
+<body onload="window.print()">
+    <h2>Sana Water </h2>
+    <h2>Detailed Sales Report - {{ selected_month }}</h2>
+    <table border="1" cellpadding="5" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>Route</th>
+                <th>Sales Quantity</th>
+                <th>Avg Price</th>
+                <th>Cash Sale Amount</th>
+                <th>Credit Sale Amount</th>
+                <th>Coupon Sale Amount</th>
+                <th>FOC</th>
+                <th>Credit Collection</th>
+                <th>Expense</th>
+                <th>Net Paid</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in routes %}
+            {% get_sales_report data.route_id start_date end_date as sales_report %}
+            <tr>
+                <td>{{ data.route_name }}</td>
+                <td>{{ sales_report.sales_quantity }}</td>
+                <td>{{ sales_report.avg_price|floatformat:2 }}</td>
+                <td>{{ sales_report.cash_sales|floatformat:2 }}</td>
+                <td>{{ sales_report.credit_sales|floatformat:2 }}</td>
+                <td>{{ sales_report.coupon_sales|floatformat:2 }}</td>
+                <td>{{ sales_report.foc_sales|floatformat:2 }}</td>
+                <td>{{ sales_report.credit_collection|floatformat:2 }}</td>
+                <td>{{ sales_report.total_expense|floatformat:2 }}</td>
+                <td>{{ sales_report.net_paid|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

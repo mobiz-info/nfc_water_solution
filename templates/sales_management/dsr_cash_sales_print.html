@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load van_template_tags %}
+    {% load sales_templatetags %}
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cash Sales Report - Print</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles for printing */
+        @media print {
+            /* Hide unnecessary elements */
+            .no-print {
+                display: none !important;
+            }
+            /* Set page margins and other print-specific styles */
+            body {
+                margin: 0;
+                padding: 10px;
+            }
+            .card {
+                border: none !important;
+                box-shadow: none;
+                margin-bottom: 20px;
+            }
+            .table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            .table-bordered th,
+            .table-bordered td {
+                border: 1px solid #dee2e6;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Cash Sales Report
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <div>
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-4">
+                                        <p><strong>Salesman: {{van_route.van.salesman.get_fullname}}</strong></p>
+                                    </div>
+                                    <div class="col-4">
+                                        <p><strong>Driver: {{van_route.van.driver.get_fullname}}</strong></p>
+                                    </div>
+                                </div>
+                                <div class="row align-items-center">
+                                    <div class="col-4">
+                                        <p>Route: {{van_route.routes.route_name}}</p>
+                                    </div>
+                                    <div class="col-4">
+                                        <p>Date: {{ filter_date_formatted }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <div id="table-container">
+                            <div class="card-body">
+                                <table  class="table table-bordered text-wrap" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center text-bold" colspan="8">Cash Sales</th>
+                                        </tr>
+                                        <tr>
+                                            <th style="text-align:center;">Sl No</th>
+                                            <th style="text-align:center;" scope="col">Reference No</th>
+                                            <th style="text-align:center;" scope="col">Customer Id</th>
+                                            <th style="text-align:center;" scope="col">Customer Name</th>
+                                            <th style="text-align:center;" scope="col">Total QTY</th>
+                                            <th style="text-align:center;" scope="col">Rate</th>
+                                            {% comment %} <th style="text-align:center;" scope="col">Vat</th> {% endcomment %}
+                                            <th style="text-align:center;" scope="col">Grand Total</th>
+                                            <th style="text-align:center;" scope="col">Net Payable</th>
+                                            <th style="text-align:center;" scope="col">Cash Recieved</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for sale in cash_sales %}
+                                        <tr>
+                                            <td style="text-align:center;">{{forloop.counter}}</td>
+                                            <td style="text-align:center;">{{sale.reference_number}}</td>
+                                            <td>{{sale.customer.custom_id}}</td>
+                                            <td>{{sale.customer.customer_name}}</td>
+                                            <td style="text-align:center;">{{sale.get_total_supply_qty}}</td>
+                                            <td style="text-align:center;">{{sale.customer.get_water_rate}}</td>
+                                            {% comment %} <td style="text-align:center;">{{sale.vat}}</td> {% endcomment %}
+                                            <td style="text-align:center;">{{sale.subtotal}}</td>
+                                            <td style="text-align:center;">{{sale.net_payable}}</td>
+                                            <td style="text-align:center;">{{sale.amount_recieved}}</td>
+                                        </tr>
+                                        {% endfor %}
+                                        {% for sale in recharge_cash_sales %}
+                                        <tr>
+                                            <td style="text-align:center;background-color:#ff9a44 !important;">{{forloop.counter}}</td>
+                                            <td style="text-align:center;background-color:#ff9a44 !important;">{{sale.reference_number}}</td>
+                                            <td style="background-color:#ff9a44 !important;">{{sale.customer.customer_name}}</td>
+                                            <td style="text-align:center;background-color:#ff9a44 !important;">1</td>
+                                            <td style="text-align:center;background-color:#ff9a44 !important;">{{sale.display_coupon_rates}}</td>
+                                            {% comment %} <td style="text-align:center;">0</td> {% endcomment %}
+                                            <td style="text-align:center;background-color:#ff9a44 !important;">{{sale.grand_total}}</td>
+                                            <td style="text-align:center;background-color:#ff9a44 !important;">{{sale.net_amount}}</td>
+                                            <td style="text-align:center;background-color:#ff9a44 !important;">{{sale.amount_recieved}}</td>
+                                        </tr>
+                                    {% endfor %}  
+                                    </tbody>
+                                    <!-- Table Footer -->
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="4" style="text-align: right;">Total:</td>
+                                            <td style="text-align:center;">{{ cash_total_qty }}</td>
+                                            <td style="text-align:center;">-</td>
+                                            <td style="text-align:center;">{{ cash_total_subtotal }}</td>
+                                            <td style="text-align:center;">{{ cash_total_net_taxable }}</td>
+                                            <td style="text-align:center;">{{ cash_total_amount_recieved }}</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+    
+                        
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap JS (optional) -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        window.onload = function() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

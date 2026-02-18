@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+{% block title %} Route Damage Details - {{ route.route_name }} {% endblock %}
+{% block content %}
+{% load static %}
+{% load el_pagination_tags %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Damage Report for {{ route.route_name }}</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Reports</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Route Damage Report</li>
+    </ol>
+</div>
+
+<!-- Main Content -->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <div class="card custom-card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Route-wise Van Damage Report - {{ route.route_name }}</h5>
+            </div>
+            <div class="card-body">
+                <!-- Filtering Form -->
+                <form method="GET">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <label for="start_date">From Date:</label>
+                            <input type="date" class="form-control" id="start_date" name="start_date" value="{{ filter_data.start_date }}">
+                        </div>
+                        <div class="col">
+                            <label for="end_date">To Date:</label>
+                            <input type="date" class="form-control" id="end_date" name="end_date" value="{{ filter_data.end_date }}">
+                        </div>
+                        <div class="col">
+                            <label for="product_name">Product Name:</label>
+                            <select name="product_name" class="form-select">
+                                <option value="">All Products</option>
+                                {% for product in product_names %}
+                                    <option value="{{ product.product_name }}" {% if product.product_name == filter_data.product_name %}selected{% endif %}>
+                                        {{ product.product_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label for="van_name">Van Name:</label>
+                            <select name="van_name" class="form-select">
+                                <option value="">All Vans</option>
+                                {% for van in available_vans %}
+                                    <option value="{{ van.van_make }}" {% if van.van_make == filter_data.van_name %}selected{% endif %}>
+                                        {{ van.van_make }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label for="reason">Damage Reason:</label>
+                            <select name="reason" class="form-select">
+                                <option value="">All Reasons</option>
+                                {% for damage_reason in damage_reasons %}
+                                    <option value="{{ damage_reason.reason }}" {% if damage_reason.reason == filter_data.reason %}selected{% endif %}>
+                                        {{ damage_reason.reason }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label for="q">Search:</label>
+                            <input type="text" name="q" class="form-control" placeholder="Search ..." value="{{ filter_data.q }}">
+                        </div>
+                        <div class="col d-flex align-items-end justify-content-end">
+                            <button type="submit" class="btn btn-primary btn-sm mx-1">Apply </button>
+                            <button type="button" class="btn btn-secondary btn-sm mx-1" onclick="resetFilters()">Reset</button>
+                            <a href="{% url 'route_damage_detail_print' route.route_id %}?start_date={{ request.GET.start_date }}&end_date={{ request.GET.end_date }}&product_name={{ request.GET.product_name }}&van_name={{ request.GET.van_name }}&reason={{ request.GET.reason }}&q={{ request.GET.q }}"
+                                class="btn btn-outline-success btn-sm mx-1" 
+                                target="_blank">
+                                <i class="fas fa-file-print"></i> Print
+                            </a>
+
+                            <a href="{% url 'route_damage_detail_excel' route.route_id %}?start_date={{ request.GET.start_date }}&end_date={{ request.GET.end_date }}&product_name={{ request.GET.product_name }}&van_name={{ request.GET.van_name }}&reason={{ request.GET.reason }}&q={{ request.GET.q }}"
+                            class="btn btn-outline-success btn-sm mx-1" 
+                            target="_blank">
+                                <i class="fas fa-file-excel"></i> Excel
+                            </a>
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Data Table -->
+            <div class="card custom-card mt-4">
+                <div class="card-body">
+                    <table class="table table-bordered text-wrap w-100">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center; width: 5%;">Sl.No</th>
+                                <th>Date</th>
+                                <th>Van Name</th>
+                                <th>Product Name</th>
+                                <th>Reason</th>
+                                <th>Total Quantity</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% paginate 50 damage_records %}
+                            {% for record in damage_records %}
+                            <tr>
+                                <td style="text-align: center;">{{ forloop.counter }}</td>
+                                <td>{{ record.created_date|date:"Y-m-d" }}</td>
+                                <td>{{ record.van__van_make }}</td>
+                                <td>{{ record.product__product_name }}</td>
+                                <td>{{ record.reason__reason }}</td>
+                                <td>{{ record.total_quantity }}</td>
+                                <td>
+                                    <div class="g-2">
+                                        <a href="{% url 'edit_van_sale_damage' record.id %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Edit">
+                                            <span class="ri-pencil-line fs-14"></span>
+                                        </a>
+                                        <a aria-label="anchor" class="action-button remove btn btn-danger-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Delete"
+                                            data-id="{{record.id}}" data-text="{{confirm_delete_message}}" data-title="Are you sure?" href="{% url 'delete_van_sale_damage' pk=record.id %}"><span class="ri-delete-bin-7-line fs-14"></span>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center">No data available</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot class="table-dark">
+                            <tr>
+                                <td colspan="5" class="text-end fw-bold">Grand Total:</td>
+                                <td class="fw-bold">{{ grand_total_quantity }}</td>
+                                <td colspan="1" class="text-center"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <div class="col-12 text-end mt-5">
+                                <button class="btn btn-success   me-md-2  mb-2" type="button"
+                                    onClick="javascript:history.go(-1);">
+                                    <i class="bi bi-backspace-fill pe-1"></i>Back</button>
+                                <a class="btn btn-success me-md-2  mb-2" href="{% url 'van_damage_stock_report' %}">
+                                    <i class="bi bi-backspace-fill pe-1"></i> Back to Dashboard
+                                </a>
+                            </div>
+                    <!-- Pagination -->
+                    {% get_pages %}
+                    <div class="clearfix"></div>
+                    <div class="row my-3">
+                        <div class="col-sm-6 text-start">
+                            Showing {{ title }}
+                            <span class="current_page_index">{{ pages.current_start_index }}</span> - 
+                            <span class="current_end_status">{{ pages.current_end_index }}</span> of 
+                            <span class="total_count">{{ pages.total_count }}</span>
+                        </div>
+                        <div class="col-sm-6 text-end">{% show_pages %}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+    function resetFilters() {
+        window.location.href = window.location.pathname;
+    }
+</script>
+
+{% endblock %}

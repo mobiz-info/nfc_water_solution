@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load sales_templatetags %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print Sales Report</title>
+    <style>
+        @media print {
+            .no-print { display: none; }
+        }
+    </style>
+</head>
+<body onload="window.print()">
+    <h2>Sana Water </h2>
+    <h2>Detailed Sales Report - {{ route.route_name }}</h2>
+    <table border="1" cellpadding="5" cellspacing="0" width="100%">
+        {% get_route_sales_report route.route_id start_date as sales_report %}
+        <thead>
+            <tr>
+                <th colspan="11" class="text-center">Route - {{ route.route_name }}</th>
+            </tr>
+            <tr>
+                <th colspan="2">Salesmen</th>
+                <th>{{van_route.van.salesman.get_fullname}}</th>
+                <th colspan="8"></th>
+            </tr>
+            <tr>
+                <th colspan="2">Driver</th>
+                <th>{{van_route.van.driver.get_fullname}}</th>
+                <th colspan="8"></th>
+            </tr>
+            <tr>
+                <th colspan="2">Helper</th>
+                <th></th>
+                <th colspan="8"></th>
+            </tr>
+            <tr>
+                <th rowspan="2">Date</th>
+                <th rowspan="2">Sale Qty</th>
+                <th rowspan="2">Cash Sale</th>
+                <th rowspan="2">Credit Sale</th>
+                <th colspan="2">Coupon Book Sale</th>
+                <th rowspan="2">Coupon Leaf <br>Received</th>
+                <th rowspan="2">FOC</th>
+                <th rowspan="2">Credit Collection</th>
+                <th rowspan="2">Expense</th>
+                <th rowspan="2">Net Cash in Hand</th>
+            </tr>
+            <tr>
+                <th>10 Leaf CPN</th>
+                <th>20 Leaf CPN</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for report in sales_report %}
+            <tr>
+                <td>{{ report.date|date:"Y-m-d" }}</td>
+                <td>{{ report.sale_qty }}</td>
+                <td>{{ report.cash_sale }}</td>
+                <td>{{ report.credit_sale }}</td>
+                <td>{{ report.coupon_10_leaf }}</td>
+                <td>{{ report.coupon_20_leaf }}</td>
+                <td>{{ report.coupon_received }}</td>
+                <td>{{ report.foc }}</td>
+                <td>{{ report.credit_collection }}</td>
+                <td>{{ report.expense }}</td>
+                <td>{{ report.net_cash_in_hand }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

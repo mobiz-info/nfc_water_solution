@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+{% load static %}
+{% load bottle_customer_stock %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Dashboard</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+    </ol>
+</div>
+
+<!-- Main Content Area -->
+<div class="main-content app-content" style={{"background:white"}}>
+    <div class="container-fluid">
+        <!-- Tab Buttons -->
+        <div class="tab mt-5 mb-3" style="border-bottom: 2px solid #bfbfbf;max-height: 40px;">
+            <button class="tablinks btn rounded-0" onclick="openOverview()">Overview</button>
+            <button class="tablinks btn rounded-0" onclick="openSales()">Sales</button>
+            <button class="tablinks btn rounded-0" onclick="openBottle()">Bottle</button>
+            <button class="tablinks btn rounded-0" onclick="openCoupons()">Coupons</button>
+            <button class="tablinks btn rounded-0" onclick="openCustomerStatistics()">Customer Statistics</button>
+            <button class="tablinks btn rounded-0" onclick="openOthers()">Others</button>
+        </div>
+        
+        <!-- Placeholder for Sales tab content sections -->
+        <div id="Sales" class="tabcontent">
+            <!-- Sales Overview Table and Pie Chart -->
+            <div class="row mt-4">
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header text-left text-white" style="background-color: #4776e6 !important;">
+                            <h5 class="card-title">Sales</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-bordered">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th class="text-left">Category</th>
+                                        <th class="text-center">Cash</th>
+                                        <th class="text-center">Credit</th>
+                                        <th class="text-center">Total Sale</th>
+                                        <th class="text-center">Coupon Sale</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr  style="cursor: pointer; ">
+                                        <td class="text-right">Sales</td>
+                                        <td class="text-center"><a href="{% url 'cashsales_report' %}" title="{% url 'cashsales_report' %}">{{ total_cash_sales_amount }}</a></td>
+                                        <td class="text-center"><a href="{% url 'creditsales_report' %}" title="{% url 'creditsales_report' %}">{{ total_credit_sales_amount }}</a></td>
+                                        <td class="text-center"><a href=" " title=" ">{{ total_sales_grand_total }}</a></td>
+                                        <td class="text-center"><a href="{% url 'dsr_coupon_sales' %}" title="{% url 'dsr_coupon_sales' %}">{{ total_reachage_sales_amount }}</a></td>
+                                    </tr>
+                                    <tr style="cursor: pointer; ">
+                                        <td class="text-right">Returns</td>
+                                        <td class="text-center"><a href=" " title=" ">{{ cash_returns_today }}</a></td>
+                                        <td class="text-center"><a href=" " title=" ">{{ credit_returns_today }}</a></td>
+                                        <td class="text-center"><a href=" " title=" ">{{ total_returns_today }}</a></td>
+                                        <td class="text-center"><a href=" " title=" ">{{ total_returns_today }}</a></td>
+                                    </tr>
+                                    <tr  style="cursor: pointer; ">
+                                        <td class="text-right">Collection - Today</td>
+                                        <td class="text-center"><a href=" " title=" ">{{ total_today_collections }}</a></td>
+                                        <td class="text-center">0</td>
+                                        <td class="text-center"><a href=" " title=" ">{{ total_today_collections }}</a></td>
+                                        <td class="text-center"><a href=" " title=" ">{{ total_rechage_collections }}</a></td>
+                                    </tr>
+                                    <tr style="cursor: pointer; ">
+                                        <td class="text-right">Collection - Previous</td>
+                                        <td class="text-center"><a href=" " title=" ">{{ total_old_payment_cash_collections }}</a></td>
+                                        <td class="text-center"><a href=" " title=" ">{{ total_old_payment_credit_collections }}</a></td>
+                                        <td class="text-center"><a href=" " title=" ">{{ total_old_payment_grand_total_collections }}</a></td>
+                                        <td class="text-center"><a href=" " title=" ">{{ total_old_payment_coupon_collections }}</a></td>
+                                    </tr>
+                                    <tr style="cursor: pointer; ">
+                                        <td class="text-right">Outstanding</td>
+                                        <td class="text-center"><a href=" " title=" ">{{ total_cash_outstanding_amounts }}</a></td>
+                                        <td class="text-center"><a href=" " title=" ">{{ total_credit_outstanding_amounts }}</a></td>
+                                        <td class="text-center"><a href=" " title=" ">{{ total_outstanding_amounts }}</a></td>
+                                        <td class="text-center"><a href=" " title=" ">{{ total_coupon_outstanding_amounts }}</a></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header text-left text-white" style="background-color: #4776e6 !important;">
+                            <h5 class="card-title">Sales Report</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="salesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+    </div>
+</div>
+{% endblock %}
+{% block static %}
+{% load static %}
+
+<script>
+    function openOverview() {
+        window.location.href = '{% url 'overview' %}';
+    }
+    
+    function openSales() {
+        window.location.href = '{% url 'sales' %}';
+    }
+    
+    function openBottle() {
+        window.location.href = '{% url 'bottles' %}';
+    }
+    
+    function openCoupons() {
+        window.location.href = '{% url 'coupons' %}';
+    }
+    
+    function openCustomerStatistics() {
+        window.location.href = '{% url 'customer-statistics' %}';
+    }
+    
+    function openOthers() {
+        window.location.href = '{% url 'others' %}';
+    }
+    
+</script>
+
+
+<script>
+    // Pass data from Django to JavaScript
+    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    
+    // Use the passed JSON data
+    const thisWeekSales = JSON.parse('{{ this_week_sales|safe }}');
+    const lastWeekSales = JSON.parse('{{ last_week_sales|safe }}');
+    const secondLastWeekSales = JSON.parse('{{ second_last_week_sales|safe }}');
+    const thirdLastWeekSales = JSON.parse('{{ third_last_week_sales|safe }}');
+    const lastYearMonthlyAvgSales = JSON.parse('{{ last_year_monthly_avg_sales|safe }}');
+
+    // Prepare data arrays for the chart
+    const salesCountsThisWeek = new Array(7).fill(0);
+    const salesCountsLastWeek = new Array(7).fill(0);
+    const salesCountsSecondLastWeek = new Array(7).fill(0);
+    const salesCountsThirdLastWeek = new Array(7).fill(0);
+    const salesCountMonthlyAvgLastYear = new Array(7).fill(0);
+
+    // Populate the sales counts arrays
+    thisWeekSales.forEach(day => {
+        salesCountsThisWeek[day.weekday - 1] = day.count; // weekday - 1 for 0-based index
+    });
+    lastWeekSales.forEach(day => {
+        salesCountsLastWeek[day.weekday - 1] = day.count;
+    });
+    secondLastWeekSales.forEach(day => {
+        salesCountsSecondLastWeek[day.weekday - 1] = day.count;
+    });
+    thirdLastWeekSales.forEach(day => {
+        salesCountsThirdLastWeek[day.weekday - 1] = day.count;
+    });
+    lastYearMonthlyAvgSales.forEach(day => {
+        salesCountMonthlyAvgLastYear[day.weekday - 1] = day.count;
+    });
+
+    // Create the chart
+    new Chart("salesChart", {
+        type: "line",
+        data: {
+            labels: daysOfWeek,
+            datasets: [
+                {
+                    label: "This Week",
+                    data: salesCountsThisWeek,
+                    borderColor: "red",
+                    fill: false
+                },
+                {
+                    label: "Last Week",
+                    data: salesCountsLastWeek,
+                    borderColor: "green",
+                    fill: false
+                },
+                {
+                    label: "Second Last Week",
+                    data: salesCountsSecondLastWeek,
+                    borderColor: "blue",
+                    fill: false
+                },
+                {
+                    label: "Third Last Week",
+                    data: salesCountsThirdLastWeek,
+                    borderColor: "orange",
+                    fill: false
+                },
+                {
+                    label: "Last Year AVG Sale for this month",
+                    data: salesCountMonthlyAvgLastYear,
+                    borderColor: "yellow",
+                    fill: false
+                }
+            ]
+        },
+        options: {
+            legend: {
+                display: true
+            },
+            title: {
+                display: true,
+                text: "Weekly Sales Overview"
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+
+{% endblock static %}
+ 

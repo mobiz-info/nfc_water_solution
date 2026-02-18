@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block title %} Detailed Sales Report {% endblock %}
+{% block content %}
+{% load sales_templatetags %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Detailed Sales Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Sales Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Detailed Sales Report</li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Detailed Sales Report
+                        </div>
+                        <div class="ms-auto">
+                            <a href="{% url 'print_routewise_sales_report' route.route_id %}?year={{ selected_year }}&month={{ selected_month}}" target="_blank" class="btn btn-outline-success me-2" style="width: 7em;"><i class="fas fa-print"></i>Print</a>
+
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                       
+                        <div id="table-container" style="overflow-x: auto;">
+                            <div class="card-body">
+                                <table class="table table-bordered text-wrap" style="width: 100%">
+                                    
+                                        <thead>
+                                            <tr>
+                                                <th colspan="11" class="text-center">Route - {{ route.route_name }}</th>
+                                            </tr>
+                                            <tr>
+                                                <th colspan="2">Salesmen</th>
+                                                <th>{{van_route.van.salesman.get_fullname}}</th>
+                                                <th colspan="8"></th>
+                                            </tr>
+                                            <tr>
+                                                <th colspan="2">Driver</th>
+                                                <th>{{van_route.van.driver.get_fullname}}</th>
+                                                <th colspan="8"></th>
+                                            </tr>
+                                            <tr>
+                                                <th colspan="2">Helper</th>
+                                                <th></th>
+                                                <th colspan="8"></th>
+                                            </tr>
+                                            <tr>
+                                                <th rowspan="2">Date</th>
+                                                <th rowspan="2">Sale Qty</th>
+                                                <th rowspan="2">Cash Sale QTY</th>
+                                                <th rowspan="2">Cash Sale Amount</th>
+                                                <th rowspan="2">Credit Sale QTY</th>
+                                                <th rowspan="2">Credit Sale Amount</th>
+                                                <th colspan="{{coupon_items_instances_length}}">Coupon Book Sale</th>
+                                                <th rowspan="2">Coupon <br>Supply</th>
+                                                <th rowspan="2">Coupon Leaf <br>Received</th>
+                                                <th rowspan="2">FOC</th>
+                                                <th rowspan="2">Credit Collection</th>
+                                                <th rowspan="2">Expense</th>
+                                                <th rowspan="2">Net Cash in Hand</th>
+                                            </tr>
+                                            <tr>
+                                                {% for coupon_item in coupon_items_instances %}
+                                                <th>{{coupon_item.coupon_type_name}}</th>
+                                                {% endfor %}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for date in date_list %}
+                                            {% get_route_sales_report route.route_id date as sales_report %}
+                                            <tr>
+                                                <td>{{ date|date:"d-m-Y" }}</td>
+                                                <td>{{ sales_report.sale_qty }}</td>
+                                                <td>{{ sales_report.total_cash_qty }}</td>
+                                                <td>{{ sales_report.total_cash_amount }}</td>
+                                                <td>{{ sales_report.total_credit_qty }}</td>
+                                                <td>{{ sales_report.total_credit_amount }}</td>
+                                                {% for coupon_item in coupon_items_instances %}
+                                                {% get_supply_coupon_qty route.route_id date coupon_item.pk as coupon_amount %}
+                                                <td>{{ coupon_amount }}</td>
+                                                {% endfor %}
+                                                <td>{{ sales_report.total_coupon_qty }}</td>
+                                                <td>{{ sales_report.coupon_leaf_recieved }}</td>
+                                                <td>{{ sales_report.foc_qty }}</td>
+                                                <td>{{ sales_report.credit_collection }}</td>
+                                                <td>{{ sales_report.expense }}</td>
+                                                <td>{{ sales_report.net_cash_in_hand }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End:: row-2 -->
+    </div>
+</div>
+
+{% endblock %}

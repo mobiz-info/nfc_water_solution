@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+        <!-- End::app-sidebar -->
+        <!-- Page Header -->
+        <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+            <h4 class="fw-medium mb-0">Salesman Request</h4>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Salesman Request</li>
+            </ol>
+        </div>
+        <!-- Page Header Close -->
+        <!-- Start::app-content -->
+        <div class="main-content app-content">
+            <div class="container-fluid">
+                <!-- Start:: row-2 -->
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card custom-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    Salesman Request
+                                </div>
+
+                                {% comment %} <div class="ms-auto">
+                                    <a href="{% url 'tax_settings:create_tax_type' %}">
+                                    <button type="button" class="btn btn-success btn-wave text-end d-flex me-4 my-auto"><i class="bi bi-plus-circle me-1"></i>Create</button>
+                                </a>
+                                </div> {% endcomment %}
+                            </div>
+                            
+                            <div class="card-body">
+                                <table class="table table-bordered text-nowrap" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                        <th scope="col" style="text-align:center !important;">Sl.No</th>
+                                        <th scope="col" style="text-align:center !important;">Date</th>
+                                        <th scope="col" style="text-align:center !important;">Salesman</th>
+                                        <th scope="col" style="text-align:center !important;">Request</th>
+                                        {% comment %} <th scope="col" class="text-right">Actions</th> {% endcomment %}
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% load el_pagination_tags %}
+                                        {% paginate 20 instances %}
+                                        {% for instance in instances %}
+                                        <tr>
+                                            <td style="text-align:center">{{forloop.counter}}</td>
+                                            <td style="text-align:center">{{instance.created_date|date:'d/m/Y'}}</td>
+                                            <td style="text-align:left">{{instance.salesman.get_fullname}}</td>
+                                            <td style="text-align:left">{{instance.request}}</td>
+                                            {% comment %} <td class="text-right">
+                                                <div class="g-2">
+                                                    <a href="{% url 'tax_settings:edit_tax_type' pk=instance.pk %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Edit">
+                                                        <span class="ri-pencil-line fs-14"></span>
+                                                    </a>
+                                                </div> 
+                                            </td> {% endcomment %}
+                                        </tr>
+                                    {%endfor%}
+                                    </tbody>
+                                </table>
+                                {% get_pages %}
+                                <div class="clearfix"></div>
+                                <div class="row pagi my-3">
+                                    <div class="col-sm-6 col-xs-6 tot my-pagination">
+                                        <div class="m-t-10 text-start">
+                                            Showing {{title}}
+                                            <span class="current_page_index">{{ pages.current_start_index }}</span> - <span
+                                            class="current_end_status">{{ pages.current_end_index }}</span> of <span
+                                            class="total_count">{{ pages.total_count }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-xs-6 text-end pagination-btn-div">{% show_pages %}</div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End:: row-2 -->
+            </div>
+        </div>
+        <!-- End::app-content -->
+{% endblock %}

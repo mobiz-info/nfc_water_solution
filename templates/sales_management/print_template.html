@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Sales Report - Print</title>
+     {% comment %}<style>
+        .table {
+            border: 1px solid black;
+  border-collapse: collapse;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+        .page-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .table th, .table td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        .table th {
+            background-color: #f2f2f2;
+        }
+        .totals {
+            margin-top: 20px;
+            float: right;
+            font-weight: bold;
+        }
+    </style> {% endcomment %}
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <h2>Customer Sales Report</h2>
+            <p>From {{ filter_data.start_date }} to {{ filter_data.end_date }}</p>
+        </div>
+        
+                <table class="table table-bordered text-wrap" style="width: 100%;border: 1px solid black !important;
+  border-collapse: collapse !important;">
+                    <thead>
+                        <tr>
+                            <th>Sl No</th>
+                            <th>Date</th>
+                            <th>Ref/Invoice No</th>
+                            <th>Customer Name</th>
+                            <th>Building Name / Room No / Floor No</th>
+                            <th>Customer Sales Type</th>
+                            <th>Route</th>
+                            <th>Salesman</th>
+                            <th>Amount</th>
+                            <th>Discount</th>
+                            <th>Net Taxable</th>
+                            <th>VAT Amount</th>
+                            <th>Grand Total</th>
+                            <th>Amount Collected</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for data in customersales %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ data.date|date:"d/m/Y" }}</td>
+                            <td>{{ data.ref_invoice_no }}</td>
+                            <td>{{ data.customer_name }}</td>
+                            <td>{{ data.building_name }} {% if data.door_house_no %}/ {{ data.door_house_no }} {% endif %} {% if data.floor_no %}/ {{ data.floor_no }} {% endif %}</td>
+                            <td>{{ data.sales_type }}</td>
+                            <td>{{ data.route_name }}</td>
+                            <td>{{ data.salesman }}</td>
+                            <td>{{ data.amount }}</td>
+                            <td>{{ data.discount }}</td>
+                            <td>{{ data.net_taxable }}</td>
+                            <td>{{ data.vat_amount }}</td>
+                            <td>{{ data.grand_total }}</td>
+                            <td>{{ data.amount_collected }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="8" style="text-align: right;">Total:</td>
+                            <td>{{ total_amount }}</td>
+                            <td>{{ total_discount }}</td>
+                            <td>{{ total_net_payable }}</td>
+                            <td>{{ total_vat }}</td>
+                            <td>{{ total_grand_total }}</td>
+                            <td>{{ total_amount_recieved }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+        <div class="totals">
+            <p>Total Amount: {{ total_amount }}</p>
+            <p>Total Discount: {{ total_discount }}</p>
+            <p>Total Net Payable: {{ total_net_payable }}</p>
+            <p>Total VAT: {{ total_vat }}</p>
+            <p>Total Grand Total: {{ total_grand_total }}</p>
+            <p>Total Amount Received: {{ total_amount_recieved }}</p>
+        </div>
+    </div>
+</body>
+</html>

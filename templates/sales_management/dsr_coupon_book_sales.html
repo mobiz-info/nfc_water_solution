@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% block title %} Coupon Book Sales {% endblock %}
+{% block content %}
+{% load static %}
+{% load van_template_tags %}
+{% load sales_templatetags %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0"> Coupon Book Sales</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Sales Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page"> Coupon Book Sales</li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                             Coupon Book Sales
+                        </div>
+                    </div>
+
+                    <div class="mt">
+                        <form method="GET" action="{% url 'dsr_coupon_book_sales' %}">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-3">
+                                        <label for="from_date">From Date:</label>
+                                        <input type="date" class="form-control" id="from_date" name="from_date" value="{{ filter_data.from_date }}">
+                                    </div>
+                                    <div class="col-3">
+                                        <label for="to_date">To Date:</label>
+                                        <input type="date" class="form-control" id="to_date" name="to_date" value="{{ filter_data.to_date }}">
+                                    </div>
+                                    <div class="col-3">
+                                        <label for="route_name">Routes:</label>
+                                        <select name="route_name" class="form-select">
+                                            <option value="">All Routes</option>
+                                            {% for route in routes_instances %}
+                                                <option value="{{ route.route_name }}" {% if route.route_name == filter_data.route_name %}selected{% endif %}>{{ route.route_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col d-flex align-items-end justify-content-end">
+                                        <input type="submit" class="btn btn-primary btn-sm mx-1" value="Apply Filter">
+                                        {% if data_filter %}
+                                            <button type="button" class="btn btn-secondary btn-sm mx-1" onclick="resetFilters()" style="width:max-content">Reset Filter</button>
+                                        {% endif %}
+                                        <div>
+                                            <a href="{% url 'dsr_coupon_book_sales_print' %}?from_date={{ filter_data.from_date }}&to_date={{ filter_data.to_date }}&route_name={{ filter_data.route_name }}" class="btn btn-outline-success">
+                                                <i class="fas fa-file-excel"></i> Print
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    {% if data_filter %}
+                        <div>
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-4">
+                                        <p><strong>Salesman: {{ van_route.van.salesman.get_fullname }}</strong></p>
+                                    </div>
+                                    <div class="col-4">
+                                        <p><strong>Driver: {{ van_route.van.driver.get_fullname }}</strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <table class="table table-bordered text-wrap" style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th class="text-center text-bold" colspan="8">Coupon Book Sales</th>
+                                </tr>
+                                <tr>
+                                    <th style="text-align:center;">Sl No</th>
+                                    <th style="text-align:center;">Date</th>
+                                    <th style="text-align:center;">Ref No</th>
+                                    <th style="text-align:center;">Customer</th>
+                                    <th style="text-align:center;">Customer Id</th>
+                                    <th style="text-align:center;">Coupon Details</th>
+                                    <th style="text-align:center;">Total</th>
+                                    <th style="text-align:center;">Discount</th>
+                                    <th style="text-align:center;">Total Payable</th>
+                                    <th style="text-align:center;">Amount Received</th>
+                                    <th style="text-align:center;">Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for customer_coupon in customer_coupons %}
+                                <tr>
+                                    <td style="text-align:center;">{{ forloop.counter }}</td>
+                                    <td style="text-align:center;">{{ customer_coupon.created_date|date:'d/m/Y' }}</td>
+
+                                    <td style="text-align:center;">{{ customer_coupon.reference_number }}</td>
+                                    <td style="text-align:center;">{{ customer_coupon.customer.customer_name }}</td>
+                                    <td style="text-align:center;">{{ customer_coupon.customer.custom_id }}</td>
+                                    <td class="p-0">
+                                        <table class="table table-bordered" style="width: 100%">
+                                            <tr>
+                                                <th>Coupon Type</th>
+                                                <th style="text-align:center;">Book No.</th>
+                                                <th style="text-align:center;">Method</th>
+                                                <th style="text-align:center;">Rate</th>
+                                            </tr>
+                                            {% get_customer_coupon_details customer_coupon.pk as coupon_items %}
+                                            {% for item in coupon_items %}
+                                            <tr>
+                                                <td>{{ item.coupon.coupon_type.coupon_type_name }}</td>
+                                                <td style="text-align:center;">{{ item.coupon.book_num }}</td>
+                                                <td>{{ item.coupon.coupon_method }}</td>
+                                                <td style="text-align:center;">{{ item.rate }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </table>
+                                    </td>
+                                    <td style="text-align:center;">{{ customer_coupon.grand_total }}</td>
+                                    <td style="text-align:center;">{{ customer_coupon.discount }}</td>
+                                    <td style="text-align:center;">{{ customer_coupon.total_payeble }}</td>
+                                    <td style="text-align:center;">{{ customer_coupon.amount_recieved }}</td>
+                                    <td style="text-align:center;">{{ customer_coupon.balance }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+    $('#submit').click(function(e){
+        e.preventDefault();       
+        // Show the table when dates are selected
+        $('#table-container').show();
+    });
+    function resetFilters() {
+        // Redirect to the same page
+        location.href = "{% url 'dsr_coupon_book_sales' %}";
+    }
+</script>
+
+{% endblock %}

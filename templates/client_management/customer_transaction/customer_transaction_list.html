@@ -1,0 +1,258 @@
+{% extends 'base.html' %}
+{% block title %}Customer Transaction List{% endblock %}
+{% block content %}
+{% load static %}
+{% load client_templatetags %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between mb-3">
+    <h4 class="fw-medium mb-0">Customer Transaction List</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="javascript:void(0);" class="text-white-30">Client Management</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Customer Transaction List</li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+
+        <!-- Filters and Customer Info -->
+        <div class="card custom-card mb-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <strong>Filter Transactions</strong>
+                <div>
+                    <a href="{% url 'customer_transaction_print' %}?customer_pk={{ customer_pk }}&start_date={{ filter_start_date }}&end_date={{ filter_end_date }}" 
+                       class="btn btn-outline-success btn-sm" target="_blank">
+                        <i class="fas fa-print"></i> Print
+                    </a>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="resetFilters()">Reset</button>
+                </div>
+            </div>
+            <form method="GET" action=".">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label for="start_date" class="form-label">Start Date</label>
+                            <input type="date" id="start_date" name="start_date" class="form-control" value="{{ filter_start_date|default:'' }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="end_date" class="form-label">End Date</label>
+                            <input type="date" id="end_date" name="end_date" class="form-control" value="{{ filter_end_date|default:'' }}">
+                        </div>
+                        <input type="hidden" name="customer_pk" value="{{ customer_pk }}">
+                        <div class="col-md-2 d-flex align-items-end">
+                            <input type="submit" class="btn btn-primary w-100" value="Apply Filter">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Customer Info -->
+        <div class="card custom-card mb-3">
+            <div class="card-header"><strong>Customer Info</strong></div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4"><strong>Customer ID:</strong> {{ customer_id }}</div>
+                    <div class="col-md-4"><strong>Customer Name:</strong> {{ customer_name }}</div>
+                    <div class="col-md-4"><strong>Route:</strong> {{ route_name }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sales Report -->
+        <div class="card custom-card mb-3">
+            <div class="card-header"><strong>Sales Report</strong></div>
+            <div class="card-body table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class=" text-center">
+                        <tr>
+                            <th>Sl No</th>
+                            <th>Supply Date</th>
+                            <th>Reference No</th>
+                            <th>Invoice No</th>
+                            <th>Product Name</th>
+                            <th>Sales Type</th>
+                            <th>QTY</th>
+                            <th>Amount</th>
+                            <th>Discount</th>
+                            <th>Net Taxable</th>
+                            <th>VAT</th>
+                            <th>Grand Total</th>
+                            <th>Collected</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sale in sales_report_data %}
+                        <tr class="text-center">
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ sale.date }}</td>
+                            <td>{{ sale.ref_invoice_no }}</td>
+                            <td>{{ sale.invoice_number }}</td>
+                            <td>{{ sale.product_name }}</td>
+                            <td>{{ sale.sales_type }}</td>
+                            <td>{{ sale.qty }}</td>
+                            <td>{{ sale.amount }}</td>
+                            <td>{{ sale.discount }}</td>
+                            <td>{{ sale.net_taxable }}</td>
+                            <td>{{ sale.vat_amount }}</td>
+                            <td>{{ sale.grand_total }}</td>
+                            <td>{{ sale.amount_collected }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot class=" text-center">
+                        <tr>
+                            <td colspan="6"><strong>Total</strong></td>
+                            <td>{{ total_qty }}</td>
+                            <td>{{ total_amount }}</td>
+                            <td>{{ total_discount }}</td>
+                            <td>{{ total_net_payable }}</td>
+                            <td>{{ total_vat }}</td>
+                            <td>{{ total_grand_total }}</td>
+                            <td>{{ total_amount_recieved }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <!-- Outstanding -->
+        <div class="card custom-card mb-3">
+            <div class="card-header"><strong>Customer Outstanding</strong></div>
+            <div class="card-body table-responsive">
+                <table class="table table-bordered table-hover text-center">
+                    <thead >
+                        <tr>
+                            <th>Sl No</th>
+                            <th>Date</th>
+                            <th>Product Type</th>
+                            <th>Invoice No</th>
+                            <th>Outstanding Amount</th>
+                            <th>Outstanding Coupons</th>
+                            <th>Empty Cans</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for outstanding in customer_outstanding_instances %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ outstanding.outstanding_date|date:"M. d, Y" }}</td>
+                            <td>{{ outstanding.product_type }}</td>
+                            <td>{{ outstanding.invoice_no }}</td>
+                            <td>{{ outstanding.total_amount }}</td>
+                            <td>{{ outstanding.total_coupons }}</td>
+                            <td>{{ outstanding.total_emptycan }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot >
+                        <tr>
+                            <td colspan="4" class="text-end"><strong>Total</strong></td>
+                            <td>{{ total_outstanding_amount }}</td>
+                            <td>{{ total_outstanding_coupons }}</td>
+                            <td>{{ total_outstanding_emptycan }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <!-- Collection Report -->
+        <div class="card custom-card mb-3">
+            <div class="card-header"><strong>Customer Collection Report</strong></div>
+            <div class="card-body table-responsive">
+                <table class="table table-bordered table-hover text-center">
+                    <thead >
+                        <tr>
+                            <th>Sl No</th>
+                            <th>Created Date</th>
+                            <th>Payment Method</th>
+                            <th>Receipt No</th>
+                            <th>Amount Received</th>
+                            <th>Total Discounts</th>
+                            <th>Net Taxable</th>
+                            <th>VAT</th>
+                            <th>Collected</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for collection_payment in collection_payment_instance %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ collection_payment.created_date|date:"M. d, Y" }}</td>
+                            <td>{{ collection_payment.payment_method }}</td>
+                            <td>{{ collection_payment.receipt_number }}</td>
+                            <td>{{ collection_payment.amount_received }}</td>
+                            <td>{{ collection_payment.total_discounts }}</td>
+                            <td>{{ collection_payment.total_net_taxeble }}</td>
+                            <td>{{ collection_payment.total_vat }}</td>
+                            <td>{{ collection_payment.collected_amount }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot >
+                        <tr>
+                            <td colspan="4" class="text-end"><strong>Total</strong></td>
+                            <td>{{ total_amount_received }}</td>
+                            <td>{{ total_discounts }}</td>
+                            <td>{{ total_net_taxable }}</td>
+                            <td>{{ total_collection_vat }}</td>
+                            <td>{{ total_collected_amount }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <!-- Redeemed Coupon -->
+        <div class="card custom-card mb-5">
+            <div class="card-header"><strong>Customer Redeemed Coupons</strong></div>
+            <div class="card-body table-responsive">
+                <table class="table table-bordered table-hover text-center">
+                    <thead >
+                        <tr>
+                            <th rowspan="2">Sl No</th>
+                            <th rowspan="2">Supply Date</th>
+                            <th rowspan="2">Invoice No</th>
+                            <th colspan="2">Coupons</th>
+                        </tr>
+                        <tr>
+                            <th>Manual</th>
+                            <th>Digital</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for redeemed_coupon in redeemed_coupon_instances %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ redeemed_coupon.created_date|date:"M. d, Y" }}</td>
+                            <td>{{ redeemed_coupon.invoice_no }}</td>
+                            <td>{{ redeemed_coupon.total_coupon_recieved.manual_coupon }}</td>
+                            <td>{{ redeemed_coupon.total_coupon_recieved.digital_coupon }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot >
+                        <tr>
+                            <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                            <td><strong>{{ total_manual_coupons }}</strong></td>
+                            <td><strong>{{ total_digital_coupons }}</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script>
+    function resetFilters() {
+        location.href = "{% url 'customer_transaction_list' %}";
+    }
+</script>
+{% endblock %}

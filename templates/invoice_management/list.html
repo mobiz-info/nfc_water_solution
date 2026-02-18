@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+{% load invoice_template_tags %}
+<!-- End::app-sidebar -->
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Invoice List</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Invoice List</li>
+    </ol>
+</div>
+<!-- Page Header Close -->
+<!-- Start::app-content -->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Invoice List
+                        </div>
+
+                        <div class="ms-auto">
+                            <a href="{% url 'invoice:invoice_customers' %}">
+                                <button type="button" class="btn btn-success btn-wave text-end d-flex me-4 my-auto"><i class="bi bi-plus-circle me-1"></i>Create</button>
+                            </a>
+                        </div>
+                        
+                    </div>
+                    <div class="card-body">
+                        <div class="mt">
+                            <form method="GET" action=".">
+                                <div class="row d-flex align-items-end justify-content-end">
+                                    <div class="col-4">
+                                        <label for="search">Search:</label>
+                                        <input type="text" class="form-control" id="search" name="q" value="{{ filter_data.q }}">
+                                    </div>
+                                    <div class="col-3">
+                                        <label for="date">Date:</label>
+                                        <input type="date" class="form-control" id="date" name="date" value="{{ filter_data.filter_date }}">
+                                    </div>
+                                    <div class="col-3">
+                                        <label for="product">Routes :</label>
+                                        <select name="route_name" class="form-select">
+                                            <option value="">All Routes</option>
+                                            {% for route in route_li %}
+                                            <option value="{{ route.route_name }}" {% if route.route_name == filter_data.route_name %}selected{% endif %}>
+                                                {{ route.route_name }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-auto">
+                                        <input type="submit" class="btn btn-primary btn-sm mx-1" value="Apply Filter">
+                                        {% if data_filter %}
+                                        <button type="button" class="btn btn-secondary btn-sm mx-1" onclick="resetFilters()" style="width:max-content">Reset Filter</button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="card-body" style="overflow: auto;">
+                            <table class="table table-bordered text-nowrap" style="width:100%">
+                                <thead>
+                                    <tr>
+                                    <th scope="col" class="text-center">Sl.No</th>
+                                    <th scope="col" class="text-center">Created Date</th>
+                                    <th scope="col" class="text-center">Invoice No</th>
+                                    <th scope="col" class="text-left">Customer Name</th>
+                                    <th scope="col" class="text-left">Customer Id</th>
+                                    <th scope="col" class="text-left">Invoice Type</th>
+                                    <th scope="col" class="text-center">Net Taxeble</th>
+                                    <th scope="col" class="text-center">VAT</th>
+                                    <th scope="col" class="text-center">Total Amount</th>
+                                    <th scope="col" class="text-center">Amount Recieved</th>
+                                    <th scope="col" class="text-center">Status</th>
+                                    <th scope="col" class="text-right">Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    {% load el_pagination_tags %}
+                                    {% paginate 20 instances %}
+                                    {% for instance in instances %}
+                                    <tr>
+                                        <td class="text-center">{{forloop.counter}}</td>
+                                        <td class="text-left">{{instance.created_date}}</td>
+                                        <td class="text-left">{{instance.invoice_no}}</td>
+                                        <td class="text-center">{{instance.customer.customer_name}}</td>
+                                        <td class="text-center">{{instance.customer.custom_id}}</td>
+                                        <td class="text-center">{{instance.get_invoice_type_display}}</td>
+                                        <td class="text-center">{{instance.net_taxable}}</td>
+                                        <td class="text-center">{{instance.vat}}%</td>
+                                        <td class="text-center">{{instance.amout_total}}</td>
+                                        <td class="text-center">{{instance.amout_recieved}}</td>
+                                        <td class="text-center">{{instance.get_invoice_status_display}}</td>
+                                        <td class="text-right">
+                                            <div class="g-2">
+                                                {% if instance.can_edit %}
+                                                <a href="{% url 'invoice:edit_invoice' pk=instance.pk %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Edit">
+                                                    <span class="ri-pencil-line fs-14"></span>
+                                                </a>
+                                                <a aria-label="anchor" class="action-button remove btn btn-danger-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Delete"
+                                                    data-id="{{instance.pk}}" data-text="{{confirm_delete_message}}" data-title="Are you sure?" href="{% url 'invoice:delete_invoice' pk=instance.pk %}"><span class="ri-delete-bin-7-line fs-14"></span>
+                                                </a>
+                                                {% endif %}
+                                                <a href="{% url 'invoice:invoice' pk=instance.pk %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Invoice Info">
+                                                    <span class="ri-printer-fill fs-14"></span>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {%endfor%}
+                                    <tr>
+                                        <td class="font-weight-bold text-right" colspan="6">Grand Total: </td>
+                                        {% get_total_values instances as total_values %}
+                                        <td class="font-weight-bold text-center">{{total_values.net_taxable}}</td>
+                                        <td class="font-weight-bold text-center">{{total_values.vat}}</td>
+                                        <td class="font-weight-bold text-center">{{total_values.amout_total}}</td>
+                                        <td class="font-weight-bold text-center">{{total_values.amout_recieved}}</td>
+                                        <td class="font-weight-bold text-center"></td>
+                                        <td class="font-weight-bold text-center"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {% get_pages %}
+                    <div class="clearfix"></div>
+                    <div class="row pagi my-3">
+                        <div class="col-sm-6 col-xs-6 tot my-pagination">
+                            <div class="m-t-10 text-start">
+                                Showing {{title}}
+                                <span class="current_page_index">{{ pages.current_start_index }}</span> - <span
+                                class="current_end_status">{{ pages.current_end_index }}</span> of <span
+                                class="total_count">{{ pages.total_count }}</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xs-6 text-end pagination-btn-div">{% show_pages %}</div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End:: row-2 -->
+    </div>
+</div>
+<!-- End::app-content -->
+{% endblock %}

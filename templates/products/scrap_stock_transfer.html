@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Scrap Stock</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Product Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Scrap Stock</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-1 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title mx-auto">Scrap Stock</div>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="mb-4">Scrap Stock: {{ scrap_stocks }}</h5>
+
+                        <form enctype="multipart/form-data" role="form" method="post" class="row g-3 needs-validation">
+                            {% csrf_token %}
+                            <!-- Form fields -->
+                            <div class="col-md-6">
+                                <label for="product" class="form-label">Product</label>
+                                <select name="product" id="product" class="form-control">
+                                    {% for product in form.product.field.queryset %}
+                                        <option value="{{ product.id }}">{{ product.product_name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="text-danger">{{ form.product.errors }}</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="cleared_quantity" class="form-label">Cleared Quantity</label>
+                                <input type="number" name="cleared_quantity" id="cleared_quantity" class="form-control" value="{{ form.cleared_quantity.value }}">
+                                <div class="text-danger">{{ form.cleared_quantity.errors }}</div>
+                            </div>
+                            
+                            <div class="col-12 text-end mt-5">
+                                <input type="submit" class="btn btn-primary me-2 mb-2" value="Submit">
+                                <button class="btn btn-success me-md-2 mb-2" type="button" onClick="javascript:history.go(-1);">
+                                    <i class="bi bi-backspace-fill pe-1"></i>Back</button>
+                                <a class="btn btn-success me-md-2 mb-2" href="{% url 'dashboard' %}">
+                                    <i class="bi bi-backspace-fill pe-1"></i> Back to Dashboard
+                                </a>
+                            </div>
+                        </form>
+
+                        {% if form.errors %}
+                            <div class="alert alert-danger mt-3">
+                                {{ form.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

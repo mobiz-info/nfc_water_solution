@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block title %} Monthly Sales Report {% endblock %}
+{% block content %}
+{% load sales_templatetags %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Monthly Sales Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Sales Management </a></li>
+        <li class="breadcrumb-item active" aria-current="page">Monthly Sales Report</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                             Monthly Sales Report
+                        </div>
+                    </div>
+                    <div class="mt">
+                        <form method="GET">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <label for="start_date">From Date:</label>
+                                        <input type="date" class="form-control" id="start_date" name="start_date" value="{{ filter_data.start_date }}">
+                                    </div>
+                                    <div class="col">
+                                        <label for="end_date">To Date:</label>
+                                        <input type="date" class="form-control" id="end_date" name="end_date" value="{{ filter_data.end_date }}">
+                                    </div>
+                                    
+                                    <div class="col-md-6 row">
+                                       
+                                        <div class="col d-flex align-items-end justify-content-end">
+                                            <input type="submit" class="btn btn-primary btn-sm mx-1" value="Apply Filter">
+                                            <button type="button" class="btn btn-secondary btn-sm mx-1" onclick="resetFilters()" style="width:max-content">Reset Filter</button>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </form>
+                        
+                        <div id="table-container" style="overflow:scroll;">
+                            <div class="card-body">
+                                <table id="responsiveDataTable" class="table table-bordered text-wrap" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Customer Name</th>
+                                            <th>January</th>
+                                            <th>February</th>
+                                            <th>March</th>
+                                            <th>April</th>
+                                            <th>May</th>
+                                            <th>June</th>
+                                            <th>July</th>
+                                            <th>August</th>
+                                            <th>September</th>
+                                            <th>October</th>
+                                            <th>November</th>
+                                            <th>December</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for customer, months_data in report_data.items %}
+                                            <tr>
+                                                <td>{{ customer }}</td>
+                                                {% for month in months %}
+                                                    <td>{{ months_data|get_item:month|default:"0" }}</td>
+                                                {% endfor %}
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    function resetFilters() {
+        // Redirect to the same page
+        location.href = "{% url 'monthly_sales_report' %}";
+    }
+    function resetFilters() {
+            document.getElementById('start_date').value = '';
+            document.getElementById('end_date').value = '';
+            document.querySelector('select[name="route_name"]').value = '';
+        }
+        
+</script>
+
+{% endblock %}

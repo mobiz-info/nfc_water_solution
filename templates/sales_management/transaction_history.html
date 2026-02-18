@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %} van {% endblock %}
+{% block content %}
+{% load static %}
+<!-- End::app-sidebar -->
+        <!-- Page Header -->
+        {% for message in messages %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+        {% endfor %}
+
+        <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+            <h4 class="fw-medium mb-0">Transaction History</h4>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Transaction History</li>
+            </ol>
+        </div>
+        <div class="main-content app-content">
+            <div class="container-fluid">
+                         <!-- Start:: row-2 -->
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card custom-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    Transaction History
+                                </div>
+                   
+                            </div>
+                            <div class="card-body">
+                                <div class="tbl table-responsive">
+                                    <table id="datatable-basic" class="table table-bordered text-nowrap dataTable no-footer" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Sl No</th>
+                                            <th scope="col">Order Number</th>
+                                            <th scope="col">Customer</th>
+                                            <th scope="col">Category</th>
+                                            <th scope="col">Transaction Category</th>
+                                            <th scope="col">Amount</th>
+                                            <th scope="col">Created Staff</th>
+                                            <th scope="col">Created At</th>
+                                            <th scope="col">Invoice Number</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for transaction in transaction_history_list %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ transaction.order_number }}</td>
+                                            <td>{{ transaction.customer }}</td>
+                                            <td>{{ transaction.category }}</td>
+                                            <td>{{ transaction.transaction_category }}</td>
+                                            <td>{{ transaction.amount }}</td>
+                                            <td>{{ transaction.created_staff }}</td>
+                                            <td>{{ transaction.created_at }}</td>
+                                            <td>{{ transaction.invoice_number }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+{% endblock %}

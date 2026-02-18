@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %} Municipality License {% endblock %}
+{% block content %}
+{% load static %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Municipality License</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="" class="text-white-30">Van Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Municipality License</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title mx-auto">
+                            Municipality License</div>
+                    </div>
+                    <div class="card-body">
+                        <form enctype="multipart/form-data" role="form" method="post"
+                                class="row g-3 needs-validation">
+                            {% csrf_token %}
+                            <!--row 1-->
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Emirate</label>
+                                {{form.emirate}}
+                                    <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>License Number</label>
+                                {{form.license_no}}
+                                    <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Licence Expiry date</label>
+                                {{form.expiry_date}}
+                                    <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                </div>
+                            </div>
+                            <div class="col-12 text-end mt-5">
+                                <input type="submit" class="btn btn-primary me-2 mb-2" value="Submit">
+                                <button class="btn btn-success   me-md-2  mb-2" type="button" onClick="javascript:history.go(-1);">
+                                    <i class="bi bi-backspace-fill pe-1"></i>Back</button>
+                                <a class="btn btn-success me-md-2  mb-2"
+                                    href="{% url 'dashboard' %}"> <i class="bi bi-backspace-fill pe-1"></i>Back to Dashboard </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+{% endblock %}

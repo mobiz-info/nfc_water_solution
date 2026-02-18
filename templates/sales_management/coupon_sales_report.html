@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% block title %} Coupons Sales {% endblock %}
+{% block content %}
+{% load static %}
+{% load coupon_sales_templatetags %}
+
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Coupons Sales</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Sales Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Coupons Sales</li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <div class="card custom-card">
+            <div class="card-header">
+                <div class="card-title">Coupons Sales Report</div>
+            </div>
+
+            <div class="mt">
+                <form method="GET" action="{% url 'coupon_sales_report' %}">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-3">
+                                <label for="start_date">Start Date:</label>
+                                <input type="date" class="form-control" name="start_date" value="{{ filter_data.start_date }}">
+                            </div>
+                            <div class="col-3">
+                                <label for="end_date">End Date:</label>
+                                <input type="date" class="form-control" name="end_date" value="{{ filter_data.end_date }}">
+                            </div>
+                            <div class="col-3">
+                                <label for="route_name">Routes :</label>
+                                <select name="route_name" class="form-select">
+                                    <option value="">All Routes</option>
+                                    {% for route in routes_instances %}
+                                        <option value="{{ route.route_name }}" {% if route.route_name == filter_data.route_name %}selected{% endif %}>{{ route.route_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-3">
+                                <label for="sales_type">Sales Type:</label>
+                                <select name="sales_type" class="form-select">
+                                    <option value="">All Sales Types</option>
+                                    <option value="CASH COUPON" {% if filter_data.sales_type == 'CASH COUPON' %}selected{% endif %}>CASH COUPON</option>
+                                    {% comment %} <option value="FOC" {% if filter_data.sales_type == 'FOC' %}selected{% endif %}>FOC</option> {% endcomment %}
+                                    <option value="CASH" {% if filter_data.sales_type == 'CASH' %}selected{% endif %}>CASH</option>
+                                    <option value="CREDIT" {% if filter_data.sales_type == 'CREDIT' %}selected{% endif %}>CREDIT</option>
+                                </select>
+                            </div>
+                            <div class="col d-flex align-items-end justify-content-end">
+                                <input type="submit" class="btn btn-primary btn-sm mx-1" value="Apply Filter">
+                                {% if data_filter %}
+                                    <button type="button" class="btn btn-secondary btn-sm mx-1" onclick="resetFilters()">Reset Filter</button>
+                                {% endif %}
+                                <div class="d-flex">
+                                    <a href="{% url 'coupon_sales_excel' %}?start_date={{ filter_data.start_date }}&end_date={{ filter_data.end_date }}&sales_type={{ filter_data.sales_type }}&route_name={{ filter_data.route_name }}" class="btn btn-outline-success btn-sm mx-1">
+                                        <i class="fas fa-file-excel"></i> Excel
+                                    </a>
+                                    <a href="{% url 'coupon_sales_print' %}?start_date={{ filter_data.start_date }}&end_date={{ filter_data.end_date }}&sales_type={{ filter_data.sales_type }}&route_name={{ filter_data.route_name }}" class="btn btn-outline-success btn-sm mx-1">
+                                        <i class="fas fa-print"></i> Print
+                                    </a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+
+            <div id="table-container" class="card-body">
+                <table class="table table-bordered text-wrap">
+                    <thead>
+                        <tr>
+                            <th>Sl No</th>
+                            <th>Coupon Method</th>
+                            <th>Book Number</th>
+                            <th>Customer Name</th>
+                            <th>Customer Id</th>
+                            <th>Sales Type</th>
+                            <th>Route name</th>
+                            <th>No of Leaflets</th>
+                            <th>Used Leaflets</th>
+                            <th>Balance Coupons</th>
+                            <th>Rate</th>
+                            <th>Per Leaf Rate</th>
+                            <th>Amount Collected</th>
+                            <th>Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% load el_pagination_tags %}
+                        {% paginate 20 coupon_sales %}
+                        {% for sale in coupon_sales %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ sale.customer_coupon.coupon_method }}</td>
+                                <td>{{ sale.coupon.book_num }}</td>
+                                <td>{{ sale.customer_coupon.customer.customer_name }}</td>
+                                <td>{{ sale.customer_coupon.customer.custom_id }}</td>
+                                <td>{{ sale.customer_coupon.customer.sales_type }}</td>
+                                <td>{{ sale.customer_coupon.customer.routes.route_name }}</td>
+                                <td>{{ sale.coupon.no_of_leaflets }}</td>
+                                <td>{{ sale|used_coupon_count }}</td>
+                                <td>{{ sale|unused_coupon_count }}</td>
+                                <td>{{ sale.rate }}</td>
+                                <td>{{ sale|per_leaf_rate }}</td>
+                                <td>{{ sale.customer_coupon.amount_recieved }}</td>
+                                <td>{{ sale.customer_coupon.balance }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="10">Total:</td>
+                            <td>{{ total_rate }}</td>
+                            <td>{{ total_per_leaf_rate }}</td>
+                            <td>{{ total_amount_collected }}</td>
+                            <td>{{ total_balance }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            {% get_pages %}
+            <div class="clearfix"></div>
+            <div class="row pagi my-3">
+                <div class="col-sm-6 col-xs-6 tot my-pagination">
+                    <div class="m-t-10 text-start">
+                        Showing {{title}}
+                        <span class="current_page_index">{{ pages.current_start_index }}</span> - 
+                        <span class="current_end_status">{{ pages.current_end_index }}</span> of 
+                        <span class="total_count">{{ pages.total_count }}</span>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xs-6 text-end pagination-btn-div">{% show_pages %}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+    function resetFilters() {
+        location.href = "{% url 'coupon_sales_report' %}";
+    }
+</script>
+{% endblock %}

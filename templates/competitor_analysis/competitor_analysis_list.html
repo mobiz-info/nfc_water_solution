@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block title %} van {% endblock %}
+{% block content %}
+{% load static %}
+<!-- End::app-sidebar -->
+        <!-- Page Header -->
+        {% for message in messages %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+        {% endfor %}
+
+        <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+            <h4 class="fw-medium mb-0">Competitor Analysis</h4>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Competitor analysis</li>
+            </ol>
+        </div>
+        <div class="main-content app-content">
+            <div class="container-fluid">
+                         <!-- Start:: row-2 -->
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card custom-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    Competitor Analysis
+                                </div>
+                                <div class="ms-auto">
+                                <a href="{% url 'competitor_analysis_form' %}"><button type="button" class="btn btn-success btn-wave text-end d-flex me-4 my-auto"><i class="bi bi-plus-circle me-1"></i>Create</button>
+                                </a>
+                                </div>  
+                            </div>
+                                {% comment %} -------------------------------------------- {% endcomment %}
+                            <div class="card-body">
+                                <form method="get" action="">
+                                {{ form.as_p }}
+                                <div class="d-flex align-items-center">
+                                    <button type="submit" class="btn btn-success btn-wave me-2">Filter</button>
+                                    <a href="{% url 'competitor_analysis_list' %}" class="text-decoration-none">
+                                      <button type="button" class="btn btn-outline-danger">
+                                        <i class="bi bi-cross-circle me-1"></i>
+                                        Reset
+                                      </button>
+                                    </a>
+                                  </div>
+                                </form>
+                            </div>
+                            {% comment %} =================== {% endcomment %}
+                            <div class="card-body">
+                                <div class="tbl table-responsive">
+                                    <table id="datatable-basic" class="table table-bordered text-nowrap dataTable no-footer" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Sl No</th>
+                                            <th scope="col">Customer</th>
+                                            <th scope="col">Salesman</th>
+                                            <th scope="col">Route</th>
+                                            <th scope="col">No of visit in week</th>
+                                            <th scope="col">Customer type</th>
+                                            <th scope="col">Competitor</th>
+                                            <th scope="col">Our Share</th>
+                                            <th scope="col">Competitor Share</th>
+                                            <th scope="col">Price Difference</th>
+                                            <th scope="col">Water/Coupon</th>
+                                            <th scope="col">Potential Qty</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for analysis in competitor_analysis_list %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ analysis.customer }}</td>
+                                            <td>{{ analysis.created_by }}</td>
+                                            <td>{{ analysis.customer.routes }}</td>
+                                            <td>{{ analysis.number_of_visits_per_month }}</td>
+                                            <td>{{ analysis.customer.customer_type }}</td>
+                                            <td>{{ analysis.competitor.name }}</td>
+                                            <td>{{ analysis.our_share|floatformat:2 }}%</td>
+                                            <td>{{ analysis.competitor_share|floatformat:2 }}%</td>
+                                            <td>{{ analysis.price_difference|floatformat:2 }}</td>
+
+                                            <td>{{ analysis.customer.sales_type }}</td>
+                                            <td>{{ analysis.quantity }}</td>
+                                            
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+{% endblock %}

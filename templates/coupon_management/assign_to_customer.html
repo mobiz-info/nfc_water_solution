@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block title %} Assign Coupon Request {% endblock %}
+{% block content %}
+{% load static %}
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Customer Assign Details</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Coupon Management</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Coupon Assign</li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-1 -->
+        <div class="card card-product-details shadow">
+            <div class="card-header text-center">
+                <h4>Coupon Assign Details</h4>
+            </div>
+            <div class="card-body ">
+                <p class="card-text">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <tbody>
+                                <!-- Display Coupon Type -->
+                                <tr>
+                                    <td class="text-secondary">Coupon Type</td>
+                                    <td>{{coupon_request}}</td>
+                                </tr>
+
+                                <!-- Display Quantity -->
+                                <tr>
+                                    <td class="text-secondary">Requested Quantity</td>
+                                    <td>{{quantity}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-secondary">Allotted Quantity</td>
+                                    <td>{{alloted_quantity}}</td>
+                                </tr>
+
+                                <tr>
+                                    <td class="text-secondary">Allotted Staff</td>
+                                    <td>{{branch_id}}</td>
+                                </tr>
+                                
+                                <!-- Form for Save -->
+                                 <tr>
+                                    <td colspan="2">
+                                        <form method="post" action="{% url 'assign_to_customer' assign_id=assign_to_customer.assign_id %}">
+                                            {% csrf_token %}
+                                            {{ form.as_p }}
+                                            <button type="submit" class="btn btn-primary">Assign</button>
+                                        </form>
+                                    </td>
+                                </tr> 
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </p>
+
+            </div>
+        </div>
+    </div>
+    <!-- End:: row-1 -->
+</div>
+{% endblock %}

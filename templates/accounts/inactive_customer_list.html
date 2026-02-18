@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% block title %}Inactive Customers List{% endblock %}
+{% block content %}
+{% load accounts_templatetags %}
+{% load client_templatetags %}
+{% load static %}
+
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Inactive Customers</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Client Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Inactive Customer</li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">Inactive Customers</div>
+                    </div>
+
+                    <div class="card-body">
+                        <div style="padding:15px 0px;">
+                            <form method="GET">
+                                <div class="row d-flex align-items-end justify-content-end">
+                                    <div class="col-2">
+                                        <label for="date">Custom Date:</label>
+                                        <select name="days_filter" id="days_filter" class="form-select">
+                                            <option value="">Select Days</option>
+                                            <option value="10" {% if filter_data.days_filter == '10' %}selected{% endif %}>10 Days</option>
+                                            <option value="15" {% if filter_data.days_filter == '15' %}selected{% endif %}>15 Days</option>
+                                            <option value="30" {% if filter_data.days_filter == '30' %}selected{% endif %}>30 Days</option>
+                                            <option value="custom" {% if filter_data.days_filter == 'custom' %}selected{% endif %}>Custom Date</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="col-2" id="from_date" {% if filter_data.days_filter != 'custom' %}style="display:none;"{% endif %}>
+                                        <label for="date">From Date:</label>
+                                        <input type="date" name="from_date" class="form-control" value="{{ filter_data.from_date }}" >
+                                    </div>
+                                    <div class="col-2" id="to_date" {% if filter_data.days_filter != 'custom' %}style="display:none;"{% endif %}>
+                                        <label for="date">To Date:</label>
+                                        <input type="date" name="to_date" class="form-control" value="{{ filter_data.to_date }}" >
+                                    </div>
+                                    <div class="col-1">
+                                        <label for="product">Routes :</label>
+                                        <select name="route_name" class="form-select">
+                                            <option value="">All Routes</option>
+                                            {% for route in routes_instances %}
+                                                <option value="{{ route.route_name }}" {% if route.route_name == filter_data.route_name %}selected{% endif %}>
+                                                    {{ route.route_name }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-2">
+                                        <label for="date">Search:</label>
+                                        <input type="text" name="q" class="form-control" placeholder="Search ..." value="{{ q }}">
+                                    </div>
+                                    <div class="col-auto">
+                                        <input type="submit" class="btn btn-primary btn-sm mx-1" value="Apply Filter">
+                                        {% if data_filter %}
+                                        <button type="button" class="btn btn-secondary btn-sm mx-1" onclick="resetFilters()" style="width:max-content">Reset Filter</button>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-auto no-print">
+                                        <a href="{% url 'print_inactive_customers' %}?days_filter={{ filter_data.days_filter }}&from_date={{ filter_data.from_date }}&to_date={{ filter_data.to_date }}&route_name={{ filter_data.route_name }}&q={{ q }}" 
+                                           class="btn btn-success btn-sm" target="_blank">Print</a>
+                                    </div>
+                                </div>
+
+
+                                
+                            </form>
+                        </div>
+                        <div class="w-100 overflow-auto">
+                            <table class="table table-bordered text-nowrap" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align:center;width:5%;" scope="col">Sl.No</th>
+                                        <th style="text-align:center;" scope="col">Customer ID</th>
+                                        <th style="text-align:center;" scope="col">Customer Name</th>
+                                        <th style="text-align:center;" scope="col">Route</th>
+                                        <th style="text-align:center;" scope="col">Mobile No</th>
+                                        <th style="text-align:center;" scope="col">Sales Type</th>
+                                        <th style="text-align:center;" scope="col">Last Visit Date</th>
+                                        <th style="text-align:center;" scope="col">Outstanding Amount</th>
+                                        <th style="text-align:center;" scope="col">Inactive Days</th>
+                                        <th style="text-align:center;" scope="col">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% load el_pagination_tags %}
+                                    {% paginate 20 inactive_customers %}
+                                    {% for customer in inactive_customers %}
+                                        <tr>
+                                            <td style="text-align:center;">{{ forloop.counter }}</td>
+                                            <td style="text-align:left;">{{ customer.custom_id }}</td>
+                                            <td style="text-align:left;">
+                                                <a href="{% url 'customer_complaint' customer.pk %}" aria-label="anchor">{{ customer.customer_name }}</a>
+                                            </td>
+                                            <td style="text-align:left;">{{ customer.routes.route_name }}</td>
+
+                                            <td style="text-align:left;">{{ customer.mobile_no }}</td>
+                                            
+                                            <td style="text-align:left;">{{ customer.sales_type }}</td>
+                                            <td style="text-align:left;">{{ customer.last_supply_date|date:'d/m/Y' }}</td>
+                                            <td style="text-align:left;">
+                                                {% get_outstanding_amount customer.pk today as outstanding_amount %}
+                                                {{ outstanding_amount }}
+                                            </td>
+                                            <td style="text-align:center;">{{ customer.days_since_last_supply }}</td>
+                                            <td style="text-align:left;">
+                                                {% if customer.on_vacation %}
+                                                    Vacation
+                                                {% else %}
+                                                    Inactive
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                    
+                        {% get_pages %}
+                        <div class="clearfix"></div>
+                        <div class="row pagi my-3">
+                            <div class="col-sm-6 col-xs-6 tot my-pagination">
+                                <div class="m-t-10 text-start">
+                                    Showing {{title}}
+                                    <span class="current_page_index">{{ pages.current_start_index }}</span> - <span
+                                    class="current_end_status">{{ pages.current_end_index }}</span> of <span
+                                    class="total_count">{{ pages.total_count }}</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xs-6 text-end pagination-btn-div">{% show_pages %}</div>
+                        </div> 
+                    </div>   
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Show or hide the custom date fields based on the selected option
+    document.getElementById('days_filter').addEventListener('change', function () {
+        const fromDate = document.getElementById('from_date');
+        const toDate = document.getElementById('to_date');
+        if (this.value === 'custom') {
+            fromDate.style.display = 'block';
+            toDate.style.display = 'block';
+        } else {
+            fromDate.style.display = 'none';
+            toDate.style.display = 'none';
+        }
+    });
+</script>
+{% endblock %}

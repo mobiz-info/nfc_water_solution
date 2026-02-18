@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% block title %} User View {% endblock %}
+{% block content %}
+{% load static %}
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <div class="card card-product-details shadow">
+            <div class="card-header text-center">
+                <h4>Customer Details</h4>
+            </div>
+
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <td class="text-secondary">Customer Name</td>
+                                <td>{{ user_det.customer_name }}</td>
+                                <td class="text-secondary">Building Name</td>
+                                <td>{{ user_det.building_name }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-secondary">Door/House Number</td>
+                                <td>{{ user_det.door_house_no }}</td>
+                                <td class="text-secondary">Floor Number</td>
+                                <td>{{ user_det.floor_no }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-secondary">Sales Staff</td>
+                                <td>{{ user_det.sales_staff.first_name }}</td>
+                                <td class="text-secondary">Route</td>
+                                <td>{{ user_det.routes.route_name }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-secondary">Emirate</td>
+                                <td>{{ user_det.emirate.name }}</td>
+                                <td class="text-secondary">Mobile Number</td>
+                                <td>{{ user_det.mobile_no }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-secondary">Whatsapp Number</td>
+                                <td>{{ user_det.whats_app }}</td>
+                                <td class="text-secondary">Email ID</td>
+                                <td>{{ user_det.email_id }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-secondary">GPS Latitude</td>
+                                <td>{{ user_det.gps_latitude }}</td>
+                                <td class="text-secondary">GPS Longitude</td>
+                                <td>{{ user_det.gps_longitude }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-secondary">Customer Type</td>
+                                <td>{{ user_det.customer_type }}</td>
+                                <td class="text-secondary">5G Count Limit</td>
+                                <td>{{ user_det.five_g_count_limit }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-secondary">Eligible FOC</td>
+                                <td>{{ user_det.eligible_foc }}</td>
+                                <td class="text-secondary">Sales Type</td>
+                                <td>{{ user_det.sales_type }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-secondary">Default Bottles</td>
+                                <td>{{ user_det.no_of_bottles_required }}</td>
+                                <td class="text-secondary">Maximum Credit Limit</td>
+                                <td>{{ user_det.max_credit_limit }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-secondary">Credit Days</td>
+                                <td>{{ user_det.credit_days }}</td>
+                                <td class="text-secondary">No Of Permitted Invoices</td>
+                                <td>{{ user_det.no_of_permitted_invoices }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-secondary">Status</td>
+                                {% if user_det.is_active == 1 %}
+                                    <td>Active</td>
+                                {% else %}
+                                    <td>Inactive</td>
+                                {% endif %}
+                            </tr>
+                            <tr>
+                                <td colspan="1" class="text-secondary">Visit schedule</td>
+                                <td>
+                                    <ul>
+                                        {% for entry in visit_schedule %}
+                                            <li>{{ entry }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="row my-3 me-1">
+            <div class="col-12 text-end">
+                <a href="{% url 'delete_customer' user_det.customer_id %}">
+                    <button class="btn btn-danger me-md-2" type="button"><i class="bi bi-backspace-fill pe-1"></i>Delete {{ user_det.customer_name }}</button>
+                </a>
+                <a href="{% url 'customers' %}">
+                    <button class="btn btn-success me-md-2" type="button"><i class="bi bi-backspace-fill pe-1"></i>Back</button>
+                </a>
+                <a class="btn btn-success me-md-2 mb-2" href="{% url 'dashboard' %}">
+                    <i class="bi bi-backspace-fill pe-1"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

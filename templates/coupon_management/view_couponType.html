@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %} Coupon Type View {% endblock %}
+{% block content %}
+{% load static %}
+  <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Coupon Type Details</h4>
+      <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Coupon Management</a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">Coupon Type</li>
+      </ol>
+  </div>
+
+  <div class="main-content app-content">
+      <div class="container-fluid">
+
+                <!-- Start:: row-1 -->
+                <div class="card card-product-details shadow">
+      
+                  <div class="card-header text-center">
+                    <h4>Coupon Type Details</h4>
+                  </div>
+                  
+                  <div class="card-body ">
+                    <p class="card-text">
+                      <div class="table-responsive">
+                          <table class="table">
+                            <tbody>
+                              <tr >                                
+                                <td class="text-secondary">Coupon Type Name</td>
+                                <td> {{view_couponType.coupon_type_name}}</td>
+                              </tr>
+                                
+                              <tr>  
+                                <td class="text-secondary">No of Leaflets</td>
+                                <td>{{view_couponType.no_of_leaflets}}</td>
+                              </tr>
+                             
+                              <tr>
+                                <td class="text-secondary">Valuable Leaflets</td>
+                                <td>{{view_couponType.valuable_leaflets}}</td>
+                              </tr>
+
+                              <tr>
+                                <td class="text-secondary">Free Leaflets</td>
+                                <td>{{view_couponType.free_leaflets}}</td>
+                              <tr>
+                                
+                              
+                            </tbody>
+                      
+                          </table>
+                          
+                        </div>
+      
+                    </p>
+                    <div class="row my-3 me-1">
+                      <div class="col-12 text-end">
+                        <a href="{% url 'couponType' %}">
+                            <button class="btn btn-success me-md-2 " type="button"><i class="bi bi-backspace-fill pe-1"></i>Back</button>
+                       </a>
+                        <!-- <button class="btn btn-success me-md-2 " type="button"><i class="bi bi-backspace-fill pe-1"></i>Back to Dashboard</button> -->
+          
+                      </div>
+                    </div>
+                  </div>
+                  
+                </div>
+
+              <!-- End:: row-1 -->
+                
+
+      </div>
+  </div>
+  {% endblock %}

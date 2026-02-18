@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }}</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @media print {
+            /* Print-specific layout */
+            body {
+                font-size: 12px;
+                margin: 0;
+                padding: 10px;
+            }
+            .no-print {
+                display: none;
+            }
+            .card {
+                border: none !important;
+                box-shadow: none;
+            }
+            .table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            .table-bordered th,
+            .table-bordered td {
+                border: 1px solid #dee2e6;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Start:: Card for Redeemed History Report -->
+        <div class="card custom-card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">Redeemed History Report</h4>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered text-wrap">
+                    <thead>
+                        <tr>
+                            <th rowspan="2">Sl No</th>
+                            <th rowspan="2">Supply Date</th>
+                            <th rowspan="2">Invoice Number</th>
+                            <th rowspan="2">Customer</th>
+                            <th rowspan="2">Customer Id</th>
+                            <th rowspan="2">Mobile No</th>
+                            <th rowspan="2">Building No</th>
+                            <th rowspan="2">Route</th>
+                            <th colspan="2">No of coupons</th>
+                        </tr>
+                        <tr>
+                            <th>Manual</th>
+                            <th>Digital</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for instance in instances %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ instance.created_date|date:'d-m-Y' }}</td>
+                                <td>{{ instance.invoice_no }}</td>
+                                <td>{{ instance.customer.customer_name }}</td>
+                                <td>{{ instance.customer.custom_id }}</td>
+                                <td>{{ instance.customer.mobile_no }}</td>
+                                <td>{{ instance.customer.building_name }}</td>
+                                <td>{{ instance.customer.routes.route_name }}</td>
+                                <td>{{ instance.total_coupon_recieved.manual_coupon }}</td>
+                                <td>{{ instance.total_coupon_recieved.digital_coupon }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="8" class="text-end"><strong>Total:</strong></td>
+                            <td><strong>{{ total_manual_coupons }}</strong></td>
+                            <td><strong>{{ total_digital_coupons }}</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        <!-- End:: Card for Redeemed History Report -->
+    </div>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        window.onload = function() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }}</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @media print {
+            /* Add any styles for print-specific layout here */
+            body {
+                font-size: 12px;
+            }
+            .no-print {
+                display: none;
+            }
+            /* Set page margins and other print-specific styles */
+            body {
+                margin: 0;
+                padding: 10px;
+            }
+            .card {
+                border: none !important;
+                box-shadow: none;
+                margin-bottom: 20px;
+            }
+            .table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            .table-bordered th,
+            .table-bordered td {
+                border: 1px solid #dee2e6;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Outstanding Report
+                        </div>
+                    </div>
+                    
+
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="text-align:center; width:5%;">Sl No</th>
+                                <th style="text-align:center;">Created Date</th>
+                                <th style="text-align:center;">Invoice No</th>
+                                <th style="text-align:center;">Customer ID</th>
+                                <th style="text-align:center;">Customer</th>
+                                <th style="text-align:center;">Customer Type</th>
+                                <th style="text-align:center;">Building No</th>
+                                <th style="text-align:center;">Route</th>
+                                {% comment %} <th style="text-align:center;">Outstanding Type</th> {% endcomment %}
+                                <th style="text-align:center;">Count</th>
+                            
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in instances %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td style="text-align:center;">{{ item.created_date|date:'d-m-Y' }}</td>
+                                <td style="text-align:center;">{{ item.invoice_no }}</td>
+                                <td style="text-align:center;">{{ item.customer.custom_id }}</td>
+                                <td style="text-align:center;">{{ item.customer.customer_name }}</td>
+                                <td style="text-align:center;">{{ item.customer.sales_type }}</td>
+                                <td style="text-align:center;">{{ item.customer.building_name }}</td>
+                                <td style="text-align:center;">{{ item.customer.routes.route_name }}</td>
+                                {% comment %} <td style="text-align:center;">{{ item.get_product_type_display }}</td> {% endcomment %}
+                                <td style="text-align:center;">{{ item.get_outstanding_count }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="5"><strong>Total Outstanding Count:</strong></td>
+                                <td><strong>{{ total_outstanding_count }}</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        window.onload = function() {
+            window.print();
+        }
+    </script>
+
+</body>
+</html>

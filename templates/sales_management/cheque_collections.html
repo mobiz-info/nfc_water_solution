@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% block title %}Cheque Collections List{% endblock %}
+{% block content %}
+{% load static %}
+
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Cheque Collections List</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Sales Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Cheque Collections List</li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+
+        <!-- ✅ Show Messages -->
+        {% if messages %}
+        <div>
+            {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">Cheque Collections List</div>
+                    </div>
+                    <div class="card-body">
+
+                        <!-- Filter Form -->
+                        <form method="GET" action="{% url 'cheque_collections' %}">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <label for="start_date">From Date:</label>
+                                    <input type="date" class="form-control" id="start_date" name="start_date" value="{{ filter_data.start_date }}">
+                                </div>
+                                <div class="col">
+                                    <label for="end_date">To Date:</label>
+                                    <input type="date" class="form-control" id="end_date" name="end_date" value="{{ filter_data.end_date }}">
+                                </div>
+                                <div class="col">
+                                    <label for="route_name">Routes:</label>
+                                    <select name="route_name" class="form-select">
+                                        <option value="">All Routes</option>
+                                        {% for route in route_li %}
+                                            <option value="{{ route.route_name }}" {% if route.route_name == filter_data.route_name %}selected{% endif %}>{{ route.route_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <label for="route_name">Search:</label>
+                                    <input type="text" name="q" class="form-control" placeholder="Search ..." value="{{ filter_data.q|default:'' }}">
+                                </div>
+                                <div class="col d-flex align-items-end justify-content-end">
+                                    <input type="submit" class="btn btn-primary btn-sm mx-1" value="Apply Filter">
+                                    <button type="button" class="btn btn-secondary btn-sm mx-1" onclick="resetFilters()">Reset Filter</button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <!-- Table -->
+                        <div class="table-responsive mt-3">
+                            {% if collection_list %}
+                            <table class="table table-bordered text-wrap">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">Sl.No</th>
+                                        <th>Created Date</th>
+                                        <th>Customer ID</th>
+                                        <th>Customer Name</th>
+                                        <th>Route</th>
+                                        <th>Invoice</th>
+                                        <th>Receipt</th>
+                                        <th>Payment Method</th>
+                                        <th>Details</th>
+                                        <th>Amount Received</th>
+                                        <th class="text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for collection in collection_list %}
+                                    <tr>
+                                        <td class="text-center">{{ forloop.counter }}</td>
+                                        <td>{{ collection.created_date|date:"d/m/Y" }}</td>
+                                        <td>{{ collection.custom_id }}</td>
+                                        <td>{{ collection.customer }}</td>
+                                        <td>{{ collection.route }}</td>
+                                        <td>{{ collection.invoice_numbers }}</td>
+                                        <td>{{ collection.receipt_number }}</td>
+                                        <td>{{ collection.payment_method }}</td>
+                                        <td>
+                                            {% if collection.payment_method == "Cheque" %}
+                                                <ul>
+                                                    {% for cheque in collection.details %}
+                                                        <li>Cheque Number: {{ cheque.cheque_no }}</li>
+                                                        <li>Bank Name: {{ cheque.bank_name }}</li>
+                                                        <li>Cheque Date: {{ cheque.cheque_date }}</li>
+                                                        <li>Amount: {{ cheque.cheque_amount }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ collection.amount_received }}</td>
+                                        <td>
+                                            {% if collection.payment_method == "Cheque" %}
+                                                {% if collection.details and collection.details.0.status != "CLEARED" %}
+                                                    <form action="{% url 'cheque_clearance' collection.collection_id %}"
+                                                          method="post"
+                                                          class="d-inline ajax redirect">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="btn btn-danger-light btn-sm">
+                                                            Cheque Clearance
+                                                        </button>
+                                                    </form>
+                                                {% else %}
+                                                    <span class="badge bg-success">Cheque Cleared</span>
+                                                {% endif %}
+                                            {% else %}
+                                                <span>No Action Available</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            {% else %}
+                                <p>No collections found.</p>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

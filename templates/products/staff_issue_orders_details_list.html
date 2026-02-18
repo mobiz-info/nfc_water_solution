@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+{% block title %} Products List {% endblock %}
+{% block content %}
+{% load static %}
+{% load purchase_template_tags %}
+<!-- End::app-sidebar -->
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Issue Order Details</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+    </ol>
+</div>
+<!-- Page Header Close -->
+<!-- Start::app-content -->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title w-100">
+                            <div class="row justify-space-between">
+                                <div class = "col-6">
+                                    Issue Order Details
+                                </div>
+                                <div class = "col-6">
+                                    <p class="date-section m-0" style="font-size: small;">Order Date: {{order_date|date:"d/m/Y"}}</p>
+                                    <p class="oder-number-section m-0" style="font-size: small;">Order No: {{order_number}}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <div class="card-body">
+                        
+                        <table id="datatable-basic" class="table table-bordered text-nowrap" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th scope="col" style="text-align:center !important;width:5%;">Sl.No</th>
+                                    <th scope="col" style="text-align:center !important;">Item name</th>
+                                    <th scope="col" style="text-align:center !important;">Current Stock</th>
+                                    <th scope="col" style="text-align:center !important;">Requested Quantity</th>
+                                    <th scope="col" style="text-align:center !important;">Issued Quantity</th>
+                                    <th scope="col" style="text-align:right !important;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for data in staff_orders_details %}
+                                <tr>
+                                    <td style="text-align:center;">{{forloop.counter}}</td>
+                                    <td style="text-align:left;">{{data.product_id}}</td>
+                                    {% get_van_current_stock data.staff_order_id.created_by data.product_id.pk as current_stock %}
+                                    <td style="text-align:center;">{{current_stock}}</td>
+                                    <td style="text-align:center;">{{data.count}}</td>
+                                    <td style="text-align:center;">{{data.issued_qty}}</td>
+                                    <td>
+                                        {% if data.count != data.issued_qty %}
+                                        <div class="g-2">
+                                            <!-- Add the action button for issuing a quantity -->
+                                            {% if not data.product_id.category.category_name == "Coupons" %}
+                                            <a href="{% url 'staffIssueOrdersCreate' data.staff_order_details_id %}" id="issueQuantityButton" aria-label="anchor" class="btn btn-primary-light btn-sm" data-bs-toggle="tooltip" data-bs-original-title="Issue Quantity" onclick="disableButton(this)"><span class="bi bi-plus-circle fs-14"></span> Issue Quantity</a>
+                                            {% else %}
+                                            <button class="btn btn-primary-light btn-sm" data-request_id="{{data.pk}}" data-href="{% url 'issue_coupons_orders' %}" onclick="handleButtonClick(this)"><span class="bi bi-plus-circle fs-14"></span> Issue Quantity</button>
+                                            {% endif %}
+                                        </div>
+                                        {% else %}
+                                        <button class="btn btn-primary-light btn-sm" data-request_id="{{data.pk}}" data-current_issued="{{data.issued_qty}}" data-href="" onclick="bottleRebackButton(this)"><span class="bi bi-arrow-repeat fs-14"></span> Reback</button>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End:: row-2 -->
+        <div class="row">
+            <div class="col-12 text-end mt-4">
+                <button class="btn btn-success me-md-2 mb-2" type="button" onClick="javascript:history.go(-1);">
+                    <i class="bi bi-backspace-fill pe-1"></i>Back
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End::app-content -->
+
+<!-- Modal -->
+<div class="modal fade" id="couponIssueModal" tabindex="-1" role="dialog" aria-labelledby="couponIssueModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+            <h5 class="modal-title" id="exampleModalLabel">Check Coupon Book</h5>
+            <button type="button" class="btn-close text-dark" data-bs-dismiss="modal" aria-label="Close" onclick="clearForm()"></button>
+            </div>
+            <form action="{% url 'issue_coupons_orders' %}" role="form" method="post" enctype="multipart/form-data"  class="row g-3 ajax redirect" autocomplete="off" novalidate>
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="row justify-content-center">
+                        <div class="col-12">
+                            <div id="modalBookNumbers">
+                                <!-- Checkboxes will be added here dynamically -->
+                            </div>
+                            <input type="hidden" name="request_id" id="modalRequestId">
+                        </div>
+                    </div>
+                </div>                             
+                <div class="modal-footer">
+                    <button type="submit" class="btn bg-gradient-secondary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Reback Modal -->
+<div class="modal fade" id="rebackModal" tabindex="-1" role="dialog" aria-labelledby="rebackModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+            <h5 class="modal-title" id="rebackModalLabel">Stock Reback</h5>
+            <button type="button" class="btn-close text-dark" data-bs-dismiss="modal" aria-label="Close" onclick="clearForm()"></button>
+            </div>
+            <form action="" role="form" method="post" enctype="multipart/form-data"  class="row g-3 ajax redirect" autocomplete="off" novalidate>
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="row justify-content-center">
+                        <div class="col-12">
+                            <input type="hidden" name="request_id" id="modalRequestId">
+                        </div>
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="col-12">
+                            <div class="form-group required">
+                                <input type="radio" name="reback_type" value="increase"> Increase
+                                <input type="radio" name="reback_type" value="decrease"> Decrease
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group required">
+                                <label class='control-label'>Count</label>
+                                <input class="form-control" type="text" name="reback_count">
+                            </div>
+                        </div> 
+                    </div>
+                </div>                             
+                <div class="modal-footer">
+                    <button type="submit" class="btn bg-gradient-secondary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block static %}
+{% load static %}
+<script>
+    function handleButtonClick(button) {
+        var requestId = $(button).data("request_id");
+        $("#modalRequestId").val(requestId);
+        
+        $.ajax({
+            url: "{% url 'get_coupon_bookno' %}",
+            method: "GET",
+            data: {
+                request_id: requestId
+            },
+            success: function(response) {
+                if (response.data.length > 0) {
+                    var bookNumbers = response.data;
+
+                    // Sort book numbers in ascending order
+                    bookNumbers.sort(function(a, b) {
+                        return a.book_no - b.book_no;
+                    });
+
+                    var checkboxesHtml = "";
+                    for (var i = 0; i < bookNumbers.length; i++) {
+                        checkboxesHtml += '<div class="form-check">' +
+                                          '<input class="form-check-input" type="checkbox" name="coupon_book_no" value="' + bookNumbers[i].book_no + '">' +
+                                          '<label class="form-check-label" for="couponBook' + bookNumbers[i].book_no + '">' + bookNumbers[i].book_no + '</label>' +
+                                          '</div>';
+                    }
+                    $("#modalRequestId").val(requestId);
+                    $("#modalBookNumbers").html(checkboxesHtml);
+                    $('#couponIssueModal').modal('show');
+                } else {
+                    $("#modalBookNumbers").html('<p>No book numbers found.</p>');
+                    $('#couponIssueModal').modal('show');
+                }
+            },
+            error: function(xhr, status, error) {
+                // Handle error
+                console.error(xhr.responseText);
+            }
+        });
+    }
+
+    function bottleRebackButton(button) {
+        var requestId = $(button).data("request_id");
+        $("#modalRequestId").val(requestId);
+        $('#rebackModal').modal('show');
+    }
+
+
+
+    {% comment %} function handleButtonClick(button) {
+        var requestId = $(button).data("request_id");
+        $("#modalRequestId").val(requestId);
+
+        $.ajax({
+            url: "{% url 'get_coupon_bookno' %}",
+            method: "GET",
+            data: {
+                request_id: requestId
+            },
+            success: function(response) {
+                $("#modalBookNumbers").html(response);
+
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText);
+            }
+        });
+    } {% endcomment %}
+
+    function clearForm() {
+        // Clear the form fields
+        document.getElementById('modalRequestId').value = '';
+        document.getElementById('modalCouponBookNo').value = '';
+        }
+    </script>
+{% endblock static %}
+
+
+

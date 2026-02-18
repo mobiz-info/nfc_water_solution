@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %} Customer Custody Stock {% endblock %}
+{% block content %}
+
+<!-- Page Header -->
+    <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+        <h4 class="fw-medium mb-0">Customer Custody Stock</h4>
+        <h4 class="fw-medium mb-0"></h4>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Clients</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Customer Custody Stock </li>
+        </ol>
+    </div>
+    <div class="main-content app-content">
+        <div class="container-fluid">
+            <div>
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card custom-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                Customer Custody Stock
+                            </div>
+                        </div>
+                         <div class="card-body" style="margin-top: 3em;">
+                            <table id="datatable-basic" class="table table-bordered text-wrap " style="width: 100%;"  data-page-length="50">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align:center !important;width:5%;" scope="col">Sl No</th>
+                                        <th style="text-align:center !important;" scope="col">Customer</th>
+                                        <th style="text-align:center !important;" scope="col">Agreement No</th>
+                                        <th style="text-align:center !important;" scope="col">Deposit Type</th>
+                                        <th style="text-align:center !important;" scope="col">Reference No</th>
+                                        <th style="text-align:center !important;" scope="col">Product</th>
+                                        <th style="text-align:center !important;" scope="col">Quantity</th>
+                                        <th style="text-align:center !important;" scope="col">Serial Number</th>
+                                        <th style="text-align:center !important;" scope="col">Amount</th>
+                                        <th style="text-align:center !important;" scope="col">Can Deposite Charge</th>
+                                        <th style="text-align:center !important;" scope="col">Five Gallon Water Charge</th>
+                                        <th style="text-align:center !important;" scope="col">Amount Collected</th>
+                                        <th style="text-align:center !important;" scope="col">Action </th>
+                                    </tr>
+                                </thead>
+                                    {% for stock in custody_stocks %}
+                                    <tr>
+                                        <td style="text-align:center;">{{ forloop.counter }}</td>
+                                        <td style="text-align:left;">{{ stock.customer }}</td>
+                                        <td style="text-align:left;">{{ stock.agreement_no }}</td>
+                                        <td style="text-align:left;">{{ stock.deposit_type }}</td>
+                                        <td style="text-align:left;">{{ stock.reference_no }}</td>
+                                        <td style="text-align:left;">{{ stock.product }}</td>
+                                        <td style="text-align:left;">{{ stock.quantity }}</td>
+                                        <td style="text-align:left;">{{ stock.serialnumber }}</td>
+                                        <td style="text-align:left;">{{ stock.amount }}</td>
+                                        <td style="text-align:left;">{{ stock.can_deposite_chrge }}</td>
+                                        <td style="text-align:left;">{{ stock.five_gallon_water_charge }}</td>
+                                        <td style="text-align:left;">{{ stock.amount_collected }}</td>
+                                        <td style="text-align:center;">
+                                            <a href="{% url 'custody_item_return_pull' stock_id=stock.id %}" class="btn btn-danger btn-sm">
+                                                PULL OUT
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    
+                                </tbody>
+                                
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %} Balance Coupon Books {% endblock %}
+{% block content %}
+{% load static %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Balance Coupon Books</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Coupon Management</a></li>
+        <li class="breadcrumb-item">
+            <a href="{% url 'route_wise_coupon_report' %}" class="text-white-30">
+                Route Coupon Report
+            </a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Balance Books</li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+
+        <!-- Start:: row -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+
+                    <div class="card-header">
+                        <div class="card-title">
+                            Balance Coupon Books - {{ route.route_name }}
+                        </div>
+                    </div>
+
+                    <!-- FILTER BAR (same UI, no filter needed here) -->
+                    <div class="card-body border-bottom">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Route :</strong> {{ route.route_name }}
+                            </div>
+
+                            
+                        </div>
+                    </div>
+
+                    <!-- TABLE -->
+                    <div id="table-container">
+                        <div class="card-body">
+
+                         <table class="table table-bordered text-wrap" style="width:100%">
+                              <thead>
+                                  <tr>
+                                      <th>Sl No</th>
+                                      <th>Coupon Book No</th>
+                                      <th>Coupon Type</th>
+                                      <th>Created Date</th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  {% for c in balance_books %}
+                                  <tr>
+                                      <td>{{ forloop.counter }}</td>
+                                      <td>{{ c.book_num }}</td>
+                                      <td>{{ c.coupon_type }}</td>
+                                      <td>{{ c.created_date|date:"d/m/Y" }}</td>
+                                  </tr>
+                                  {% empty %}
+                                  <tr>
+                                      <td colspan="4" class="text-center text-muted">
+                                          No balance coupon books found
+                                      </td>
+                                  </tr>
+                                  {% endfor %}
+                              </tbody>
+                          </table>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% block title %}New Registered Customers{% endblock %}
+{% block content %}
+{% load static %}
+{% load el_pagination_tags %}
+
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">New Registered Customers</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">New Registered Customers</li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            New Registered Customers
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- Filter Form -->
+                        <form method="GET">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <label for="start_date">From Date:</label>
+                                        <input type="date" class="form-control" id="start_date" name="start_date" value="{{ filter_data.start_date }}">
+                                </div>
+                                <div class="col">
+                                    <label for="end_date">To Date:</label>
+                                        <input type="date" class="form-control" id="end_date" name="end_date" value="{{ filter_data.end_date }}">
+                                </div>
+                                <div class="col">
+                                    <label for="status">Status:</label>
+                                    <select name="status" id="status" class="form-select">
+                                        <option value="">All</option>
+                                        <option value="requested" {% if status_filter == 'requested' %}selected{% endif %}>Requested</option>
+                                        <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>Approved</option>
+                                        <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>Rejected</option>
+                                    </select>
+                                </div>
+
+                                <div class="col">
+                                    <label for="location">Location:</label>
+                                    <select name="location" id="location" class="form-select">
+                                        <option value="">All</option>
+                                        {% for location in locations %}
+                                            <option value="{{ location.location_id }}" {% if location_filter == location.location_id|stringformat:"s" %}selected{% endif %}>
+                                                {{ location.location_name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-auto">
+                                    <label for="q">Search:</label>
+                                    <input type="text" name="q" class="form-control" placeholder="Search ..." value="{{ filter_data.q }}">
+                                </div>
+                                <div class="col-auto d-flex align-items-end">
+                                    <input type="submit" class="btn btn-primary btn-sm mx-1" value="Apply Filter">
+                                    <button type="button" class="btn btn-secondary btn-sm mx-1" onclick="resetFilters()">Reset Filter</button>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+
+                    <div class="card-body">
+                        <table class="table table-bordered text-wrap" style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center;">Sl.No</th>
+                                    <th style="text-align:center;">Created Date</th>
+                                    <th style="text-align:center;">Name</th>
+                                    <th style="text-align:center;">Phone</th>
+                                    <th style="text-align:center;">Email</th>
+                                    <th style="text-align:center;">Location</th>
+                                    <th style="text-align:center;">Emirate</th>
+                                    <th style="text-align:center;">No. of Bottles</th>
+                                    <th style="text-align:center;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% load el_pagination_tags %}
+                                {% paginate 20 requests %}
+                                {% for request in requests %}
+                                    <tr>
+                                        <td style="text-align:center;">{{ forloop.counter }}</td>
+                                        <td style="text-align:center;">{{ request.created_date|date:"d/m/Y" }}</td>
+                                        <td style="text-align:center;">{{ request.name }}</td>
+                                        <td style="text-align:center;">{{ request.phone_no }}</td>
+                                        <td style="text-align:center;">{{ request.email_id }}</td>
+                                        <td style="text-align:center;">{{ request.location.location_name }}</td>
+                                        <td style="text-align:center;">{{ request.emirate.name }}</td>
+                                        <td style="text-align:center;">{{ request.no_of_5g_bottles_required }}</td>
+                                        <td style="text-align:center;">{{ request.get_status_display }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="8" style="text-align:center;">No registration requests found.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% get_pages %}
+                        <div class="clearfix"></div>
+                        <div class="row pagi my-3">
+                            <div class="col-sm-6 col-xs-6 tot my-pagination">
+                                <div class="m-t-10 text-start">
+                                    Showing {{ title }} <span class="current_page_index">{{ pages.current_start_index }}</span> - <span class="current_end_status">{{ pages.current_end_index }}</span> of <span class="total_count">{{ pages.total_count }}</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xs-6 text-end pagination-btn-div">{% show_pages %}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End:: row-2 -->
+    </div>
+</div>
+<script>
+    function resetFilters() {
+        // Redirect to the same page
+        location.href = "{% url 'new_registered_customers' %}";
+    }
+</script>
+{% endblock %}

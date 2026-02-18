@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Create Supply</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Client Management</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Create Supply Customers</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-1 -->
+        <div class="row justify-content-center">
+            <div class="col-auto">
+                <div class="card custom-card">
+                    <div class="card-header d-flex justify-content-between">
+                        <div class="card-title">
+                            Create Invoice
+                        </div>
+                        <div class="col-auto">
+                            <div class="form-group required">
+                                <form method="GET" action=".">
+                                    <input type="text" name="q" class="form-control" placeholder="Search Name, Cust Id, Mobile no, Whatsapp No">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <!--row 1-->
+                        <form method="GET" action=".">
+                            <div class="container">
+                                <div class="row justify-content-end">
+                                    <div class="col-auto">
+                                        <div class="form-group required">
+                                            <label class='control-label'>Route</label>
+                                            <select class="form-control" id="id_route" name="route">
+                                                <option value="" selected>Select Route</option>
+                                                {% for route in route_instances %}
+                                                <option value="{{ route.pk }}" {% if route.pk == route %}selected{% endif %}>{{ route.route_name }}</option>
+                                                {% endfor %}
+                                            </select>                                        
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <div class="form-group required">
+                                            <label class='control-label'>Building Name/No</label>
+                                            <select class="form-control" id="id_building_no" name="building_no">
+                                                <option value="">Select Building Name/No</option>
+                                                    {% if is_edit %}
+                                                    {% for name in building_names %}
+                                                        <option value="{{ name }}" {% if invoice_form.instance.customer.building_name == name %}selected{% endif %}>{{ name }}</option>
+                                                    {% endfor %}
+                                                    {%endif%}
+                                                </select>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto d-flex align-items-end">
+                                        <div class="form-group required">
+                                            <input type="submit" class="btn btn-primary" value="Filter">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="row mt-2">
+                            <div class="col-12" style="overflow: auto;">
+                                <table class="table table-bordered text-nowrap" style="width:100%;">
+                                    <thead>
+                                        <tr>
+                                        <th scope="col" class="text-center">Sl.No</th>
+                                        <th scope="col" class="text-center">Customer Id</th>
+                                        <th scope="col" class="text-center">Customer Name</th>
+                                        <th scope="col" class="text-left">Mobile No</th>
+                                        <th scope="col" class="text-left">Building Name</th>
+                                        <th scope="col" class="text-center">Door House No</th>
+                                        <th scope="col" class="text-center">Route Name</th>
+                                        <th scope="col" class="text-center">Outstanding Amount</th>
+                                        <th scope="col" class="text-right">Actions</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="customerTableBody">
+                                        {% load el_pagination_tags %}
+                                        {% paginate 20 instances %}
+                                        {% for instance in instances %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{instance.custom_id}}</td>
+                                            <td>{{instance.customer_name}}</td>
+                                            <td>{{instance.mobile_no}}</td>
+                                            <td>{{instance.building_name}}</td>
+                                            <td>{{instance.door_house_no}}</td>
+                                            <td>{{instance.routes.route_name}}</td>
+                                            <td></td>
+                                            <td>
+                                                <div class="g-2">
+                                                    <a href="{% url 'create_customer_supply' pk=instance.pk %}" aria-label="anchor" class="btn btn-danger-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Create Supply"><span class="ri-bill-fill fs-14"></span></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                {% get_pages %}
+                                <div class="clearfix"></div>
+                                <div class="row pagi my-3">
+                                    <div class="col-sm-6 col-xs-6 tot my-pagination">
+                                        <div class="m-t-10 text-start">
+                                            Showing {{title}}
+                                            <span class="current_page_index">{{ pages.current_start_index }}</span> - <span
+                                            class="current_end_status">{{ pages.current_end_index }}</span> of <span
+                                            class="total_count">{{ pages.total_count }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-xs-6 text-end pagination-btn-div">{% show_pages %}</div>
+                                </div>
+                            </div> 
+                        </div>  
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block static %}
+{% load static %}
+<script>
+    $(document).ready(function(){
+        $('#id_route').change(function(){
+            var route_id = $(this).val();
+            if(route_id){
+                $.ajax({
+                    url: '/invoice-management/get-building-no/' + route_id, 
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(data){
+                        $('#id_building_no').empty();
+                        $('#id_building_no').append($('<option>').text('Select Building Name/No').attr('value', ''));
+                        $.each(data.data, function(index, building){
+                            $('#id_building_no').append($('<option>').text(building.building_name).attr('value', building.building_name));
+                        });
+                    }
+                });
+            }else{
+                $('#id_building_no').empty();
+                $('#id_building_no').append($('<option>').text('Select Building Name/No').attr('value', ''));
+            }
+        });
+    });
+</script>
+
+
+{% endblock static %}

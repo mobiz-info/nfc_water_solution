@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %} Freelance Van Report {% endblock %}
+{% block content %}
+{% load static %}
+<!-- End::app-sidebar -->
+        <!-- Page Header -->
+        {% for message in messages %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+        {% endfor %}
+
+        <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+            <h4 class="fw-medium mb-0">Van Management</h4>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Freelance Van Report</li>
+            </ol>
+        </div>
+        <div class="main-content app-content">
+            <div class="container-fluid">
+                         <!-- Start:: row-2 -->
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card custom-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    Freelance Van Report
+                                </div>
+                                  
+                            </div>
+                            <div class="card-body">
+                                <table id="datatable-basic" class="table table-bordered text-nowrap" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align:center !important;" scope="col">Sl No</th>
+                                            <th style="text-align:center !important;" scope="col">Van</th>
+                                            <th style="text-align:center !important;" scope="col">Total Outstanding</th>
+                                            <th style="text-align:center !important;" scope="col">Action</th>
+                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        
+                                        {% for item in report_data %}
+                                        <tr>
+                                            <td style="text-align:left;">{{ forloop.counter }}</td>
+                                            <td>{{ item.van }}</td>
+                                            <td>{{ item.total_outstanding }}</td>
+                                            <td>
+                                                <a href="{% url 'freelance_van_issue_list' item.van.van_id %}" aria-label="anchor" class="btn  btn-warning-light btn-sm" data-bs-toggle="tooltip" data-bs-original-title="View">
+                                                    <span class="bi bi-eye fs-14"></span>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+{% endblock %}

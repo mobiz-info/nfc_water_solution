@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Bottle Count</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Van Management</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Bottle Count</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-1 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title mx-auto">
+                           Bottle Count
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form enctype="multipart/form-data" role="form" method="post" class="row g-3 needs-validation">
+                            {% csrf_token %}
+                            <!--row 1-->
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Quantity Added</label>
+                                    {{ form.qty_added }}
+                                    <span style="color: red;">{{ form.qty_added.errors }}</span>
+                                </div>
+                            </div>
+
+                            {% comment %} <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Comment </label>
+                                    {{ form.comment }}
+                                    <span style="color: red;">{{ form.comment.errors }}</span>
+                                </div>
+                            </div> {% endcomment %}
+                            {% comment %} <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Stock</label>
+                                    {% for value, label in form.stock.field.choices %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="stock" id="stock_{{ value }}" value="{{ value }}" {% if form.stock.value == value %} checked {% endif %}>
+                                        <label class="form-check-label" for="stock_{{ value }}">
+                                            {{ label }}
+                                        </label>
+                                    </div>
+                                    {% endfor %}
+                                    <span style="color: red;">{{ form.stock.errors }}</span>
+                                </div>
+                            </div> {% endcomment %}
+                            
+                            
+                           
+                            <div class="col-12 text-end mt-5">
+                                <input type="submit" class="btn btn-primary me-2 mb-2" value="Submit">
+                                <button class="btn btn-success   me-md-2  mb-2" type="button"
+                                    onClick="javascript:history.go(-1);">
+                                    <i class="bi bi-backspace-fill pe-1"></i>Back</button>
+                                <a class="btn btn-success me-md-2  mb-2" href="{% url 'dashboard' %}">
+                                    <i class="bi bi-backspace-fill pe-1"></i> Back to Dashboard
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

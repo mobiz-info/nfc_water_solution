@@ -1,0 +1,259 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!-- End::app-sidebar -->
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Supply List</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Supply List</li>
+    </ol>
+</div>
+<!-- Page Header Close -->
+<!-- Start::app-content -->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Supply List
+                        </div>
+
+                        <div class="ms-auto">
+                            <a href="{% url 'customer_supply_customers' %}">
+                            <button type="button" class="btn btn-success btn-wave text-end d-flex me-4 my-auto"><i class="bi bi-plus-circle me-1"></i>Create</button>
+                        </a>
+                        </div>
+                    </div>
+                    <div class="mt">
+                        <form method="GET">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <label for="start_date">From Date:</label>
+                                        <input type="date" class="form-control" id="start_date" name="start_date" value="{{ filter_data.start_date|date:'Y-m-d' }}">
+                                    </div>
+                                    <div class="col">
+                                        <label for="end_date">To Date:</label>
+                                        <input type="date" class="form-control" id="end_date" name="end_date" value="{{ filter_data.end_date|date:'Y-m-d' }}">
+                                    </div>
+                                    
+                                    <div class="col">
+                                        <label for="route_name">Routes:</label>
+                                        <select name="route_name" class="form-select">
+                                            <option value="">All Routes</option>
+                                            {% for route in routes %}
+                                                <option value="{{ route.route_name }}"  {% if route.route_name == filter_data.route_name %}selected{% endif %}>{{ route.route_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <label for="route_name">Search:</label>
+                                        <input type="text" name="q" class="form-control" placeholder="Search ..." value="{{ filter_data.q }}">
+                                    </div>
+                                    <div class="col">
+                                        <label for="supply_type">Supply Type:</label>
+                                        <select name="supply_type" class="form-select">
+                                            <option value="">All</option>
+                                            <option value="Paid" {% if filter_data.supply_type == "Paid" %}selected{% endif %}>Paid</option>
+                                            <option value="Non Paid" {% if filter_data.supply_type == "Non Paid" %}selected{% endif %}>Non Paid</option>
+                                        </select>
+                                    </div>
+                                    <div class="col d-flex align-items-end justify-content-end">
+                                        <input type="submit" class="btn btn-primary btn-sm mx-1" value="Apply Filter">
+                                        <button type="button" class="btn btn-secondary btn-sm mx-1" onclick="resetFilters()" style="width:max-content">Reset Filter</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form> 
+                    </div>
+                    {% comment %} <div>
+                        <form method="get">
+                            <div class="row mt-3 align-items-center">
+                                <!-- Start and End Date -->
+                                <div id="datePeriodDiv" class="col-4 d-flex align-items-center">
+                                    <label for="start_date" class="col-form-label text-end me-2">Start:</label>
+                                    <input name="start_date" type="date" class="form-select me-2" style="width: 50%;" value="{{ filter_data.start_date|date:'Y-m-d' }}">
+                                    <label for="end_date" class="col-form-label text-end me-2">End:</label>
+                                    <input name="end_date" type="date" class="form-select" style="width: 50%;" value="{{ filter_data.end_date|date:'Y-m-d' }}">
+                                </div>
+                    
+                                <!-- Route Selection -->
+                                <div class="col-4 d-flex align-items-center">
+                                    <label for="route_name" class="col-form-label text-end me-2">Route:</label>
+                                    <select name="route_name" class="form-select me-2" style="width: 70%;">
+                                        <option value="">-- Select Route --</option>
+                                        {% for route in routes %}
+                                            <option value="{{ route.route_name }}" {% if route.route_name == filter_data.route_name %}selected{% endif %}>{{ route.route_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                    
+                                <!-- Search and Buttons -->
+                                <div class="col-4 d-flex align-items-center justify-content-end">
+                                    <input type="text" name="q" class="form-control me-2" placeholder="Search ..." value="{{ filter_data.q }}">
+                                    <input type="submit" class="btn btn-primary btn-sm me-2" value="Apply Filter">
+                                    <button type="button" class="btn btn-secondary btn-sm" onclick="resetFilters()">Reset</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div> {% endcomment %}
+                    
+                    <div class="card-body" style="overflow: auto;">
+                        <table class="table table-bordered text-nowrap" style="width:100%">
+                            <thead>
+                                <tr>
+                                <th scope="col" class="text-center">Sl.No</th>
+                                <th scope="col" class="text-center">Created Date</th>
+                                <th scope="col" class="text-center">Supply Date</th>
+                                <th scope="col" class="text-center">Invoice Number</th>
+                                <th scope="col" class="text-left">Customer ID</th>
+                                <th scope="col" class="text-left">Customer Name</th>
+                                <th scope="col" class="text-left">Customer Type</th>
+                                <th scope="col" class="text-left">Salesman Name</th>
+                                <th scope="col" class="text-center">Total Supply</th>
+                                <th scope="col" class="text-center">FOC</th>
+                                <th scope="col" class="text-center">Collected</th>
+                                <th scope="col" class="text-center">Supply Type</th>
+                                {% comment %} <th scope="col" class="text-center">Discount</th>
+                                <th scope="col" class="text-center">Sub Total</th>
+                                <th scope="col" class="text-center">Amount Recieved</th> {% endcomment %}
+                                <th scope="col" class="text-right">Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                {% load el_pagination_tags %}
+                                {% paginate 20 instances %}
+                                {% for instance in instances %}
+                                <tr>
+                                    <td class="text-center" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>{{forloop.counter}}</td>
+                                    <td class="text-left" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>{{instance.created_date}}</td>
+                                    <td class="text-left" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>{{instance.supply_date}}</td>
+                                    <td class="text-center" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>{{instance.invoice_no}}</td>
+                                    <td class="text-center" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>{{instance.customer.custom_id}}</td>
+                                    <td class="text-center" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>{{instance.customer.customer_name}}</td>
+                                    <td class="text-center" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>{{instance.customer.get_sales_type_display}}</td>
+                                     <td class="text-center" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>{{instance.salesman.get_fullname}}</td>
+                                    <td class="text-center" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>{{instance.get_total_supply_qty}}</td>
+                                    <td class="text-center" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>{{instance.allocate_bottle_to_free}}</td>
+                                    <td class="text-center" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>{{instance.collected_empty_bottle}}</td>
+                                    <td class="text-center" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>{% if instance.subtotal == instance.amount_recieved %} Paid {% else %} Non Paid {% endif %}</td>
+                                    {% comment %}<td class="text-center" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>{{instance.discount}}</td>
+                                    <td class="text-center" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>{{instance.subtotal}}</td>
+                                    <td class="text-center" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>{{instance.amount_recieved}}</td> {% endcomment %}
+                                    <td class="text-right"  {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>
+                                        <div class="g-2">
+                                            <a href="javascript:void(0);"
+                                            class="btn btn-warning-light btn-sm ms-2"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-original-title="Change Supply Date"
+                                            onclick="openChangeDateModal('{{ instance.pk }}', '{{ instance.supply_date|date:'Y-m-d' }}')">
+                                                <span class="ri-calendar-event-line fs-14"></span>
+                                            </a>
+                                            <a href="{% url 'customer_supply_info' pk=instance.pk %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Info">
+                                                <span class="ri-printer-fill fs-14"></span>
+                                            </a>
+                                            <a href="{% url 'view_invoice' invoice_no=instance.invoice_no %}" aria-label="anchor" class="btn btn-info-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="View Invoice">
+                                                <span class="ri-file-text-fill fs-14"></span>  <!-- Adjust icon as needed -->
+                                            </a>
+                                            {% if instance.can_edit %}
+                                            <a href="{% url 'edit_customer_supply' pk=instance.pk %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Edit">
+                                                <span class="ri-pencil-line fs-14"></span>
+                                            </a>
+                                            
+                                            <a aria-label="anchor" class="action-button remove btn btn-danger-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Delete"
+                                                data-id="{{instance.pk}}" data-text="{{confirm_delete_message}}" data-title="Are you sure?" href="{% url 'delete_customer_supply' pk=instance.pk %}"><span class="ri-delete-bin-7-line fs-14"></span>
+                                            </a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {%endfor%}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% get_pages %}
+                    <div class="clearfix"></div>
+                    <div class="row pagi my-3">
+                        <div class="col-sm-6 col-xs-6 tot my-pagination">
+                            <div class="m-t-10 text-start">
+                                Showing {{title}}
+                                <span class="current_page_index">{{ pages.current_start_index }}</span> - <span
+                                class="current_end_status">{{ pages.current_end_index }}</span> of <span
+                                class="total_count">{{ pages.total_count }}</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xs-6 text-end pagination-btn-div">{% show_pages %}</div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End:: row-2 -->
+    </div>
+</div>
+...
+<script>
+    function resetFilters() {
+        location.href = "{% url 'customer_supply_list' %}";
+    }
+
+    function openChangeDateModal(supplyId, currentDate) {
+        document.getElementById("supply_id").value = supplyId;
+        document.getElementById("supply_date").value = currentDate;
+
+        let modal = new bootstrap.Modal(
+            document.getElementById("changeDateModal")
+        );
+        modal.show();
+    }
+</script>
+
+<!-- Change Supply Date Modal -->
+<div class="modal fade" id="changeDateModal" tabindex="-1">
+  <div class="modal-dialog">
+    <form method="post" action="{% url 'change_supply_date' %}">
+      {% csrf_token %}
+      <input type="hidden" name="supply_id" id="supply_id">
+
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Change Supply Date</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <label class="form-label">Supply Date</label>
+          <input type="date" name="supply_date" id="supply_date"
+                 class="form-control" required>
+
+          <small class="text-danger mt-2 d-block">
+            ⚠ Invoice date & outstanding date will also be updated.
+          </small>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary"
+                  data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Update</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+
+<script>
+    function resetFilters() {
+        // Redirect to the same page
+        location.href = "{% url 'customer_supply_list' %}";
+    }
+</script>
+<!-- End::app-content -->
+{% endblock %}

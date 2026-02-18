@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block title %} Bottle Count {% endblock %}
+{% block content %}
+{% load sales_templatetags %}
+
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Bottle Count</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Bottle Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Bottle Count</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">Bottle Count</div>
+                    </div>
+                    <div class="mt">
+                        <form method="GET">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="row col-md-6">
+                                        <div class="col">
+                                            <label for="route_name">Routes:</label>
+                                            <select name="route_name" class="form-select">
+                                                <option value="">All Routes</option>
+                                                {% for route in routes %}
+                                                    <option value="{{ route.route_name }}" {% if filter_data.selected_route == route.route_name %}selected{% endif %}>{{ route.route_name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col">
+                                            <label for="filter_date">Date:</label>
+                                            <input type="date" name="filter_date" class="form-control" value="{% if filter_data.date %}{{ filter_data.filter_date }}{% else %}{% now 'Y-m-d' %}{% endif %}">
+                                        </div>
+                                        <div class="col d-flex align-items-end justify-content-end">
+                                            <input type="submit" class="btn btn-primary btn-sm mx-1" value="Apply Filter">
+                                            <button type="button" class="btn btn-secondary btn-sm mx-1" onclick="resetFilters()" style="width:max-content">Reset Filter</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        
+                    </div>
+                    <div id="table-container" style="overflow:scroll;">
+                        <div class="card-body">
+                            <table id="responsiveDataTable" class="table table-bordered text-wrap" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align:center; width:5%;" scope="col">Sl.No</th>
+                                        <th style="text-align:center;" scope="col">Date</th>
+                                        <th style="text-align:center;" scope="col">Van</th>
+                                        <th style="text-align:center;" scope="col">Route Name</th>
+                                        <th style="text-align:center;" scope="col">Bottle Count</th>
+                                        <th style="text-align:center;" scope="col">Opening Stock</th>
+                                        <th style="text-align:center;" scope="col">Custody Issue</th>
+                                        <th style="text-align:center;" scope="col">Custody Return</th>
+                                        <th style="text-align:center;" scope="col">Issued</th>
+                                        <th style="text-align:center;" scope="col">Deducted</th>
+                                        <th style="text-align:center;" scope="col">closing Stock</th>
+
+                                        <th style="text-align:center;" scope="col">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for instance in instances %}
+                                        <tr>
+                                            <td style="text-align:right;">{{ forloop.counter }}</td>
+                                            <td style="text-align:left;">{{ instance.created_date|date:"d-m-Y" }}</td>
+                                            <td style="text-align:left;">{{ instance.van.van_make }} - {{ instance.van.plate }}</td>
+                                            <td style="text-align:left;">{{ instance.van.get_van_route }}</td>
+                                            <td style="text-align:right;">{{ instance.van.bottle_count }}</td>
+                                            <td style="text-align:right;">{{ instance.opening_stock }}</td>
+                                            <td style="text-align:right;">{{ instance.custody_issue }}</td>
+                                            <td style="text-align:right;">{{ instance.custody_return }}</td>
+                                            <td style="text-align:right;">{{ instance.qty_added }}</td>
+                                            <td style="text-align:right;">{{ instance.qty_deducted }}</td>
+                                            <td style="text-align:right;">{{ instance.closing_stock }}</td>
+
+                                            <td style="text-align:center;">
+                                                <a href="{% url 'bottle_count_add' instance.van.pk %}" class="btn btn-primary">Add</a>
+                                                <a href="{% url 'bottle_count_deduct' instance.van.pk %}" class="btn btn-primary">Deduct</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function resetFilters() {
+        // Redirect to the same page without filters
+        location.href = "{% url 'van_route_bottle_count' %}";
+    }
+</script>
+{% endblock %}

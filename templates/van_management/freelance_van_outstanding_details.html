@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}Freelance Van Outstanding List {% endblock %}
+{% block content %}
+{% load static %}
+        <!-- End::app-sidebar -->
+        <!-- Page Header -->
+        <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+            <h4 class="fw-medium mb-0">Freelance Van Outstanding</h4>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Van</li>
+            </ol>
+        </div>
+        <div class="main-content app-content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card custom-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    Freelance Van Outstanding List 
+                                </div>
+                               
+                            </div>
+                            <div class="card-body">
+                                
+                                
+                            
+                                <table id="responsiveDataTable" class="table table-bordered text-nowrap" style="width:100%">
+                                    <h6>Outstanding Details for Van: {{ van }}</h6>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" style="text-align:center !important;">Sl.No</th>
+                                            <th scope="col"  style="text-align:center !important;">Date</th>
+                                            <th scope="col"  style="text-align:center !important;">Amount</th>
+                                            <th scope="col"  style="text-align:center !important;">Create By</th>
+                                            {% comment %} <th scope="col"  style="text-align:center !important;">Staff name</th> {% endcomment %}
+                                            {% comment %} <th scope="col"  style="text-align:center !important;">Amount</th>
+                                            <th scope="col">Actions</th> {% endcomment %}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for out in outstanding %}
+                                        <tr>
+                                            <td style="text-align:center">{{forloop.counter}}</td>
+                                            <td style="text-align:center">{{out.created_date|date:'d/m/Y'}}</td>
+                                            <td style="text-align:left">{{out.outstanding_amount}}</td>
+                                            <td style="text-align:left">{{out.created_by}}</td>
+                                            
+                                           
+                                            
+                                            {% comment %} <td>
+                                                <div class="g-2">
+                                                    
+                                                    <a href="{% url 'expense_edit' expense.expense_id %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Edit">
+                                                        <span class="ri-pencil-line fs-14"></span>
+                                                    </a>
+                                                    <a href="{% url 'expense_delete' expense.expense_id %}" aria-label="anchor" class="btn btn-danger-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Delete">
+                                                        <span class="ri-delete-bin-7-line fs-14"></span>
+                                                    </a>
+                                                </div>
+                                            </td> {% endcomment %}
+                                        </tr>
+                                        {%endfor%}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+       
+        {% endblock %}

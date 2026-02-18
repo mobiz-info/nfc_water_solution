@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% block title %} Users List {% endblock %}
+{% block content %}
+{% load static %}
+        <!-- End::app-sidebar -->
+        <!-- Page Header -->
+        <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+            <h4 class="fw-medium mb-0">Sales Management</h4>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Sales Management</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Sales Management</li>
+            </ol>
+        </div>
+        <!-- Page Header Close -->
+
+
+
+        <!-- Start::app-content -->
+        <div class="main-content app-content">
+            <div class="container-fluid">
+
+                
+                <!-- Start:: row-2 -->
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card custom-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    Create Purchase order
+                                </div>
+                            </div>
+                            {% comment %} -------------------------------------------- {% endcomment %}
+                            <div class="card-body">
+                                <form method="get" action="">
+                                {{ form.as_p }}
+                                <div class="d-flex align-items-center">
+                                    <button type="submit" class="btn btn-success btn-wave me-2">Filter</button>
+                                    <a href="{% url 'sale_entry_log_view' %}" class="text-decoration-none">
+                                        <button type="button" class="btn btn-outline-danger">
+                                        <i class="bi bi-cross-circle me-1"></i>
+                                        Reset
+                                        </button>
+                                    </a>
+                                    </div>
+                                </form>
+                            </div>
+                            {% comment %} =================== {% endcomment %}
+                            {% if not_found  == True%}
+                            <div class="ms-auto">
+                                <a href="{% url 'customer_create' %}">
+                                <button type="button" class="btn btn-success btn-wave text-end d-flex me-4 my-auto"><i class="bi bi-plus-circle me-1"></i>Customer Not Found, Add Coustomer</button>
+                            </a>
+                            </div>
+
+                            {% endif %}
+                            
+                            <div class="card-body">
+                                <div class="tbl table-responsive">
+                                    <table id="datatable-basic" class="table table-bordered text-nowrap dataTable no-footer" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                        <tr>
+                                        <th scope="col">Sl.No</th>
+                                        <th scope="col">Customer Name</th>
+                                        <th scope="col">Building</th>
+                                        <th scope="col">Building No</th>
+                                        <th scope="col">Customer type</th>
+                                        <th scope="col">Rate of 5 Gal.</th>
+                                        <th scope="col">Default Bottles</th>
+                                        <th scope="col">Last Delivery Date</th>
+                                        <th scope="col">Actions</th>
+
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for data in user_li %}
+                                        <tr>
+                                            <td style="text-align:center;">{{forloop.counter}}</td>
+                                            <td style="text-align:left;">{{data.customer_name}}</td>
+                                            <td style="text-align:center;">{{data.building_name}}</td>
+                                            <td style="text-align:center;">{{data.door_house_no}}</td>
+                                            <td style="text-align:center;">{{data.sales_type}}</td>
+                                            <td style="text-align:center;">{{data.rate}}</td>
+                                            <td style="text-align:center;">{{data.no_of_bottles_required}}</td>
+                                            <td style="text-align:center;">{{data.no_of_bottles_required}}</td>
+                                            {% comment %} <td style="text-align:center;">{% if data.is_active == 1 %}Active{% else %}Inactive{% endif %}</td> {% endcomment %}
+
+                                            <td>
+                                                <div class="g-2">
+                                                    <a href="{% url 'customer_details_view' data.customer_id %}" aria-label="anchor" class="btn  btn-warning-light btn-sm" data-bs-toggle="tooltip" data-bs-original-title="View">
+                                                        <span class="bi bi-eye fs-14"></span>
+                                                    </a>
+                                                    <a href="{% url 'edit_customer' data.customer_id %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Edit">
+                                                        <span class="ri-pencil-line fs-14"></span>
+                                                    </a>
+                                                    {% comment %} <a href="{% url 'visit_days_assign' data.customer_id %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Assign Visit Days">
+                                                        <span class="ri-arrow-right-s-line fs-14"></span>
+                                                    </a>
+                                                    <a href="{% url 'customer_custody_item' data.customer_id %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Custody Item">
+                                                        <span class="bi bi-cart fs-14"></span>
+                                                    </a>
+                                                    <a href="" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Coupons">
+                                                        <span class="bi bi-ticket-fill fs-14"></span>
+                                                    </a> {% endcomment %}
+                                            </div>
+                                            </td>
+                                        </tr>
+                                    {%endfor%}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                <!-- End:: row-2 -->
+            </div>
+        </div>
+        <!-- End::app-content -->
+        {% endblock %}

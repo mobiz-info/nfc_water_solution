@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %} Offload List {% endblock %}
+{% block content %}
+{% load static %}
+<!-- End::app-sidebar -->
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Van Management</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+    </ol>
+</div>
+<!-- Page Header Close -->
+<!-- Start::app-content -->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Offload
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <table id="datatable-basic" class="table table-bordered text-nowrap" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center !important;" scope="col">Sl.No</th>
+                                    <th style="text-align:center !important;" scope="col">Plate no</th>
+                                    <th style="text-align:center !important;" scope="col">Route</th>
+                                    <th style="text-align:center !important;" scope="col">Salesman</th>
+                                    {% comment %} <th scope="col">Total Stock <small>(Product + Coupon)</small></th> {% endcomment %}
+                                    <th scope="col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for data in instances %}
+                                <tr>
+                                    <td style="text-align:center;">{{forloop.counter}}</td>
+                                    <td style="text-align:left;">{{data.plate}}</td>
+                                    <td style="text-align:left;">{{data.driver}}</td>
+                                    <td style="text-align:left;">{{data.salesman}}</td>
+                                    {% comment %} <td style="text-align:center;">{{data|get_total_vanstock:filter_data.filter_date}}</td> {% endcomment %}
+                                    <td>
+                                        <div class="g-2">
+                                            <a href="{% url 'view_item_details' data.pk %}" aria-label="anchor" class="btn  btn-warning-light btn-sm" data-bs-toggle="tooltip" data-bs-original-title="View">
+                                                <span class="bi bi-eye fs-14"></span>
+                                            </a>
+                                    </div>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End:: row-2 -->
+    </div>
+</div>
+<!-- End::app-content -->
+
+
+{% endblock %}
+
+
+
+

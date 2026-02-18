@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+{% block title %} Bottle Generator {% endblock %}
+{% block content %}
+{% load static %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Bottle Generator</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="javascript:void(0);">Product Management</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+            Bottle Generator
+        </li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+
+                    <div class="card-header">
+                        <div class="card-title">
+                            Generate Bottles
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+
+                        <!-- Form -->
+                        <div class="row mb-4">
+                            <div class="col-md-3">
+                                <label class="form-label">Product</label>
+                                <select id="product_id" class="form-select">
+                                    {% for p in products %}
+                                        <option value="{{ p.id }}">{{ p.product_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">Quantity</label>
+                                <input type="number" id="qty" class="form-control" min="1" placeholder="Enter qty">
+                            </div>
+
+                            <div class="col-md-3 mt-4">
+                                <button class="btn btn-primary btn-sm" onclick="generateBottles()">
+                                    Generate
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Generated Serials -->
+                        <div id="serial-container" class="row mb-4" style="display:none;">
+                            <div class="col-12">
+                                <label class="form-label">Generated Serial Numbers</label>
+                                <div id="serial-list"
+                                     style="
+                                        border:1px solid #e5e7eb;
+                                        border-radius:6px;
+                                        padding:10px;
+                                        min-height:80px;
+                                     ">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Save -->
+                        <div class="row">
+                            <div class="col-md-3">
+                                <button id="saveBtn"
+                                        class="btn btn-success btn-sm"
+                                        style="display:none;"
+                                        onclick="saveBottles()">
+                                    Save Bottles
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+let generatedSerials = [];
+
+function generateBottles() {
+    const qty = document.getElementById("qty").value;
+    if (!qty || qty <= 0) {
+        alert("Enter valid quantity");
+        return;
+    }
+
+    fetch("{% url 'bottle_management:preview_bottles' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify({ qty: qty })
+    })
+    .then(res => res.json())
+    .then(data => {
+        generatedSerials = data.serials;
+
+        const container = document.getElementById("serial-list");
+        container.innerHTML = "";
+
+        data.serials.forEach(s => {
+            const chip = document.createElement("span");
+            chip.innerText = s;
+            chip.style.cssText = `
+                display:inline-block;
+                padding:6px 12px;
+                margin:4px;
+                background:#eef2ff;
+                border-radius:20px;
+                font-size:13px;
+                font-weight:500;
+            `;
+            container.appendChild(chip);
+        });
+
+        document.getElementById("serial-container").style.display = "block";
+        document.getElementById("saveBtn").style.display = "inline-block";
+    });
+}
+
+
+</script>
+<script>
+     function saveBottles() {
+          console.log('save botle work')
+         const productId = document.getElementById("product_id").value;
+          
+         if (generatedSerials.length === 0) {
+             alert("No bottles to save");
+             return;
+         }
+     
+         fetch("{% url 'bottle_management:save_bottles' %}", {
+             method: "POST",
+             headers: {
+                 "Content-Type": "application/json",
+                 "X-CSRFToken": "{{ csrf_token }}"
+             },
+             body: JSON.stringify({
+                 product_id: productId,
+                 serials: generatedSerials
+             })
+         })
+         .then(res => {
+             if (!res.ok) {
+                 throw new Error("Failed to save bottles");
+             }
+             return res.json();
+         })
+         .then(data => {
+             alert("Successfully saved " + data.created_count + " bottles");
+             location.reload();
+         })
+         .catch(err => {
+             alert(err.message);
+         });
+     }
+</script>
+     
+
+{% endblock %}

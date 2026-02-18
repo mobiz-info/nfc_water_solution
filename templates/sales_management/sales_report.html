@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %} Sales Report {% endblock %}
+{% block content %}
+{% load static %}
+<!-- End::app-sidebar -->
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Sales Management</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+    </ol>
+</div>
+<!-- Page Header Close -->
+<!-- Start::app-content -->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">Sales Report Details</div>
+                    </div>
+                    <div class="card-body">
+                        <table id="datatable-basic" class="table table-bordered text-nowrap" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Sl No</th>
+                                    <th scope="col">Sales Man</th>
+                                    <th scope="col">Actions</th>
+
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for instance in instances %}
+                                <tr>
+                                    <td >{{forloop.counter}}</td>
+                                    <td>{{instance.username}}</td>
+
+                                    <td>
+                                        <div class="g-2">
+                                            <a href="{% url 'salesreportview' instance.id %}" aria-label="anchor" class="btn  btn-warning-light btn-sm" data-bs-toggle="tooltip" data-bs-original-title="View">
+                                                <span class="bi bi-eye fs-14"></span>
+                                            </a>
+                                            
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End:: row-2 -->
+    </div>
+</div>
+
+<!-- End::app-content -->
+
+
+{% endblock %}
+

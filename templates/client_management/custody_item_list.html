@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block title %} van {% endblock %}
+{% block content %}
+{% load static %}
+<!-- End::app-sidebar -->
+        <!-- Page Header -->
+        {% for message in messages %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+        {% endfor %}
+
+        <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+            <h4 class="fw-medium mb-0">Custody Item </h4>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Custody Item </li>
+            </ol>
+        </div>
+        <div class="main-content app-content">
+            <div class="container-fluid">
+                         <!-- Start:: row-2 -->
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card custom-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    Custody Item 
+                                </div>
+                                <div class="ms-auto">
+                                <a href=""><button type="button" class="btn btn-success btn-wave text-end d-flex me-4 my-auto"><i class="bi bi-plus-circle me-1"></i>Create</button>
+                                </a>
+                                </div>  
+                            </div>
+                                {% comment %} -------------------------------------------- {% endcomment %}
+                            <div class="card-body">
+                                <form method="get" action="">
+                                {{ form.as_p }}
+                                <div class="d-flex align-items-center">
+                                    <a href="{% url 'competitor_analysis_list' %}" class="text-decoration-none">
+                                     
+                                    </a>
+                                  </div>
+                                </form>
+                            </div>
+                            {% comment %} =================== {% endcomment %}
+                            <div class="card-body">
+                                <div class="tbl table-responsive">
+                                    <table id="datatable-basic" class="table table-bordered text-nowrap dataTable no-footer" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Sl No</th>
+                                            <th scope="col">Customer Name</th>
+                                            <th scope="col">Custody Item</th>
+                                            <th scope="col">Mobile No</th>
+                                            <th scope="col">Empty Bottles</th>
+                                            <th scope="col">Coolers</th>
+                                            <th scope="col">DIspenser</th>
+                                            <th></th>
+                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for i in customer_list %} 
+                                      <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ i.customer.customer_name }}</td>
+                                            <td>{{ i.product.product_name }}</td>
+                                            <td>{{ i.customer.mobile_no}}</td>
+                                            <td>{{ i.empty_bottles }}</td>
+                                            <td>{{ i.cooler }}</td>
+                                            <td>{{ i.dispenser }}</td>
+                                            <td><a href="">Add</td>
+                                            <td><a href="">Pullout</td>
+                                        </tr> 
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+{% endblock %}

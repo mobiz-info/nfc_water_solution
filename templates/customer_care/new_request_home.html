@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% block title %} Branch View {% endblock %}
+{% block content %}
+{% load static %}
+{% load accounts_templatetags %}
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+  <h4 class="fw-medium mb-0">Customer Details</h4>
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboard</a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">Customer</li>
+  </ol>
+</div>
+
+<div class="main-content app-content">
+  <div class="container-fluid">
+
+    <!-- Start:: row-1 -->
+    <div class="card card-product-details shadow">
+      <div class="card-body ">
+        <div class="table-responsive">
+          <table class="table">
+            <tbody>
+              <tr>
+                <td class="text-secondary">Customer</td>
+                <td> {{customer}}</td>
+              </tr>
+
+              <tr>
+                <td class="text-secondary">Customer type</td>
+                <td>{{customer_type}}</td>
+              </tr>
+
+              <tr>
+                <td class="text-secondary">Building No</td>
+                <td>{{building_name}}</td>
+              </tr>
+
+              <tr>
+                <td class="text-secondary">Mobile No</td>
+                <td>{{mobile_no}}</td>
+              <tr>
+
+              <tr>
+                <td class="text-secondary">Route name</td>
+                <td>{{route}}</td>
+              </tr>
+              <tr>
+                <td class="text-secondary">Door No</td>
+                <td>{{door_house_no}}</td>
+              </tr>
+              <tr style="display: none;">
+                <td class="text-secondary">Sales man Name</td>
+                <td>{{sales_man_name}}</td>
+              </tr>
+              <tr>
+                <td class="text-secondary">Email id</td>
+                <td>{{email_id}}</td>
+              </tr>
+
+              <tr>
+                <td class="text-secondary">Customer type</td>
+                <td>{{customer_type}}</td>
+              </tr>
+              
+              <tr>
+                <td class="text-secondary">Next delivery date</td>
+                {% get_next_visit_day customer.pk as next_del_date %}
+                <td>{{next_del_date}}</td>
+              </tr>
+              <tr>
+                <td class="text-secondary">Last delivery date</td>
+                <td>{{last_delivered_date.date}}</td>
+              </tr>
+            </tbody>
+
+          </table>
+
+        </div>
+
+        </p>
+
+      </div>
+    </div>
+
+    <div class="card custom-card">
+
+      <div class="card-body">
+        <form enctype="multipart/form-data" role="form" method="post" class="row g-3 needs-validation mb-4 ">
+          {% csrf_token %}
+          <!--row 1-->
+
+          <div class="col-md-6">
+            <div class="form-group required">
+
+              <label class='control-label'>Product Item</label>
+
+              {{ form.product_item }}
+              <span style="color: red;">{{ form.request_type.errors }}</span>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group required">
+              <input type="hidden" id="customer_id_re" name="" value="{{pk}}" class="form-control">
+            </div>
+          </div>
+
+          <!--row 1-->
+          <div class="col-md-6">
+            <div class="form-group required">
+              <label class='control-label'>Quantity Required</label>
+              {{ form.quantity_required }}
+              <span style="color: red;">{{ form.quantity_required.errors }}</span>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group required">
+              <label class='control-label'>Delivery date</label>
+              {{ form.delivery_date }}
+              <span style="color: red;">{{ form.delivery_date.errors }}</span>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group required">
+              <label class='control-label'>Assign this to</label>
+              {{ form.assign_this_to }}
+              <span style="color: red;">{{ form.assign_this_to.errors }}</span>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group required">
+              <label class='control-label'>Mode</label>
+              {{ form.mode }}
+              <span style="color: red;">{{ form.mode.errors }}</span>
+            </div>
+          </div>
+
+          <div class="col-12 text-end mt-5">
+            <input type="submit" class="btn btn-primary me-2 mb-2 submitcls" value="Submit">
+           <a href="{% url 'requestType' %}">
+                <button class="btn btn-success me-md-2 " type="button"><i class="bi bi-backspace-fill pe-1"></i>Back</button>
+            </a>
+            <a class="btn btn-success me-md-2 mb-2" href="{% url 'dashboard' %}">
+              <i class="bi bi-backspace-fill pe-1"></i> Back to Dashboard
+            </a>
+          </div>
+        </form>
+
+
+
+
+      </div>
+
+
+    </div>
+
+  </div>
+
+
+
+
+  {% endblock %}

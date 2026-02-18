@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% block title %}Van and Route-wise Bottle Damage Report{% endblock %}
+{% block content %}
+{% load static %}
+{% load el_pagination_tags %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Van and Route-wise Bottle Damage Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Reports</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Van and Route-wise Bottle Damage Report</li>
+    </ol>
+</div>
+
+<!-- Main Content -->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Report Card -->
+        <div class="card custom-card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Van and Route-wise Bottle Damage Report</h5>
+            </div>
+            <div class="card-body">
+                <form method="GET" action="{% url 'van_damage_stock_report' %}">
+                    <div class="row align-items-end">
+                        
+                        <!-- Route Filter -->
+                        <div class="col-md-3">
+                            <label for="route_name" class="form-label">Van Route:</label>
+                            <select name="route_name" class="form-select">
+                                <option value="">All Routes</option>
+                                {% for van_route in van_routes %}
+                                    <option value="{{ van_route.route_name }}" 
+                                        {% if van_route.route_name == filter_data.route_name %}selected{% endif %}>
+                                        {{ van_route.route_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Product Filter -->
+                        <div class="col-md-3">
+                            <label for="product_name" class="form-label">Product Name:</label>
+                            <select name="product_name" class="form-select">
+                                <option value="">All Products</option>
+                                {% for product in product_names %}
+                                    <option value="{{ product.product_name }}" 
+                                        {% if product.product_name == filter_data.product_name %}selected{% endif %}>
+                                        {{ product.product_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Search Box -->
+                        <div class="col-md-3">
+                            <label for="q" class="form-label">Search:</label>
+                            <input type="text" name="q" class="form-control" placeholder="Search..." value="{{ filter_data.q }}">
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="col-md-3 d-flex align-items-end justify-content-end">
+                            <button type="submit" class="btn btn-primary btn-sm mx-1">Apply Filter</button>
+                            <button type="button" class="btn btn-secondary btn-sm mx-1" onclick="resetFilters()">Reset</button>
+                            <a href="{% url 'van_damage_stock_print' %}?route_name={{ filter_data.route_name }}&product_name={{ filter_data.product_name }}&q={{ filter_data.q }}" 
+                                class="btn btn-outline-success btn-sm mx-1" target="_blank">
+                                <i class="fas fa-file-print"></i> Print
+                            </a>
+
+                            <a href="{% url 'van_damage_stock_excel' %}?route_name={{ filter_data.route_name }}&product_name={{ filter_data.product_name }}&q={{ filter_data.q }}" 
+                                class="btn btn-outline-success btn-sm mx-1" target="_blank">
+                                <i class="fas fa-file-excel"></i> Excel
+                            </a>
+                        </div>
+
+                    </div>
+                </form>
+
+            </div>
+
+            <!-- Table Section -->
+            <div class="card custom-card mt-4">
+                <div class="card-body">
+                    <table class="table table-bordered text-wrap w-100">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center; width: 5%;">Sl.No</th>
+                                <th>Route</th>
+                                <th>Product Name</th>
+                                <th>Total Quantity</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% paginate 50 damage_data %}
+                            {% for data in damage_data %}
+                            <tr>
+                                <td style="text-align: center;">{{ forloop.counter }}</td>
+                                <td>{{ data.route }}</td>
+                                <td>{{ data.product_name }}</td>
+                                <td>{{ data.total_quantity }}</td>
+                                <td>
+                                    <a href="{% url 'route_damage_detail' data.route_id %}" 
+                                    aria-label="View Details" 
+                                    class="btn btn-info btn-sm" 
+                                    data-bs-toggle="tooltip" 
+                                    data-bs-original-title="View Damage Details">
+                                        <span class="bi bi-eye fs-14"></span> <!-- Eye icon for viewing details -->
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center">No data available</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <!-- Pagination -->
+                    {% get_pages %}
+                    <div class="clearfix"></div>
+                    <div class="row my-3">
+                        <div class="col-sm-6 text-start">
+                            Showing {{ title }}
+                            <span class="current_page_index">{{ pages.current_start_index }}</span> - 
+                            <span class="current_end_status">{{ pages.current_end_index }}</span> of 
+                            <span class="total_count">{{ pages.total_count }}</span>
+                        </div>
+                        <div class="col-sm-6 text-end">{% show_pages %}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Report Card -->
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+    function resetFilters() {
+        location.href = "{% url 'van_damage_stock_report' %}";
+    }
+</script>
+
+{% endblock %}

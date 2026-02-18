@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %} Privacy Policy {% endblock %}
+{% block content %}
+{% load static %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Create Permission Management</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Create Permission Management</li>
+    </ol>
+</div>
+<!-- Page Header Close -->
+
+<!-- Start::app-content -->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Create Permission Management
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End::app-content -->
+{% endblock %}
+{% block static %}
+{% load static %}
+<style>
+    .django-ckeditor-widget{
+        width : 100%
+    }
+</style>
+{% endblock static %}

@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% block title %} Audit Report {% endblock %}
+{% block content %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Audit Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Van Management </a></li>
+        <li class="breadcrumb-item active" aria-current="page">Audit Report</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                             Audit Report
+                        </div>
+                    </div>
+                        {% comment %} <div class="mt">
+                            <form method="GET">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col">
+                                            <label for="start_date">From Date:</label>
+                                            <input type="date" class="form-control" id="start_date" name="start_date" value="{{ filter_data.start_date }}">
+                                        </div>
+                                        <div class="col">
+                                            <label for="end_date">To Date:</label>
+                                            <input type="date" class="form-control" id="end_date" name="end_date" value="{{ filter_data.end_date }}">
+                                        </div>
+                                        
+                                        <div class="row col-md-6" style="">
+                                        <div class="col">
+                                        <label for="product">Routes :</label>
+                                        <select name="route_name" class="form-select">
+                                            <option value="">All Routes</option>
+                                            {% for route in routes %}
+                                                <option value="{{ route.route_name }}"  {% if filter_data.selected_route == route.route_name %}selected{% endif %}>{{ route.route_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col d-flex align-items-end justify-content-end">
+                                        <input type="submit" class="btn btn-primary btn-sm mx-1" value="Apply Filter">
+                                        <button type="button" class="btn btn-secondary btn-sm mx-1" onclick="resetFilters()" style="width:max-content">Reset Filter</button>
+                                        <a href="{% url 'collection_report_excel' %}?start_date={{ request.GET.start_date }}&end_date={{ request.GET.end_date }}&route_name={{ request.GET.route_name }}" class="btn btn-outline-success"><i class="fas fa-file-excel"></i> Excel</a>
+                                        <a href="{% url 'print_collection_report' %}?start_date={{ request.GET.start_date }}&end_date={{ request.GET.end_date }}&route_name={{ request.GET.route_name }}" target="_blank" class="btn btn-outline-success"><i class="fas fa-print"></i> Print</a>
+
+                                    </div>
+                                        
+                                    </div>
+                                </div>
+                            </form> 
+                        </div>  {% endcomment %}
+                        <div id="table-container" style="overflow:scroll;">
+                            <div class="card-body">
+                                <table id="responsiveDataTable" class="table table-bordered text-wrap" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                        <th style="text-align:center;width:5%;" scope="col">Sl.No</th>
+                                        <th>Start Date</th>
+                                        <th>Route</th>
+                                        <th>Total Customers</th>
+                                        <th>Audited Customers</th>
+                                        <th>End Date</th>
+                                        <th>Marketing Executive</th>
+                                        <th>Action</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for audit in audits %}
+                                        <tr>
+                                            <td style="text-align:center">{{forloop.counter}}</td>
+                                            <td>{{ audit.start_date }}</td>
+                                            <td>{{ audit.route.route_name }}</td>
+                                            <td>{{ audit.total_customers }}</td>
+                                            <td>{{ audit.audited_customers }}</td>
+                                            <td>{{ audit.end_date|default:"In Progress" }}</td>
+                                            <td>{{ audit.marketing_executieve.username }}</td>
+                                            <td>
+                                                <a href="{% url 'audit_detail' audit.id  %}" aria-label="anchor" class="btn btn-warning-light btn-sm" data-bs-toggle="tooltip" data-bs-original-title="View">
+                                                    <span class="bi bi-eye-fill fs-14"></span> <!-- Icon updated for 'View' -->
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="7" class="text-center">No audits available</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    function resetFilters() {
+        // Redirect to the same page
+        location.href = "{% url 'audit_report' %}";
+    }
+</script>
+
+{% endblock %}

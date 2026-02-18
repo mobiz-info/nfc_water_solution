@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %} Products Stock Details {% endblock %}
+{% block content %}
+{% load static %}
+<!-- End::app-sidebar -->
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Product Management</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+    </ol>
+</div>
+<!-- Page Header Close -->
+<!-- Start::app-content -->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">Products Stock Details</div>
+                    </div>
+                    <div class="card-body">
+                        <table id="datatable-basic" class="table table-bordered text-nowrap" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th scope="col" style="text-align:center !important;">Sl.No</th>
+                                    <th scope="col" style="text-align:center !important;">Product Name</th>
+                                    <th scope="col" style="text-align:center !important;">Stock Quantity</th>
+                                    <th scope="col" style="text-align:center !important;">Branch</th>
+                                    <th scope="col" style="text-align:center !important;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for instance in instances %}
+                                <tr>
+                                    <td style="text-align:center;">{{forloop.counter}}</td>
+                                    <td style="text-align:left;">{{instance.product_name}}</td>
+                                    <td style="text-align:center;">{{instance.quantity}}</td>
+                                    <td style="text-align:left;">{{instance.branch}}</td>
+                                    <td style="text-align:left;">{{instance.status}}</td>
+                                    
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <div class="col-12 text-end mt-5">
+                            <a href="download_productstock_pdf" class="btn btn-primary me-2 mb-2" onclick="downloadPDF()">Download PDF</a>
+                            <a href="product_stock_excel_download" class="btn btn-success me-md-2 mb-2" onclick="exportToCSV()">Export to CSV</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End:: row-2 -->
+    </div>
+</div>
+
+<!-- End::app-content -->
+
+<script>
+    function downloadPDF() {
+        // Logic to download PDF
+        // Example: window.open('path/to/pdf', '_blank');
+        //alert('PDF download functionality will be implemented soon.');
+    }
+
+    function exportToCSV() {
+        // Logic to export to CSV
+        // Example: window.location.href = 'path/to/csv';
+       // alert('CSV export functionality will be implemented soon.');
+    }
+</script>
+{% endblock %}

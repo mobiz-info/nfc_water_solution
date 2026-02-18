@@ -1,0 +1,384 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Create Invoice</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Invoice Management</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Create Invoice</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-1 -->
+        <div class="row justify-content-center">
+            <div class="col-auto">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title mx-auto">
+                            Create Invoice
+                        </div>
+                    </div>
+                    <input type="hidden" id="customer_id_hfield" value="{{customer_instance.customer_id}}">
+                    <div class="card-body">
+                        <form action="." role="form" method="post" enctype="multipart/form-data"  class="row g-3 ajax redirect" autocomplete="off" novalidate>
+                            {% csrf_token %}
+                            <!--row 1-->
+                            <div class="row mt-2">
+                                <div class="col-12" style="overflow: auto;">
+                                    <table class="table table-bordered text-nowrap" style="width:100%;">
+                                        <thead>
+                                            <tr>
+                                            <th scope="col" class="text-center">Customer Name</th>
+                                            <th scope="col" class="text-center">Customer Id</th>
+                                            <th scope="col" class="text-left">Mobile No</th>
+                                            <th scope="col" class="text-left">Building Name</th>
+                                            <th scope="col" class="text-center">Door House No</th>
+                                            <th scope="col" class="text-center">Route Name</th>
+                                            <th scope="col" class="text-center">Outstanding Amount</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="customerTableBody">
+                                            <tr>
+                                                <td>{{customer_instance.customer_id}}</td>
+                                                <td>{{customer_instance.customer_name}}</td>
+                                                <td>{{customer_instance.mobile_no}}</td>
+                                                <td>{{customer_instance.building_name}}</td>
+                                                <td>{{customer_instance.door_house_no}}</td>
+                                                <td>{{customer_instance.routes.route_name}}</td>
+                                                <td></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div> 
+                            </div>
+                            <div class="row mt-2">
+                                <div class="row">
+                                    <div class="table-responsive card-body add_item_container invoice_items_formset">
+                                        <table id="data-table-basic" class="table table-striped table-vmiddle">
+                                            <thead>
+                                                <tr>
+                                                    <th data-column-id="image" colspan="4">Add Invoice Items</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <th style="min-width: 15px;">Category</th>
+                                                <th style="min-width: 15px;">Product</th>
+                                                <th style="min-width: 15px;">Rate</th>
+                                                <th style="min-width: 15px;">Qty</th>
+                                                <th style="min-width: 15px;">Total Include VAT</th>
+                                                <th style="min-width: 15px;">Remark</th>
+                                                <th style="min-width: 15px;"></th>
+                                                {% for item in invoice_items_formset.forms %}
+                                                <tr class="form_set_row invoice_items_formset">
+                                                    {{item.id}}
+                                                    <td>
+                                                        <span class="category">
+                                                            {{ item.category }}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="product">
+                                                            {{ item.product_items }}
+                                                        </span>
+                                                    </td>
+
+                                                    <td>
+                                                        <span class="rate">
+                                                            {{ item.rate }}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="qty">
+                                                            {{ item.qty }}
+                                                        </span>
+                                                    </td>
+                                                    <td class="">
+                                                        <span class="total_including_vat">
+                                                            {{ item.total_including_vat }}
+                                                        </span>
+                                                    </td>
+                                                    <td class="">
+                                                        <span class="remarks">
+                                                            {{ item.remarks }}
+                                                        </span>
+                                                    </td>
+                                                    <td class="delete">
+                                                        {% if item.instance.pk %}{{ item.DELETE }}{% endif %}
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                        {{ invoice_items_formset.management_form }}
+                                    </div>
+                                </div>
+
+                                <div class="row d-flex justify-content-end">
+                                    <div class="col-2">
+                                        <div class="row">
+                                            <div class="form-group required">
+                                                <label class='control-label'>Grand Total</label>
+                                                <input type="text" value="0" class="required form-control text-right" required="" id="id_grand_total">
+                                                <span style="color: red;"></span>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group required">
+                                                <label class='control-label'>Discount</label>
+                                                {{invoice_form.discount}}
+                                                <span style="color: red;">{{ invoice_form.discount.errors }}</span>
+                                            </div>
+                                        </div> 
+                                        <div class="row">
+                                            <div class="form-group required">
+                                                <label class='control-label'>Net Taxable</label>
+                                                {{invoice_form.net_taxable}}
+                                                <span style="color: red;">{{ invoice_form.net_taxable.errors }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group required">
+                                                <label class='control-label'>VAT (%)</label>
+                                                {{invoice_form.vat}}
+                                                <span style="color: red;">{{ invoice_form.vat.errors }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group required">
+                                                <label class='control-label'>Grand Total</label>
+                                                {{invoice_form.amout_total}}
+                                                <span style="color: red;">{{ invoice_form.amout_total.errors }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group required">
+                                                <label class='control-label'>Amount Recieved</label>
+                                                {{invoice_form.amout_recieved}}
+                                                <span style="color: red;">{{ invoice_form.amout_recieved.errors }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group required">
+                                                <label class='control-label'>Balance</label>
+                                                <input type="text" value="0" class="required form-control text-right" required="" id="id_balance_amount"  style="text-align: right;">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group required">
+                                                <label class='control-label'>Reference no</label>
+                                                {{invoice_form.reference_no}}
+                                                <span style="color: red;">{{ invoice_form.reference_no.errors }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 text-end mt-5">
+                                        <input type="submit" class="btn btn-primary me-2 mb-2" value="Submit">
+                                        <button class="btn btn-success   me-md-2  mb-2" type="button" onClick="javascript:history.go(-1);"> <i class="bi bi-backspace-fill pe-1"></i>Back</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block static %}
+{% load static %}
+<style>
+    .dynamic-formset-add td{
+        text-align: center !important;
+    }
+    .invoice_items_formset a.add-row::before{
+        content: "+ Add"
+    }
+    .invoice_items_formset a.remove::before{
+        content: "Remove"
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        $('.invoice_items_formset table tr.form_set_row').formset({
+            prefix: '{{ invoice_items_formset.prefix }}',
+            formCssClass: 'dynamic-formset',
+
+            'added': function (row) {
+                
+            },
+        });
+    });
+</script>
+<script>
+    {% comment %} $('#id_product_category').change(function(){
+        var category_id = $('#id_product_category').val();
+        if(category_id){
+            $.ajax({
+                url: '/invoice-management/get-products/' + category_id, 
+                type: 'GET',
+                dataType: 'json',
+                success: function(data){
+                    $('#id_product').empty();
+                    $('#id_product').append($('<option>').text('Select Product').attr('value', ''));
+                    $.each(data.data, function(index, product){
+                        $('#id_product').append($('<option>').text(product.product_name).attr('value', product.product_id));
+                    });
+                }
+            });
+        }else{
+            $('#id_product').empty();
+            $('#id_product').append($('<option>').text('Select Product').attr('value', ''));
+        }
+    }); {% endcomment %}
+
+</script>
+<script type="text/javascript">
+    function calculateSubTotal() {
+        var subTotal = 0;
+        var grandTotal = parseFloat($('#id_grand_total').val().trim());
+        var discount = parseFloat($('#id_discount').val().trim());
+        var total = grandTotal - discount
+        $('#id_amout_total').val(total.toFixed(2));
+    }
+</script>
+<script type="text/javascript">
+    function calculateGrandTotal() {
+        var grandTotal = 0;
+        $('.total_including_vat').each(function() {
+            var totalIncludingVat = parseFloat($(this).val().trim());
+            if (!isNaN(totalIncludingVat)) {
+                grandTotal += totalIncludingVat;
+            }
+        });
+        $('#id_grand_total').val(grandTotal.toFixed(2));
+        calculateSubTotal();
+    }
+    
+    $('.total_including_vat').on('input', function() {
+        calculateGrandTotal();
+    });
+
+    $('#id_discount').on('input', function() {
+        calculateGrandTotal();
+    });
+
+    $('#id_amout_recieved').on('input', function() {
+        var totalAmnt = parseFloat($('#id_amout_total').val().trim());
+        var recievedAmt = parseFloat($('#id_amout_recieved').val().trim());
+
+        var balanceAmt = totalAmnt - recievedAmt
+        $('#id_balance_amount').val(balanceAmt.toFixed(2));
+
+    });
+</script>
+<script>
+    $('.product-category').change(function(){
+        var elemId = $(this).attr("id");
+        var formCount = elemId.match(/\d+/);
+        var category_id = $(this).val(); // Parse the amount as a float
+        
+        if(category_id){
+            $.ajax({
+                url: '/invoice-management/get-products/' + category_id, 
+                type: 'GET',
+                dataType: 'json',
+                success: function(data){
+                    $('#id_invoice_items_formset-'+formCount+'-product').empty();
+                    $('#id_invoice_items_formset-'+formCount+'-product').append($('<option>').text('Select Product').attr('value', ''));
+                    $.each(data.data, function(index, product){
+                        $('#id_invoice_items_formset-'+formCount+'-product').append($('<option>').text(product.product_name).attr('value', product.product_id));
+                    });
+                }
+            });
+        }else{
+            $('#id_invoice_items_formset-'+formCount+'-product').empty();
+            $('#id_invoice_items_formset-'+formCount+'-product').append($('<option>').text('Select Product').attr('value', ''));
+        }
+    });
+</script>
+
+<script>
+    $('.product-item').change(function(){
+        var elemId = $(this).attr("id");
+        var formCount = elemId.match(/\d+/);
+        var productId = $(this).val(); 
+        var customerId = $("#customer_id_hfield").val();
+        
+        if(productId && customerId){
+            $.ajax({
+                url: '/invoice-management/get-customer-rate/' + productId + '/' + customerId, 
+                type: 'GET',
+                dataType: 'json',
+                success: function(data){
+                    $('#id_invoice_items_formset-'+formCount+'-rate').val(data.product_price);
+                }
+            });
+        }else{
+            $('#id_invoice_items_formset-'+formCount+'-rate').empty();
+        }
+    });
+</script>
+<script>
+    $('.product-qty').keyup(function(){
+        var elemId = $(this).attr("id");
+        var formCount = elemId.match(/\d+/);
+        var qty = $(this).val(); 
+        var productId = $('#id_invoice_items_formset-'+formCount+'-product').val(); 
+        var customerId = $("#customer_id_hfield").val();
+        
+        if(productId && customerId){
+            $.ajax({
+                url: '/invoice-management/get-customer-rate/' + productId + '/' + customerId, 
+                type: 'GET',
+                dataType: 'json',
+                success: function(data){
+                    var vat = data.total_include_vat
+                    var productAmt = $('#id_invoice_items_formset-'+formCount+'-rate').val();
+
+                    totalAmnt = productAmt * qty
+                    totalInclude = totalAmnt + vat
+                    // console.log(vat + "vat")
+                    // console.log(totalAmnt + "totalAmnt")
+                    // console.log(totalInclude)
+
+                    $('#id_invoice_items_formset-'+formCount+'-total_including_vat').val(totalInclude);
+                    calculateGrandTotal();
+                }
+            });
+        }else{
+            $('#id_invoice_items_formset-'+formCount+'-rate').empty();
+        }
+    });
+</script>
+<script>
+    function createInvoiceBtn(button){
+        var customerId = $(button).data("customer_id");
+        $('#customer_id_hfield').val(customerId);        
+    };
+    
+</script>
+
+{% if is_edit %}
+<script>
+    $(document).ready(function(){
+        calculateGrandTotal();
+
+        var totalAmnt = parseFloat($('#id_amout_total').val().trim());
+        var recievedAmt = parseFloat($('#id_amout_recieved').val().trim());
+
+        var balanceAmt = totalAmnt - recievedAmt
+        $('#id_balance_amount').val(balanceAmt.toFixed(2));
+
+        customerFinding() 
+    });
+</script>
+{% endif %}
+    
+
+{% endblock static %}

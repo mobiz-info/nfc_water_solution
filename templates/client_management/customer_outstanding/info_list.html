@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+{% block title %} Custody Report {% endblock %}
+{% block content %}
+{% load static %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Outstanding Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Client Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Outstanding Report</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Outstanding Items
+                        </div>
+                        
+                        <div class="ms-auto">
+                            <a href="{% url 'create_customer_outstanding' %}{% if customer_pk %}?customer_pk={{customer_pk}}{% endif %}">
+                                <button type="button" class="btn btn-success btn-wave text-end d-flex me-4 my-auto"><i class="bi bi-plus-circle me-1"></i>Create</button>
+                            </a>
+                        </div>
+                        {% comment %} <div style="float:right;padding:10px 10px">
+                            <form method="GET">
+                                <div class="input-group">
+                                    <select name="route_name" class="form-select">
+                                        <option value="">All Routes</option>
+                                        {% for route in route_li %}
+                                            <option value="{{ route.route_name }}">{{ route.route_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-search"></i> Search
+                                    </button>
+                                </div>
+                            </form>
+                        </div> {% endcomment %}
+                    </div>
+                    <div class="mt">
+                        <form method="GET" action=".">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-3">
+                                        <label for="date">Date:</label>
+                                        <input type="date" class="form-control" id="date" name="date" value="{{ filter_data.filter_date }}">
+                                    </div>
+                                    {% comment %} <div class="col-3">
+                                        <label for="product">Routes :</label>
+                                        <select name="route_name" class="form-select">
+                                            <option value="">All Routes</option>
+                                            {% for route in route_li %}
+                                                <option value="{{ route.route_name }}"  {% if route.route_name == filter_data.route_name %}selected{% endif %}>{{ route.route_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div> {% endcomment %}
+                                    <div class="col-3">
+                                        <label for="product">Product Items :</label>
+                                        <select name="product_type" class="form-select me-2">
+                                            <option value="amount" {% if filter_data.product_type == 'amount' %}selected{% endif %}>Amount</option>
+                                            <option value="emptycan" {% if filter_data.product_type == 'emptycan' %}selected{% endif %}>Empty Can</option>
+                                            <option value="coupons" {% if filter_data.product_type == 'coupons' %}selected{% endif %}>Coupon</option>
+                                        </select>
+                                    </div>
+                                    <div class="col d-flex align-items-end justify-content-end">
+                                        <input type="submit" class="btn btn-primary btn-sm mx-1" value="Apply Filter">
+                                        {% if data_filter %}
+                                        <button type="button" class="btn btn-secondary btn-sm mx-1" onclick="resetFilters()" style="width:max-content">Reset Filter</button>
+                                        {% endif %}
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div id="table-container">
+                        <div class="card-body">
+                            {% comment %} <div style="float:right;padding:10px 0px">
+                                <form method="GET">
+                                    <div class="input-group">
+                                        <input type="text" name="q" class="form-control" placeholder="Search ..." value="{{ filter_data.q }}" >
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-search"></i> Search
+                                        </button>
+                                    </div>
+                                </form>
+                            </div> {% endcomment %}
+                            
+                            <table  id="datatable-basic" class="table table-bordered text-wrap" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th>Sl No</th>
+                                        <th>Transaction Date</th>
+                                        <th>Invoice No</th>
+                                        <th>Customer</th>
+                                        <th>Building No</th>
+                                        <th>Route</th>
+                                        <th>Outstanding Type</th>
+                                        <th>Amount</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in instances %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ item.created_date }}</td>
+                                        <td>{{ item.invoice_no }}</td>
+                                        <td>{{ item.customer }}</td>
+                                        <td>{{ item.building_no }}</td>
+                                        <td>{{ item.route }}</td>
+                                        <td>{{ item.outstanding_type }}</td>
+                                        <td class="{% if item.amount < 0 %}text-danger{% endif %}">
+                                            {{ item.amount }}
+                                        </td>
+                                        <td>
+                                            <div class="g-2">
+                                                {% if item.outstanding_pk %}
+                                                    <!-- <a href="{% url 'edit_customer_outstanding' item.outstanding_pk %}"
+                                                       class="btn btn-primary-light btn-sm ms-2"
+                                                       data-bs-toggle="tooltip" data-bs-original-title="Edit">
+                                                        <span class="ri-pencil-line fs-14"></span>
+                                                    </a> -->
+
+                                                    <a href="javascript:void(0);"
+                                                    class="btn btn-danger-light btn-sm js-delete-outstanding"
+                                                    data-url="{% url 'delete_outstanding_adjustment' item.outstanding_pk %}"
+                                                    data-title="Reverse payment?"
+                                                    data-text="This will undo the payment adjustment">
+                                                    <span class="ri-delete-bin-7-line fs-14"></span>
+                                                    </a>
+                                        
+                                                    <!-- <a href="{% url 'delete_outstanding' pk=item.outstanding_pk %}"
+                                                       class="btn btn-danger-light btn-sm ms-2 action-button remove"
+                                                       data-bs-toggle="tooltip" data-bs-original-title="Delete">
+                                                        <span class="ri-delete-bin-7-line fs-14"></span>
+                                                    </a> -->
+                                                {% else %}
+                                                    <span class="text-muted">No Record</span>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                        {% comment %} <td>
+                                            <div class="g-2">
+                                                
+                                                <a href="{% url 'edit_customer_outstanding' item.outstanding_pk %}?customer_pk={{ customer_pk }}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Edit">
+                                                    <span class="ri-pencil-line fs-14"></span>
+                                                </a>
+                                                <a aria-label="anchor" class="action-button remove btn btn-danger-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Delete"
+                                                    data-id="{{item.pk}}" data-text="{{confirm_delete_message}}" data-title="Are you sure?" href="{% url 'delete_outstanding' pk=item.pk %}"><span class="ri-delete-bin-7-line fs-14"></span>
+                                                </a>
+                                                
+                                            </div>
+                                        </td> {% endcomment %}
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="7" style="text-align:right;">Total Outstanding</th>
+                                        <th>{{ total_outstanding }}</th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    document.querySelectorAll(".js-delete-outstanding").forEach(btn => {
+
+        btn.addEventListener("click", function () {
+
+            const url = this.dataset.url;  // 👈 URL from data-url
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "This action cannot be undone!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Yes, delete",
+                cancelButtonText: "Cancel"
+            }).then((result) => {
+
+                if (!result.isConfirmed) return;
+
+                fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": getCookie("csrftoken")
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+
+                    if (data.status === "true") {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Deleted",
+                            text: data.message,
+                            timer: 1500,
+                            showConfirmButton: false
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire("Error", data.message, "error");
+                    }
+
+                })
+                .catch(() => {
+                    Swal.fire("Error", "Something went wrong", "error");
+                });
+
+            });
+        });
+    });
+
+});
+
+// CSRF helper
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + "=")) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+
+{% endblock %}

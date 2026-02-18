@@ -1,0 +1,701 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Create Request Type</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Customer Care</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Request Type</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-1 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title mx-auto">
+                            Create Request
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form enctype="multipart/form-data" role="form" method="post" class="row g-3 needs-validation">
+                            {% csrf_token %}
+                            <!--row 1-->
+                            
+                           <div class="col-md-6">
+                                <div class="form-group required">
+                                    
+                                    <label class='control-label'>Request Type</label>
+                                    <select name="" id="requesttypeselect" class="form-control">
+                                        <option value="">-</option>
+                                        {% for i in requestype_obj%}
+                                        <option value="{{i}}">{{i}}</option>
+
+                                        {% endfor %}
+                                        
+                                    </select>
+                                    <!-- {{ form.request_type }}
+                                    <span style="color: red;">{{ form.request_type.errors }}</span> -->
+                                </div>
+                           </div>
+                           <div class="col-md-6">
+                            <div class="form-group required">
+                                <input type="hidden" id="customer_id_re" name="" value="{{pk}}" class="form-control">
+                            </div>
+                        </div>
+                                                                              
+                            
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <section id = "differentsectionbottle">
+        <div class="container-fluid" aria-hidden="true">
+            <!-- Start:: row-1 -->
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card custom-card">
+                        <div class="card-header">
+                            <div class="card-title mx-auto">
+                                
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <form enctype="multipart/form-data" role="form" method="post" class="row g-3 needs-validation">
+                                {% csrf_token %}
+                                <!--row 1-->
+                                                            
+
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Quantity Required</label>
+                                        <input type="text" id="quantityrequired" name="quantityrequired" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Delivery date</label>
+                                        <input type="date" id="deliverydate" name="deliverydate" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Assign this to </label>
+                                        <input type="text" id="assignto" name="assignto" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Mode</label>
+                                        <select id="mode" name="mode" class="form-control">
+                                            <option value="">-</option>
+                                            <option value="custody">Custody</option>
+                                            <option value="paid">Paid</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Amount</label>
+                                        <input type="text"  id="amount" name="amount" class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group required" style="display: none;">
+                                        <label class='control-label'>Discount Net total</label>
+                                        <input type="text" id="discountnettotal" name="discountnettotal" class="form-control">
+                                    </div>
+                                </div>
+                            
+
+                                <div class="col-12 text-end mt-5">
+                                    <input type="submit" class="btn btn-primary me-2 mb-2 submitcls" value="Submit">
+                                    <button class="btn btn-success   me-md-2  mb-2" type="button"
+                                        onClick="javascript:history.go(-1);">
+                                        <i class="bi bi-backspace-fill pe-1"></i>Back</button>
+                                    <a class="btn btn-success me-md-2  mb-2" href="{% url 'branch' %}">
+                                        <i class="bi bi-backspace-fill pe-1"></i> Back to Dashboard
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id = "otherrequirementsection">
+        <div class="container-fluid" aria-hidden="true">
+            <!-- Start:: row-1 -->
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card custom-card">
+                        <div class="card-header">
+                            <div class="card-title mx-auto">
+                                
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <form enctype="multipart/form-data" role="form" method="post" class="row g-3 needs-validation">
+                                {% csrf_token %}
+                                <!--row 1-->
+                                                            
+
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Requirement</label>
+                                        <textarea id="requirement" rows="4" cols="50" class="form-control">
+                                            
+                                        </textarea>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12 text-end mt-5">
+                                    <input type="submit" class="btn btn-primary me-2 mb-2 submitcls" value="Submit">
+                                    <button class="btn btn-success   me-md-2  mb-2" type="button"
+                                        onClick="javascript:history.go(-1);">
+                                        <i class="bi bi-backspace-fill pe-1"></i>Back</button>
+                                    <a class="btn btn-success me-md-2  mb-2" href="{% url 'branch' %}">
+                                        <i class="bi bi-backspace-fill pe-1"></i> Back to Dashboard
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id = "coupenpurchase">
+        <div class="container-fluid" aria-hidden="true">
+            <!-- Start:: row-1 -->
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card custom-card">
+                        <div class="card-header">
+                            <div class="card-title mx-auto">
+                                
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <form enctype="multipart/form-data" role="form" method="post" class="row g-3 needs-validation">
+                                {% csrf_token %}
+                                <!--row 1-->
+                                                            
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Coupon Type</label>
+                                        <select id="coupontype" name="coupontype" class="form-control">
+                                            <option value="">-</option>
+                                            <option value="digital ">Digital</option>
+                                            <option value="manual">Manual</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Category</label>
+                                        <select id="category" name="category" class="form-control">
+                                            <option value="">-</option>
+                                            <option value="cashcoupon ">Cash coupon/ </option>
+                                            <option value="creditcoupon">Credit coupon</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>No of Books</label>
+                                        <input type="text" id="numberofbooks" name="numberofbooks" class="form-control">
+                                    </div>
+                                </div>
+                           
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Payment Status</label>
+                                        <select id="paymentstatus" name="paymentstatus" class="form-control">
+                                            <option value="">-</option>
+                                            <option value="paid">Paid</option>
+                                            <option value="unpaid">Unpaid</option>
+
+                                        </select>
+                                    </div>
+
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Coupon Rate</label>
+                                        <input type="text"  id="amount" name="amount" class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Free coupon</label>
+                                        <input type="text" id="freecoupon" name="freecoupon" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Discount</label>
+                                        <input type="text" id="discount" name="discount" class="form-control">
+                                    </div>
+                                </div>        
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Delivery date</label>
+                                        <input type="date" id="deliverydate" name="deliverydate" class="form-control">
+                                    </div>
+                                </div>                   
+
+                                <div class="col-12 text-end mt-5">
+                                    <input type="submit" class="btn btn-primary me-2 mb-2 submitcls" value="Submit">
+                                    <button class="btn btn-success   me-md-2  mb-2" type="button"
+                                        onClick="javascript:history.go(-1);">
+                                        <i class="bi bi-backspace-fill pe-1"></i>Back</button>
+                                    <a class="btn btn-success me-md-2  mb-2" href="{% url 'branch' %}">
+                                        <i class="bi bi-backspace-fill pe-1"></i> Back to Dashboard
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id = "custodypulloutsection">
+        <div class="container-fluid" aria-hidden="true">
+            <!-- Start:: row-1 -->
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card custom-card">
+                        <div class="card-header">
+                            <div class="card-title mx-auto">
+                                
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <form enctype="multipart/form-data" role="form" method="post" class="row g-3 needs-validation">
+                                {% csrf_token %}
+                                <!--row 1-->
+                                                            
+
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Item Name</label>
+                                        <select id="itemname" name="itemname" class="form-control">
+                                            <option value="">-</option>
+                                            {% for i in pronmae%}
+                                            <option value="{{i.product_name}}">{{i}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Qty to be taken out</label>
+                                        <input type="text"  id="qtytobetakenout" name="qtytobetakenout" class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Scheduled date</label>
+                                        <input type="date" id="scheduleddate" name="scheduleddate" class="form-control">
+                                    </div>
+                                </div> 
+                                
+                                
+                            
+
+                                <div class="col-12 text-end mt-5">
+                                    <input type="submit" class="btn btn-primary me-2 mb-2 submitcls" value="Submit">
+                                    <button class="btn btn-success   me-md-2  mb-2" type="button"
+                                        onClick="javascript:history.go(-1);">
+                                        <i class="bi bi-backspace-fill pe-1"></i>Back</button>
+                                    <a class="btn btn-success me-md-2  mb-2" href="{% url 'branch' %}">
+                                        <i class="bi bi-backspace-fill pe-1"></i> Back to Dashboard
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id = "changeofaddress">
+        <div class="container-fluid" aria-hidden="true">
+            <!-- Start:: row-1 -->
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card custom-card">
+                        <div class="card-header">
+                            <div class="card-title mx-auto">
+                                
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+
+                            <form enctype="multipart/form-data" role="form" method="post" class="row g-3 needs-validation">
+                                {% csrf_token %}
+                                <!--row 1-->
+
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Emirate</label>
+                                        
+                                        <input type="text" id="emirate" name="emirate" value ="{{ customer_data.emirate }}" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Location</label>
+                                        
+                                        <input type="text" id="location" name="Location" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Building Name</label>
+                                        <input type="text" id="buildingname" name="assignto" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Door No/ Flat no</label>
+                                        <input type="text" id="doorno" name="assignto" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Floor No</label>
+                                        <input type="text" id="floorno" name="assignto" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Route</label>
+                                        <select name="" id="route" class="form-control">
+                                            <option value="">-</option>
+                                        </select>
+                                    </div>
+                               </div> 
+                               <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Salesman</label>
+                                    <select name="" id="salesman" class="form-control">
+                                        <option value="">-</option>
+                                    </select>
+                                </div>
+                                </div>                    
+                                <div class="col-12 text-end mt-5">
+                                    <input type="submit" class="btn btn-primary me-2 mb-2 submitcls" value="Submit">
+                                    <button class="btn btn-success   me-md-2  mb-2" type="button"
+                                        onClick="javascript:history.go(-1);">
+                                        <i class="bi bi-backspace-fill pe-1"></i>Back</button>
+                                    <a class="btn btn-success me-md-2  mb-2" href="{% url 'branch' %}">
+                                        <i class="bi bi-backspace-fill pe-1"></i> Back to Dashboard
+                                    </a>
+                                </div>
+
+                            </form>
+
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+
+<script>
+
+    
+    $(document).ready(function(){
+
+        $('#differentsectionbottle').hide();
+        $('#otherrequirementsection').hide();
+        $('#coupenpurchase').hide();
+        $('#custodypulloutsection').hide();
+        $('#changeofaddress').hide();
+     });
+
+    $('#requesttypeselect').on('change',function(){
+        console.log("---",$('#customer_id_re').val())
+
+        requesttypeval=$('#requesttypeselect').val();
+        console.log('data=',requesttypeval)
+        if ((requesttypeval == 'Empty Bottles') || (requesttypeval == 'Filled Bottles') || (requesttypeval == 'Dispenser'))
+        {
+            $('#differentsectionbottle').show();
+            $('#otherrequirementsection').hide();
+            $('#coupenpurchase').hide();
+            $('#custodypulloutsection').hide();
+            $('#changeofaddress').hide();
+        }
+        else if (requesttypeval == 'other')
+        {
+            $('#otherrequirementsection').show();
+            $('#differentsectionbottle').hide();
+            $('#coupenpurchase').hide();
+            $('#custodypulloutsection').hide();
+            $('#changeofaddress').hide();
+         }
+        else if(requesttypeval == 'Coupons')
+        {
+            $('#coupenpurchase').show();
+            $('#otherrequirementsection').hide();
+            $('#differentsectionbottle').hide();
+            $('#custodypulloutsection').hide();
+            $('#changeofaddress').hide();
+
+
+        }
+        else if(requesttypeval == 'custody pull out')
+        {         
+            $('#custodypulloutsection').show();
+            $('#coupenpurchase').hide();
+            $('#otherrequirementsection').hide();
+            $('#differentsectionbottle').hide();
+            $('#changeofaddress').hide();
+
+        }       
+        else if((requesttypeval == 'Change of address') || (requesttypeval == 'Change of delivery date') || (requesttypeval == 'Change in default filled bottle qty'))
+        {
+            $('#changeofaddress').show();
+            $('#differentsectionbottle').hide();
+            $('#otherrequirementsection').hide();
+            $('#coupenpurchase').hide();
+            $('#custodypulloutsection').hide();
+
+         
+
+        } 
+
+        else{
+            $('#differentsectionbottle').hide();
+            $('#otherrequirementsection').hide();
+            $('#coupenpurchase').hide();
+            $('#custodypulloutsection').hide();
+            $('#changeofaddress').hide();
+
+        }
+    });
+
+    
+    $('.submitcls').click(function(e){
+        requesttypeval=$('#requesttypeselect').val();
+        if (requesttypeval == 'other')
+        {
+           requesttypeval=$('#requesttypeselect').val();
+           requirement=$('#requirement').val();
+           console.log(requirement)
+           var csrftoken = '{{csrf_token}}'
+           var res3 = jQuery.ajax({
+            type: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json', "X-CSRFToken": csrftoken
+            },
+            url: "{% url 'other_requirement' %}",
+        data: JSON.stringify({
+
+            "requirement" : requirement,
+            "requesttypeval":requesttypeval,
+        }),
+        dataType: "json",
+        success: renderlist
+
+        });
+        function renderlist(res3) {
+            console.log(res)
+            
+            
+        }
+       
+        }
+     
+        if ((requesttypeval == 'Empty Bottles') || (requesttypeval == 'Filled Bottles') || (requesttypeval == 'Dispenser'))    
+        {
+           requesttypeval=$('#requesttypeselect').val();
+           quantityrequired=$('#quantityrequired').val();
+           deliverydate=$('#deliverydate').val();
+           assignto=$('#assignto').val();
+           mode=$('#mode').val();
+           amount=$('#amount').val();
+           discountnettotal=$('#discountnettotal').val();
+
+           console.log(requesttypeval,"requesttypeval")
+           console.log(quantityrequired,"quantityrequired")
+           console.log(deliverydate,"deliverydate")
+           console.log(assignto,"assignto")
+           console.log(mode,"mode")
+           console.log(amount,"amount")
+           console.log(discountnettotal,"discountnettotal")
+
+
+           var csrftoken = '{{csrf_token}}'
+           var res3 = jQuery.ajax({
+            type: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json', "X-CSRFToken": csrftoken
+            },
+            url: "{% url 'diff_bottles' %}",
+        data: JSON.stringify({
+
+            "quantityrequired" : quantityrequired,
+            "requesttypeval":requesttypeval,
+            "deliverydate":deliverydate,
+            "assignto":assignto,
+            "mode":mode,
+            "amount":amount,
+            "discountnettotal":discountnettotal
+
+        }),
+        dataType: "json",
+        success: renderlist
+
+        });
+        function renderlist(res3) {
+            console.log(res)
+            
+        }
+         
+        }
+        else if ((requesttypeval == 'Coupons'))    
+        {
+           requesttypeval=$('#requesttypeselect').val();
+           coupon_type=$('#coupontype').val();
+           category=$('#category').val();
+           number_of_books=$('#numberofbooks').val();
+           payment_status=$('#paymentstatus').val();
+           amount=$('#amount').val();
+           free_coupon=$('#freecoupon').val();
+           discount=$('#discount').val();
+           delivery_date=$('#delivery_date').val();
+           
+           var csrftoken = '{{csrf_token}}'
+           var res3 = jQuery.ajax({
+            type: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json', "X-CSRFToken": csrftoken
+            },
+            url: "{% url 'coupon_purchase' %}",
+        data: JSON.stringify({
+            "requesttypeval":requesttypeval,
+            "coupon_type" : coupon_type,
+            "category":category,
+            "number_of_books":number_of_books,
+            "payment_status":payment_status,
+            "amount" :amount,
+            "free_coupon" :free_coupon,
+            "discount":discount,
+            "deliverydate":deliverydate,
+
+
+
+        }),
+        dataType: "json",
+        success: renderlist
+
+        });
+        function renderlist(res3) {
+            console.log(res)
+            
+            
+        }          
+        }
+        if (requesttypeval == 'custody pull out')
+        {
+           requesttypeval=$('#requesttypeselect').val();
+           requirement=$('#requirement').val();
+           console.log(requirement)
+           var csrftoken = '{{csrf_token}}'
+           var res3 = jQuery.ajax({
+            type: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json', "X-CSRFToken": csrftoken
+            },
+            url: "{% url 'other_requirement' %}",
+        data: JSON.stringify({
+
+            "requirement" : requirement,
+            "requesttypeval":requesttypeval,
+        }),
+        dataType: "json",
+        success: renderlist
+
+        });
+        function renderlist(res3) {
+            console.log(res)
+            
+            
+        }
+       
+        }
+        else if((requesttypeval == 'Change of address') || (requesttypeval == 'Change of delivery date') || (requesttypeval == 'Change in default filled bottle qty'))
+        {  
+            customer_id_re=$('#customer_id_re').val();
+            requesttypeval=$('#requesttypeselect').val();
+            emirate=$('#emirate').val();
+            location=$('#location').val();
+            buildingname=$('#buildingname').val();
+            doorno=$('#doorno').val();
+            floorno=$('#floorno').val();
+            route=$('#route').val();
+            
+            console.log(route)
+            var csrftoken = '{{csrf_token}}'
+            var res3 = jQuery.ajax({
+            type: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json', "X-CSRFToken": csrftoken
+            },
+            url:"",
+        data: JSON.stringify({
+
+            "customer_id_res" : customer_id_res,
+            "emirate":emirate,
+            "location":location,
+            "buildingname":buildingname,
+            "doorno":doorno,
+            "floorno":floorno,
+            "route":route
+
+        }),
+        dataType: "json",
+        success: renderlist
+
+        });
+        function renderlist(res3) {
+            console.log(res)
+            
+            
+            
+        }
+       
+        }
+    })
+
+
+</script>
+{% endblock %}

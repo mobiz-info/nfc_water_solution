@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %} Designation View {% endblock %}
+{% block content %}
+{% load static %}
+  <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Designation Details</h4>
+      <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+      </ol>
+  </div>
+
+  <div class="main-content app-content">
+      <div class="container-fluid">
+
+                <!-- Start:: row-1 -->
+                <div class="card card-product-details shadow">
+      
+                  <div class="card-header text-center">
+                    <h4>Designation Details</h4>
+                  </div>
+                  
+                  <div class="card-body ">
+                    <p class="card-text">
+                      <div class="table-responsive">
+                          <table class="table">
+                            <!--
+                            <thead>
+                              <tr>
+                                
+                                <th scope="col">Heading</th>
+                                <th scope="col">Heading</th>
+                                <th scope="col">Heading</th>
+                                <th scope="col">Heading</th>
+                                
+                              </tr>
+                            </thead>
+                            -->
+                            <tbody>
+                              <tr >
+                                <td class="text-secondary">Designation Name</td>
+                                <td>{{designation_det.designation_name}}</td>
+                                <td class="text-secondary"></td>
+                                <td></td>
+                              </tr>
+ 
+                            </tbody>
+                      
+                          </table>
+                          
+                        </div>
+      
+                    </p>
+                    
+                  </div>
+                  
+                </div>
+                <div class="row my-3 me-1">
+                  <div class="col-12 text-end">
+                    <a href="{% url 'designation' %}">
+                        <button class="btn btn-success me-md-2 " type="button"><i class="bi bi-backspace-fill pe-1"></i>Back</button>
+                   </a>
+                    <button class="btn btn-success me-md-2 " type="button"><i class="bi bi-backspace-fill pe-1"></i>Back to Dashboard</button>
+      
+                  </div>
+                </div>
+      </div>
+  </div>
+  {% endblock %}

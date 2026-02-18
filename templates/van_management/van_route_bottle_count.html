@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %} Bottle Count Report {% endblock %}
+{% block content %}
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Bottle Count Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Van Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Bottle Count Report</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Bottle Count Report
+                        </div>
+                    </div>
+                    {% comment %} <div class="mt">
+                        <form method="get" action="">
+                            {% csrf_token %}
+                            <div class="card-body">
+                                <div class="row col-md-8">
+                                    <div class="col-md-4 col-form-label text-end">
+                                        <h6>Date</h6>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input name="date" type="date" class="form-select" style="width: min-content;" value="{{ date }}">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="submit" class="btn btn-primary btn-sm">
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div> {% endcomment %}
+                    <div class="card-body">
+                        <div class="row justify-content-left mb-5">
+                            <div class="col-md-4">
+                                <form method="get" action="" class="d-flex align-items-center">
+                                    <div class="form-group me-2 flex-grow-1">
+                                        <label for="filter_date" >Select Date:</label>
+                                        <input name="date" type="date" class="form-select"  value="{{ date }}">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary mt-3">Submit</button>
+                                </form>
+                            </div>
+                        </div>
+                        <table id="datatable-basic" class="table table-bordered text-wrap" style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center !important;" rowspan="2">Sl No</th>
+                                    <th style="text-align:center !important;" rowspan="2">Route Name</th>
+                                    <th style="text-align:center !important;" rowspan="2">Bottle Count</th>
+                                    <th style="text-align:center !important;" rowspan="2">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for instance in van_details %}
+                                    <tr>
+                                        <td style="text-align:center;">{{ forloop.counter }}</td>
+                                        <td style="text-align:center;">{{ instance.route }}</td>
+                                        <td style="text-align:center;">{{ instance.bottle_count }}</td>
+                                        <td style="text-align:center;">
+                                            <a href="{% url 'vans_route_bottle_count_add' instance.van_id %}" class="btn btn-primary">Add</a>
+                                            <a href="{% url 'vans_route_bottle_count_deduct' instance.van_id %}" class="btn btn-primary">Deduct</a>   
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <!-- Pagination can be added here if needed -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

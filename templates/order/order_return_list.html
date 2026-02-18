@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% block title %} Trip Schedule {{route.route_name}} {% endblock %}
+{% block content %}
+
+<!-- Page Header -->
+
+    <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+        <h4 class="fw-medium mb-0">Return</h4>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Order</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Returned Products </li>
+        </ol>
+    </div>
+    <div class="main-content app-content">
+        <div class="container-fluid">
+
+            <!-- Start:: row-2 -->
+            <div>
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card custom-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                Returned Products
+                            </div><br>
+                                
+                        </div>
+                        <div class="row pt-3" style="margin-left: 10px;">
+                            <div class="col-3" style="">
+                                <h6>Route : {{route.route_name}}</h6>
+                            </div>
+                            <div class="col-3" style="">
+                                <h6>Date:{{date}}</h6>
+                            </div>
+                            <div class="col-3" style="">
+                                <h6>
+                                    {% if selected_product %}
+                                        Product : {{selected_product}}</h6>
+                                    {% endif %}
+                            </div>
+                            
+                        
+                        
+                            
+                            <div class="col-1">
+                                                    
+                                <input type="button" onclick="printDiv('printArea')" value="PRINT" class="btn btn-outline-success btn-sm" style="width: 6em;">
+                            </div>
+                            
+                            <div class="col-1">
+                                <a href="{% url 'order_return_list_excel' route.route_id %}?start_date={{ start_date }}&end_date={{ end_date }}&selected_date={{ selected_date }}&selected_product_id={{ selected_product_id }}" class="btn btn-outline-success btn-sm" style="width: 6em;">
+                                    <i class="fas fa-file-excel"></i>   EXCEL
+                                </a>
+                            </div>
+                         <div class="card-body" style="margin-top: 3em;">
+                            <table id="datatable-basic" class="table table-bordered text-wrap " style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" style="border-bottom: 1; max-width: 5em;">Sl No</th>
+                                        <th scope="col" style="border-bottom: 1; max-width: 11em;">Customer Name</th>
+                                        <th scope="col">Location, building</th>
+                                        <th scope="col">Flat</th>
+                                        <th>Credit Note No</th>
+                                        <th scope="col" style="border-bottom: 1;">Product Name</th>
+                                        <th scope="col" style="border-bottom: 1;">Returned Quantity</th>
+                                        <th scope="col" style="border-bottom: 1;">Reason</th>
+                                        <th scope="col" style="border-bottom: 1;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order_return in order_returns %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td style="text-transform: capitalize;">
+                                                {{ order_return.customer }}<br>
+                                                {{order_return.customer.mobile_no}}
+                                            </td>
+                                            <td>
+                                                {{order_return.customer.location}} <br> 
+                                                {{order_return.customer.building_name}}
+                                            </td>
+                                            <td>
+                                                Floor No: {{ order_return.customer.floor_no }}<br>
+                                                Door No: {{ order_return.customer.door_house_no }}
+                                            </td>
+                                            <td></td>
+                                            
+                                            <td>{{ order_return.product }}</td>
+                                            <td>{{ order_return.returned_quantity }}</td>
+                                            <td>{{ order_return.reason }}</td>
+                                            <td>
+                                                
+                                                    <div class="g-2">
+                                                        <!-- <a href="{% url 'order_return_edit' order_return.order_return_id %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Edit">
+                                                            <span class="ri-pencil-line fs-14"></span>
+                                                        </a> -->
+                                                        <a href="{% url 'order_return_delete' order_return.order_return_id %}"  aria-label="anchor" class="btn btn-danger-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Delete">
+                                                            <span class="ri-delete-bin-7-line fs-14"></span>
+                                                        </a>
+                                                    </div>
+                                                
+                                            </td>
+                                            <td>{{todays_customer.type}}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div id="printArea"  style="display: none; padding: 10em;">
+        <div class="text-center" style="margin-top: 4em;">
+            <h3>Sana Water</h3>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <h5>Returned orders</h5>
+            </div>
+            <div class="col-3">
+                <h6>Route : {{route.route_name}}</h6>
+            </div>
+            <div class="col-5">
+                <h6>Date : {{date}}</h6>
+            </div>
+            <div class="col-4 ">
+                <h6>{% if selected_product %}
+                        Filterd Product : {{selected_product}}</h6>
+                    {% endif %}
+                </h6>
+            </div>
+        </div>
+        <hr>
+        
+        <table class="table table-bordered text-wrap " style="width: 100%; margin-top: 1em;">
+            <thead>
+                <tr>
+                    <th scope="col" style="border-bottom: 1; max-width: 5em;">Sl No</th>
+                    <th scope="col" style="border-bottom: 1; max-width: 15em;">Customer Name</th>
+                    <th scope="col"  style="border-bottom: 1;">Location, building</th>
+                    <th scope="col"  style="border-bottom: 1; min-width: 8em;">Flat</th>
+                    <th scope="col"  style="border-bottom: 1; min-width: 8em;">Credit Note No</th>
+                    <th scope="col" style="border-bottom: 1;">Product Name</th>
+                    <th scope="col" style="border-bottom: 1; ">Quantity</th>
+                    <th scope="col" style="border-bottom: 1;">Reason</th>
+                    
+                    
+                </tr>
+            </thead>
+            <tbody>
+                {% for order_return in order_returns %}
+                      <tr>  
+                        <td>{{ forloop.counter }}</td>
+                        <td style="text-transform: capitalize;">{{ order_return.customer }} <br>
+                            {{ order_return.customer.mobile_no }}</td>
+                        <td>
+                            {{order_return.customer.location}} <br> 
+                            {{order_return.customer.building_name}}
+                        </td>
+                        <td>
+                            Floor No: {{ order_return.customer.floor_no }}<br>
+                            Door No: {{ order_return.customer.door_house_no }}
+                        </td>
+                        <td></td>
+                        <td>{{ order_return.product }}</td>
+                        <td>{{ order_return.returned_quantity }}</td>
+                        <td>{{ order_return.reason }}</td>
+                        
+                    </tr>
+                {% endfor %}
+            </tbody>
+            
+        </table>
+            
+        </div>
+    
+    
+       <script>
+            
+            function printDiv(divName) {
+                var printContents = document.getElementById(divName).innerHTML;
+                var originalContents = document.body.innerHTML;
+                document.body.innerHTML = printContents;
+                window.print();
+                document.body.innerHTML = originalContents;
+            }
+        </script>
+        
+
+{% endblock %}

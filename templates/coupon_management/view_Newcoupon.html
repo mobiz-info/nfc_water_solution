@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% block title %} Coupon View {% endblock %}
+{% block content %}
+{% load coupon_templatetags %}
+{% load static %}
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+  <h4 class="fw-medium mb-0">Coupon Details</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Coupon Management</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Coupon</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+  <div class="container-fluid">
+    <div class="card card-product-details shadow">
+
+      <div class="card-header text-center">
+        <h4>Coupon Details</h4>
+      </div>
+      
+      <div class="card-body ">
+        <p class="card-text">
+          <div class="table-responsive">
+              <table class="table">
+                <tbody>
+                  <tr>
+                    <td class="text-secondary">Book no</td>
+                    <td> {{view_coupon.book_num}}</td>
+                  </tr>
+                  <tr>  
+                    <td class="text-secondary">Coupon Type</td>
+                    <td>{{view_coupon.coupon_type}}</td>
+                  </tr>
+                  <tr>  
+                    <td class="text-secondary">Total no of leaflets</td>
+                    <td>{{view_coupon.no_of_leaflets}}</td>
+                  </tr>
+                  <tr>
+                    <td class="text-secondary">Valuable leaflets</td>
+                    <td>{{view_coupon.valuable_leaflets}}</td>
+                  </tr>
+                  <tr>
+                    <td class="text-secondary">Free leaflets</td>
+                    <td>{{view_coupon.free_leaflets}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+        </p>
+        <div class="row mt-3" id="leaflet-serial-numbers">
+          <div class="col-xl-12">
+              <div class="card custom-card p-4" style="border:1px solid aquamarine;">
+                  <span class="d-flex justify-content-between align-items-start">
+                      <h4>Coupon Name : {{ view_coupon.book_num }}</h4>
+                      <p>created On : {{view_coupon.created_date|date:'d-m-Y'}}</p>
+                  </span>
+                  <h5>Valuable Leaflets: <span id="coupon-book-num"></span></h5>
+                  <ul id="leaflet-list" class="d-flex">
+                      {% available_valuable_coupons  view_coupon.pk as availabele_manual_valid %}
+                      {% for lis in availabele_manual_valid %}
+                      <li class="generated_leaf_li {% if lis.used %}used_leaf{% endif %}">{{lis.leaflet_name}}</li>
+                      {% endfor %}
+                  </ul>
+                  
+                  <h5>Free Leaflets:</h5>
+                  <ul id="free-leaflet-list" class="d-flex">
+                      {% available_free_coupons  view_coupon.pk as availabele_manual_free %}
+                      {% for freeli in availabele_manual_free %}
+                      <li class="generated_leaf_li {% if lis.used %}used_leaf{% endif %}">{{freeli.leaflet_name}}</li>
+                      {% endfor %}
+                  </ul>
+              </div>
+          </div>
+      </div>
+        <div class="row my-3 me-1">
+          <div class="col-12 text-end">
+            <a href="{% url 'new_coupon' %}">
+                <button class="btn btn-success me-md-2 " type="button"><i class="bi bi-backspace-fill pe-1"></i>Back</button>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block static %}
+<style>
+    #leaflet-list,#free-leaflet-list {
+        display: flex;
+        flex-wrap: wrap; /* Allows items to wrap to the next row */
+        padding: 15px;
+        background: aliceblue;
+        border: 1px solid aquamarine;
+        border-radius: 8px;
+        overflow: hidden; /* Hides any overflow, if necessary */
+        width: 100%; /* Ensures the list takes up the full width of the container */
+    }
+    .generated_leaf_li{
+        padding: 8px 12px;
+        background: lightyellow;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin: 5px;
+        min-width: 78px; /* Ensures each item has a minimum width */
+        max-width: fit-content;
+        box-sizing: border-box;
+        text-align: center;
+        display: inline-block;
+    }
+    .generated_leaf_li.used_leaf{
+        background: #df3024;
+        color: white;
+    }
+</style>
+{% endblock static %}

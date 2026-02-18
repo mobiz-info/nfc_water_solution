@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Van and Route Wise Damage Report - Print</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* Custom styles for printing */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            body {
+                margin: 0;
+                padding: 10px;
+            }
+            .table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            .table-bordered th,
+            .table-bordered td {
+                border: 1px solid #dee2e6;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card">
+                    <div class="card-header text-center">
+                        <h5 class="card-title">Route Damage Report</h5>
+                        <p><strong>Route Name:</strong> {{ route.route_name }}</p>
+                    </div>
+                    <div id="table-container" class="card-body">
+                        <table class="table table-bordered text-wrap">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: center; width: 5%;">Sl.No</th>
+                                    <th>Date</th>
+                                    <th>Van Name</th>
+                                    <th>Product Name</th>
+                                    <th>Reason</th>
+                                    <th>Total Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in damage_records %}
+                                <tr>
+                                    <td style="text-align: center;">{{ forloop.counter }}</td>
+                                    <td>{{ record.created_date|date:"Y-m-d" }}</td>
+                                    <td>{{ record.van__van_make }}</td>
+                                    <td>{{ record.product__product_name }}</td>
+                                    <td>{{ record.reason__reason }}</td>
+                                    <td>{{ record.total_quantity }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center">No data available</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot class="table-dark">
+                                <tr>
+                                    <td colspan="5" class="text-end fw-bold">Grand Total:</td>
+                                    <td class="fw-bold">{{ grand_total_quantity }}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS (optional) -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Auto-trigger print -->
+    <script>
+        window.onload = function() {
+            window.print();
+        };
+    </script>
+</body>
+</html>

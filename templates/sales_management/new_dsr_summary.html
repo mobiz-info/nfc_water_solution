@@ -1,0 +1,296 @@
+{% extends 'base.html' %}
+{% block title %} Daily Summary Report {% endblock %}
+{% block content %}
+{% load van_template_tags %}
+{% load sales_templatetags %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Daily Summary Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Sales Management </a></li>
+        <li class="breadcrumb-item active" aria-current="page">Daily Summary Report</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Daily Summary Report
+                        </div>
+                    </div>
+                    <div class="mt">
+                        <form method="GET" action=".">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-4">
+                                        <label for="date">Date:</label>
+                                        <input type="date" class="form-control" id="date" name="date" value="{{ filter_data.filter_date }}">
+                                    </div>
+                                    <div class="col-4">
+                                        <label for="product">Routes :</label>
+                                        <select name="route_name" class="form-select">
+                                            <option value="">All Routes</option>
+                                            {% for route in routes_instances %}
+                                                <option value="{{ route.route_name }}"  {% if route.route_name == filter_data.route_name %}selected{% endif %}>{{ route.route_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col d-flex align-items-end justify-content-end">
+                                        <input type="submit" class="btn btn-primary btn-sm mx-1" value="Apply Filter">
+                                        {% if data_filter %}
+                                        <button type="button" class="btn btn-secondary btn-sm mx-1" onclick="resetFilters()" style="width:max-content">Reset Filter</button>
+                                        {% endif %}
+                                        {% comment %} <a href="{% url 'export_dsr_summary' %}?date={{ filter_data.filter_date }}&route_name={{ filter_data.route_name }}" class="btn btn-outline-success btn-sm mx-1"><i class="fas fa-file-excel"></i>Excel</a> {% endcomment %}
+                                        <a href="{% url 'print_dsr' %}?date={{ filter_data.filter_date }}&route_name={{ filter_data.route_name }}" class="btn btn-outline-success btn-sm mx-1" target="__blank"><i class="fas fa-file-excel"></i>Print</a>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    {% if data_filter %}
+                    <div >
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-4">
+                                    <p><strong>Salesman: {{van_route.van.salesman.get_fullname}}</strong></p>
+                                </div>
+                                <div class="col-4">
+                                    <p><strong>Driver: {{van_route.van.driver.get_fullname}}</strong></p>
+                                </div>
+                            </div>
+                            {% comment %} <div class="row align-items-center">
+                                <div class="col-4">
+                                    <p>Route: {{van_route.routes.route_name}}</p>
+                                </div>
+                                <div class="col-4">
+                                    <p>Date: {{ filter_data.filter_date }}</p>
+                                </div>
+                            </div> {% endcomment %}
+                        </div>
+                    </div>
+
+                    <div id="table-container">
+                        <div class="card-body">
+                            <table  class="table table-bordered text-wrap" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center text-bold" colspan="5">Visit Statistics</th>
+                                    </tr>
+                                    <tr>
+                                        <th style="text-align:center;">New Customer Created</th>
+                                        <th style="text-align:center;">Planned Visit</th>
+                                        <th style="text-align:center;">Visited</th>
+                                        <th style="text-align:center;">Non Visited</th>
+                                        <th style="text-align:center;">Emergency Supply</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="text-align:center;">{{new_customers_count}}</td>
+                                        <td style="text-align:center;">{{planned_visit_count}}</td>
+                                        <td style="text-align:center;">{{visited_customers_count}}</td>
+                                        <td style="text-align:center;">{{non_visited_count}}</td>
+                                        <td style="text-align:center;">{{emergency_supply_count}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="table-container">
+                        <div class="card-body">
+                            <table  class="table table-bordered text-wrap" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center text-bold" colspan="10">Stock Report</th>
+                                    </tr>
+                                    <tr>
+                                        <th scope="col" style="text-align:center;">Product Name</th>
+                                        <th scope="col" style="text-align:center;">Opening Stock</th>
+                                        <th scope="col" style="text-align:center;">Issued</th>
+                                        <th scope="col" style="text-align:center;">Net Load</th>
+                                        <th scope="col" style="text-align:center;">Sold</th>
+                                        <th scope="col" style="text-align:center;">FOC</th>
+                                        <th scope="col" style="text-align:center;">Returned</th>
+                                        <th scope="col" style="text-align:center;">Damage Bottle</th>
+                                        {% comment %} <th scope="col" style="text-align:center;">Offload</th> {% endcomment %}
+                                        <th scope="col" style="text-align:center;">Empty Bottle</th>
+                                        <th scope="col" style="text-align:center;">Closing Stock</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for van_data in van_product_stock %}
+                                    {% get_van_product_wise_stock filter_data.filter_date van_data.van.pk van_data.product.pk as stock_details %}
+                                    <tr>
+                                        <td style="text-align:center;">{{van_data.product.product_name}}</td>
+                                        <td style="text-align:center;">{{van_data.opening_count}}</td>
+                                        {% comment %} <td style="text-align:center;">{{stock_details.requested_count}}</td> {% endcomment %}
+                                        <td style="text-align:center;">{{stock_details.issued_count}}</td>
+                                        <td style="text-align:center;">{{van_data.opening_count|add:stock_details.issued_count }}</td>
+                                        <td style="text-align:center;">{{van_data.sold_count }}</td>
+                                        <td style="text-align:center;">{{van_data.foc }}</td>
+                                        <td style="text-align:center;">{{van_data.return_count}}</td>
+                                        <td style="text-align:center;">{{van_data.damage_count}}</td>
+                                        {% comment %} <td style="text-align:center;">{{stock_details.offload_count}}</td> {% endcomment %}
+                                        <td style="text-align:center;">{{van_data.empty_can_count}}</td>
+                                        <td style="text-align:center;">{{van_data.closing_count}}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    
+                    
+
+                    
+                    <div id="table-container">
+                        <div class="card-body">
+                            <table  class="table table-bordered text-wrap" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center text-bold" colspan="8">Total Sale Quantity</th>
+                                    </tr>
+                                    <tr>
+                                        <th style="text-align:center;" scope="col">Sale</th>
+                                        <th style="text-align:center;" scope="col">Cash Sale </th>
+                                        <th style="text-align:center;" scope="col">Credit Sale </th>
+                                        <th style="text-align:center;" scope="col">Manual coupon received</th>
+                                        <th style="text-align:center;" scope="col">Digital coupon received</th>
+                                        <th style="text-align:center;" scope="col">Coupon book sale </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="text-align:center;">{{total_sale_qty}}</td>
+                                        <td style="text-align:center;" >{{cash_total_qty}}</td>
+                                        <td style="text-align:center;">{{credit_total_qty}}</td>
+                                        <td style="text-align:center;">{{manual_coupon_total}}</td>
+                                        <td style="text-align:center;">{{digital_coupon_total}}</td>
+                                        <td style="text-align:center;">{{coupon_total_qty}}</td>
+                                    </tr>
+                                    
+                                </tbody>
+                                
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="table-container">
+                        <div class="card-body">
+                            <table  class="table table-bordered text-wrap" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center text-bold" colspan="8">Total Sale Amount</th>
+                                    </tr>
+                                    <tr>
+                                        <th style="text-align:center;" scope="col">Sales</th>
+                                        <th style="text-align:center;" scope="col">Cash Sale </th>
+                                        <th style="text-align:center;" scope="col">Credit Sale </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="text-align:center;">{{total_sale_amount}}</td>
+                                        <td style="text-align:center;" >{{total_cash_sale_amount}}</td>
+                                        <td style="text-align:center;">{{credit_total_amount_recieved}}</td>
+                                    </tr>
+                                    
+                                </tbody>
+                                
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="table-container">
+                        <div class="card-body">
+                            <table  class="table table-bordered text-wrap" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center text-bold" colspan="7">Credit Outstanding</th>
+                                    </tr>
+                                    <tr>
+                                        <th style="text-align:center;" scope="col">Credit Outstanding</th>
+                                        <th style="text-align:center;" scope="col">Credit Outstanding Collection</th>
+                                        <th style="text-align:center;" scope="col">Net Outstanding</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="text-align:center;">{{outstanding_credit_notes_total_amount}}</td>
+                                        <td style="text-align:center;">{{outstanding_credit_notes_received_amount}}</td>
+                                        <td style="text-align:center;">{{outstanding_credit_notes_balance}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                   
+                   
+                    <div id="table-container">
+                        <div class="card-body">
+                            <table  class="table table-bordered text-wrap" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center text-bold" colspan="3">Expense</th>
+                                    </tr>
+                                    <tr>
+                                        <th style="text-align:center;">Sl No</th>
+                                        <th style="text-align:center;" scope="col">Expense Head</th>
+                                        <th style="text-align:center;" scope="col">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for expense in expenses_instanses %}
+                                    <tr>
+                                        <td style="text-align:center;">{{ forloop.counter }}</td>
+                                        <td>{{ expense.expence_type.name }}</td>
+                                        <td style="text-align:center;">{{ expense.amount }}</td>
+                                    </tr>
+                                    {% endfor %} 
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    
+
+                    <div id="table-container">
+                        <div class="card-body text-center">
+                            <p><strong>Net Payable:</strong>  {{net_payble}}/- </p>
+                        </div>
+                    </div>
+                    
+                    <div id="proceed-button-container" class="text-center  mb-3">
+                        <a href="{% url 'create_suspense_collection' van_route.van.pk filter_data.filter_date %}" class="btn btn-primary">Proceed</a>
+                    </div>
+                    
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+
+
+
+
+<script>
+    function resetFilters() {
+        // Redirect to the same page
+        location.href = "{% url 'product_route_salesreport' %}";
+    }
+</script>
+
+{% endblock %}
+

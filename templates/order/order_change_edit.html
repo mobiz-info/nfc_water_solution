@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Order Change</h4>
+      <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Order</a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">Order Edit</li>
+      </ol>
+  </div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+             <!-- Start:: row-1 -->
+             <div class="row">
+                <div class="col-xl-12">
+                    <div class="card custom-card">
+                        <div class="card-header">
+                            <div class="card-title mx-auto">
+                            Edit order Change --> {{customer}}</div>
+                        </div>
+                        <div class="card-body">
+        <form enctype="multipart/form-data" role="form" method="post"
+              class="row g-3 needs-validation">
+            {% csrf_token %}
+            <!--row 1-->
+            <div class="col-md-6">
+                        <div class="form-group required">
+                            <label class='control-label'>Product</label>
+                            {{ form.product }}
+                            <span style="color: red;">{{ form.product.errors }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group required">
+                            <label class='control-label'>Quantity</label>
+                            {{ form.changed_quantity }}
+                            <span style="color: red;">{{ form.changed_quantity.errors }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group required">
+                            <label class='control-label'>Date</label>
+                            {{ form.change_date }}
+                            <span style="color: red;">{{ form.change_date.errors }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group required">
+                            <label class='control-label'>Reason for Change</label>
+                            {{ form.reason }}
+                            <span style="color: red;">{{ form.reason.errors }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group ">
+                            <label class='control-label'>Note</label>
+                            {{ form.note }}
+                            <span style="color: red;">{{ form.note.errors }}</span>
+                        </div>
+                    </div>
+                    
+
+            <div class="col-12 text-end mt-5">
+                <input type="submit" class="btn btn-primary me-2 mb-2" value="Submit">
+                    <button class="btn btn-success   me-md-2  mb-2" type="button" onClick="javascript:history.go(-1);">
+                        <i class="bi bi-backspace-fill pe-1"></i>Back</button>
+                <a class="btn btn-success me-md-2  mb-2"
+                   href="{% url 'order_change_reason' %}"><i class="bi bi-backspace-fill pe-1"></i> Back to Dashboard </a>
+            </div>
+        </form>
+        </div>
+    </div>
+{% endblock %}

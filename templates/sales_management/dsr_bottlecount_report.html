@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% block title %} Bottle Count Report {% endblock %}
+{% block content %}
+{% load static %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Bottle Count Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Sales Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Bottle Count Report</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Bottle Count Report
+                        </div>
+                    </div>
+                    <div class="mt">
+                        <form method="GET" action="{% url 'bottlecount_report' %}">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <label for="start_date">From Date:</label>
+                                        <input type="date" class="form-control" id="start_date" name="start_date" value="{{ filter_data.start_date }}">
+                                    </div>
+
+                                    <div class="col">
+                                        <button type="submit" class="btn btn-primary me-2 mb-2 mt-3">Submit</button>
+                                    </div>
+                                    <div class="col d-flex align-items-center justify-content-end">
+                                        <a href="{% url 'creditsales_report_excel' %}?start_date={{ filter_data.start_date }}" class="btn btn-outline-success"><i class="fas fa-file-excel"></i>Excel</a>
+                                        <a href="{% url 'creditsales_report_print' %}?start_date={{ filter_data.start_date }}" class="btn btn-outline-success"><i class="fas fa-file-excel"></i>Print</a>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </form>
+                    </div>
+                    <div id="table-container" style="overflow:scroll;">
+                        <div class="card-body">
+                            <table  class="table table-bordered text-wrap" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        
+                                        <th scope="col">Van Closing Stock</th>
+                                        <th scope="col">Today supplied</th>
+                                        <th scope="col">Custody</th>
+                                        <th scope="col">Pending</th>
+                                        <th scope="col">Damaged</th>
+                                        <th scope="col">Total</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{{ closing_stock_count }}</td>
+                                        <td>{{ total_supplied_bottles }}</td>
+                                        <td>{{ total_empty_bottles }}</td>
+                                        <td>{{ pending_bottle_count }}</td>
+                                        <td>{{ damage_bottle_count }}</td>
+                                        <td>{{ total_count }}</td>
+                                    </tr>
+                                </tbody>
+                                <!-- Table Footer -->
+                                {% comment %} <tfoot>
+                                    <tr>
+                                        <td colspan="4" style="text-align: right;">Total:</td>
+                                        <td>{{ total_net_taxable }}</td>
+                                        <td>{{ total_vat }}</td>
+                                        <td>{{ total_amout_total }}</td>
+
+                                        
+
+                                    </tr>
+                                </tfoot> {% endcomment %}
+
+
+
+                            </table>
+                        </div>
+                    </div>
+                    {% comment %} {% get_pages %}
+                    <div class="clearfix"></div>
+                    <div class="row pagi my-3">
+                        <div class="col-sm-6 col-xs-6 tot my-pagination">
+                            <div class="m-t-10 text-start">
+                                Showing {{title}}
+                                <span class="current_page_index">{{ pages.current_start_index }}</span> - <span
+                                class="current_end_status">{{ pages.current_end_index }}</span> of <span
+                                class="total_count">{{ pages.total_count }}</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xs-6 pagination-btn-div">{% show_pages %}</div>
+                    </div> {% endcomment %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<script>
+ $('#submit').click(function(e){ 
+    e.preventDefault();       
+            // Show the table when dates are selected
+            $('#table-container').show();
+    });
+</script>
+
+{% endblock %}

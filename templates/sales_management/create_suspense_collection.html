@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Create Suspense</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Sales Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Create Suspense</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-1 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title mx-auto">
+                            Create Suspense
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form id="suspense-form" enctype="multipart/form-data" role="form" method="post" class="row g-3 needs-validation">
+                            {% csrf_token %}
+                            <!-- Fields for the form -->
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Amount Payable</label>
+                                    {{ form.payable_amount }}
+                                    <span style="color: red;">{{ form.payable_amount.errors }}</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Amount to be Paid</label>
+                                    {{ form.amount_paid }}
+                                    <span style="color: red;">{{ form.amount_paid.errors }}</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Reference Number</label>
+                                    {{ form.reference_no }}
+                                    <span style="color: red;">{{ form.reference_no.errors }}</span>
+                                </div>
+                            </div>
+
+                            <div class="col-12 text-end mt-5">
+                                <button type="submit" class="btn btn-primary me-2 mb-2">Submit and Print</button>
+                                <button class="btn btn-success me-md-2 mb-2" type="button" onclick="javascript:history.go(-1);">
+                                    <i class="bi bi-backspace-fill pe-1"></i> Back
+                                </button>
+                                <a class="btn btn-success me-md-2 mb-2" href="{% url 'suspense_report' %}">
+                                    <i class="bi bi-backspace-fill pe-1"></i> Back to Dashboard
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('suspense-form').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the default form submission
+        
+        // Submit the form via AJAX or similar method
+        var form = document.getElementById('suspense-form');
+        var formData = new FormData(form);
+        formData.append('action', 'submit_and_print');
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        }).then(response => response.json()).then(data => {
+            if (data.success) {
+                // Redirect to print URL with query parameters
+                window.open(`/sales_management/print-dsr/?date=${data.date}&route_name=${data.route_name}`, '_blank');
+            } else {
+                console.error('Form submission failed:', data.errors);
+                // Handle errors if necessary
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+        });
+    });
+</script>
+
+{% endblock %}

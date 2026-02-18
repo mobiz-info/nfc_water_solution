@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load coupon_templatetags %}
+{% block content %}
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Customer Coupon Details</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Coupon Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Coupon</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-1 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title mx-auto">
+                            Customer Coupon Details
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mt-2">
+                            <div class="col-12" style="overflow: auto;">
+                                <table class="table table-bordered text-nowrap" style="width:100%;">
+                                    <thead>
+                                        <tr>
+                                        <th scope="col" class="text-center">Customer Name</th>
+                                        <th scope="col" class="text-center">Customer Id</th>
+                                        <th scope="col" class="text-left">Mobile No</th>
+                                        <th scope="col" class="text-left">Building Name</th>
+                                        <th scope="col" class="text-center">Door House No</th>
+                                        <th scope="col" class="text-center">Route Name</th>
+                                        <th scope="col" class="text-center">Available Coupon</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="customerTableBody">
+                                        <tr>
+                                            <td>{{customer_instance.customer_name}}</td>
+                                            <td>{{customer_instance.custom_id}}</td>
+                                            <td>{{customer_instance.mobile_no}}</td>
+                                            <td>{{customer_instance.building_name}}</td>
+                                            <td>{{customer_instance.door_house_no}}</td>
+                                            <td>{{customer_instance.routes.route_name}}</td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div> 
+                        </div>
+                            
+                        <div class="row mt-3" id="leaflet-serial-numbers">
+                            <div class="col-xl-12">
+                                {% for manual_coupon in customer_manual_coupons %}
+                                <div class="card custom-card p-4" style="border:1px solid aquamarine;">
+                                    <span class="d-flex justify-content-between align-items-start">
+                                        <h4>Coupon Name : {{ manual_coupon.coupon.book_num }}</h4>
+                                        <p>Issued On : {{manual_coupon.customer_coupon.created_date|date:'d-m-Y'}}</p>
+                                    </span>
+                                    <h5>Valuable Leaflets: <span id="coupon-book-num"></span></h5>
+                                    <ul id="leaflet-list" class="d-flex">
+                                        {% available_valuable_coupons  manual_coupon.coupon.pk as availabele_manual_valid %}
+                                        {% for lis in availabele_manual_valid %}
+                                        <li class="generated_leaf_li {% if lis.used %}used_leaf{% endif %}" data-id="{{lis.pk}}">{{lis.leaflet_name}}</li>
+                                        {% endfor %}
+                                    </ul>
+                                    
+                                    <h5>Free Leaflets:</h5>
+                                    <ul id="free-leaflet-list" class="d-flex">
+                                        {% available_free_coupons  manual_coupon.coupon.pk as availabele_manual_free %}
+                                        {% for freeli in availabele_manual_free %}
+                                        <li class="generated_leaf_li {% if freeli.used %}used_leaf{% endif %}" data-id="{{freeli.pk}}">{{freeli.leaflet_name}}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block static %}
+{% load static %}
+<style>
+    #leaflet-list,#free-leaflet-list {
+        display: flex;
+        flex-wrap: wrap; /* Allows items to wrap to the next row */
+        padding: 15px;
+        background: aliceblue;
+        border: 1px solid aquamarine;
+        border-radius: 8px;
+        overflow: hidden; /* Hides any overflow, if necessary */
+        width: 100%; /* Ensures the list takes up the full width of the container */
+    }
+    .generated_leaf_li{
+        padding: 8px 12px;
+        background: lightyellow;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin: 5px;
+        min-width: 78px; /* Ensures each item has a minimum width */
+        max-width: fit-content;
+        box-sizing: border-box;
+        text-align: center;
+        display: inline-block;
+    }
+    .generated_leaf_li.used_leaf{
+        background: #df3024;
+        color: white;
+    }
+</style>
+<script>
+    $('li.generated_leaf_li').click(function () {
+        var pk = $(this).attr('data-id');
+        var url = "{% url 'get_leaf_used_status_change' %}";
+        var clickedElement = $(this); // Save reference to clicked element
+    
+        $.ajax({
+            url: url,
+            data: {
+                'leaf_id': pk,
+                'customer_id': "{{ customer_instance.pk }}",
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.status === "true") {
+                    clickedElement.addClass("used_leaf");
+                }
+                if (data.status === "false") {
+                    clickedElement.removeClass("used_leaf");
+                }
+            }
+        });
+    });    
+</script>
+{% endblock static %}

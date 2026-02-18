@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block title %} Credit Outstanding Report {% endblock %}
+{% block content %}
+{% load static %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Credit Outstanding Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Sales Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Credit Outstanding Report</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Credit Outstanding Report
+                        </div>
+                    </div>
+                    <div class="mt">
+                        <form method="GET" action="{% url 'dsr_credit_outstanding_report' %}">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <label for="start_date"> Date:</label>
+                                        <input type="date" class="form-control" id="date" name="date" value="{{ filter_data.filter_date }}">
+                                    </div>
+
+                                    <div class="col">
+                                        <button type="submit" class="btn btn-primary me-2 mb-2 mt-3">Submit</button>
+                                    </div>
+                                    {% comment %} <div class="col d-flex align-items-center justify-content-end">
+                                        <a href="{% url 'creditsales_report_excel' %}?start_date={{ filter_data.start_date }}" class="btn btn-outline-success"><i class="fas fa-file-excel"></i>Excel</a>
+                                        <a href="{% url 'creditsales_report_print' %}?start_date={{ filter_data.start_date }}" class="btn btn-outline-success"><i class="fas fa-file-excel"></i>Print</a>
+                                    </div> {% endcomment %}
+                                </div>
+                                
+                            </div>
+                        </form>
+                    </div> 
+                    <div id="table-container" style="overflow:scroll;">
+                        <div class="card-body">
+                            <table  class="table table-bordered text-wrap" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                    
+                                        <th scope="col">Credit outstanding</th>
+                                        <th scope="col">credit collection</th>
+                                        <th scope="col">Net outstanding</th>
+                                        
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{{ credit_outstanding }}</td>
+                                        <td>
+                                           
+                                             {{credit_collected}}
+                                        </td>
+                                        <td>{{ net_outstanding }}</td>
+                                    </tr>
+                                </tbody>
+                               
+                            </table>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<script>
+ $('#submit').click(function(e){ 
+    e.preventDefault();       
+            // Show the table when dates are selected
+            $('#table-container').show();
+    });
+</script>
+
+{% endblock %}

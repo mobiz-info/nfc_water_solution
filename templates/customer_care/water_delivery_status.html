@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+{% block title %} Status Of Orders {% endblock %}
+{% block content %}
+{% load static %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Status Of Orders</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Client Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Status Of Orders</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Water Delivery Status
+                        </div>
+                    </div>
+                    <div class="col-12 pt-3">
+                    <form method="GET" action="{% url 'water_delivery_status' %}"  id="statuschangeform">
+                        <div class="form-group required text-center">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="statustab" id="" data-id="cancelledlist" value="cancelled" {% if statustab == 'cancelled' %} checked {% endif %}>
+                                <label class="form-check-label" for="cancelled">
+                                    Cancelled
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="statustab" id="pending" data-id="pendinglist" value="pending"  {% if statustab == 'pending' %} checked {% endif %}>
+                                <label class="form-check-label" for="pending">
+                                    Pending
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="statustab" id="supplied" data-id="suppliedlist" value="supplied"  {% if statustab == 'supplied' %} checked {% endif %}>
+                                <label class="form-check-label" for="supplied">
+                                    Supplied
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                    </div>
+                    <div class="card-body status-list" id = "pendinglist">
+                        <table  class="table table-bordered text-wrap" style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center !important;width:5%;" rowspan="2">Sl No</th>
+                                    <th style="text-align:center !important;" rowspan="2">Customer Name/Mobile No</th>
+                                    <th style="text-align:center !important;" rowspan="2">Required Qty</th>
+                                    <th style="text-align:center !important;" rowspan="2">Enq Date</th>
+                                    <th style="text-align:center !important;" rowspan="2">Req Date</th>
+                                    <th style="text-align:center !important;" rowspan="2">Route</th>
+                                    <th style="text-align:center !important;" rowspan="2">Salesman</th>
+                                    <th style="text-align:center !important;" rowspan="2">status</th>
+                                    <th style="text-align:center !important;" rowspan="2">Reassign</th>
+                                    <th style="text-align:center !important;" rowspan="2">Cancel Request</th>
+                                    <th style="text-align:center !important;" rowspan="2" style="width: 130px;">Edit Qty</th>
+                                </tr>
+                                
+                            </thead>
+                            <tbody>
+                                {% for bottle in bottles_data %}
+                                <tr>
+                                    <td style="text-align:center;">{{ forloop.counter }}</td>
+                                    <td style="text-align:left;">{{ bottle.customer.customer_name }}<br>{{ bottle.customer.mobile_no }}</td>
+                                    <td style="text-align:center;">{{ bottle.quantity_required }}</td>
+                                    <td style="text-align:center;">{{ bottle.created_date }}</td>
+                                    <td style="text-align:center;">{{ bottle.delivery_date.date }}</td>
+                                    <td style="text-align:left;">{{ bottle.customer.routes.route_name }}</td>
+                                    <td style="text-align:left;">{{ bottle.customer.sales_staff }}</td>
+                                    <td style="text-align:center;">{{ bottle.status}}</td>
+                                    
+                                    <td style="text-align:center;">
+                                        <a href="{% url 'reassign_request' bottle.diffbottles_id  %}" aria-label="anchor" class="btn btn-primary-light btn-sm"><span class="bi bi-plus-circle fs-14"></span>Reassign</a> 
+                                    </td> 
+                                    <td style="text-align:center;">
+                                        <a href="{% url 'cancel_request' bottle.diffbottles_id %}" onclick="return confirm('Are you sure you want to cancel this request?')">Cancel</a>
+                                    </td>
+
+                                    <td style="text-align:center;">
+                                        <form method="post" action="{% url 'edit_quantity' bottle.diffbottles_id %}">
+                                            {% csrf_token %}
+                                            
+                                                <div class="input-group"> 
+                                                    <input type="text" class="form-control" name="quantity" placeholder="Recipient's username" value="{{ bottle.quantity_required }}" aria-label="Recipient's username"
+                                                    aria-describedby="basic-addon2"> 
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-success" type="submit"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-save"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></button>
+                                                </div>
+                                                </div>
+
+
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="9">No data available</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="reassignModal" tabindex="-1" role="dialog" aria-labelledby="reassignModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Reassign Request</h5>
+                <button type="button" class="btn-close text-dark" data-bs-dismiss="modal" aria-label="Close" onclick="clearForm()"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row justify-content-center"> <!-- Center the row content -->
+                    <div class="col-10"> <!-- Use Bootstrap grid -->
+                        <div class="form-group required">
+                            <label for="newSalesman" class="control-label">New Salesman:</label>
+                            <input class="form-control" id="newSalesman" name="newSalesman" value= {{bottles_data.customer.sales_staff}}>
+                                <!-- Populate this select box dynamically with salesman options -->
+                                <!-- Example: <option value="1">Salesman 1</option> -->
+                            </select>
+                        </div>
+                        <div class="form-group required">
+                            <label for="newDeliveryDate" class="control-label">New Delivery Date:</label>
+                            <input type="date" class="form-control" id="newDeliveryDate" name="newDeliveryDate" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn bg-gradient-secondary" onclick="clearForm()" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn bg-gradient-primary" type="submit" id="reassignBtn">Reassign</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+
+
+$('#submit').on('click', function () {
+    var x = $('input[name="status"]:checked', '#statusForm').val();
+    $('.subval').text('your value is ' + x);
+});
+{% comment %} <script>
+    $(document).ready(function() {
+        // Handle form submission
+        $('#reassignForm').submit(function(event) {
+            event.preventDefault();
+            var formData = $(this).serialize();
+
+            // AJAX request to send form data to the server
+            $.ajax({
+                type: 'POST',
+                url: '{% url 'reassign_request'  %}',
+                data: formData,
+                success: function(response) {
+                    // Handle success response (e.g., update table)
+                    // You may need to reload or update the table data here
+                    location.reload(); // Reload the page for demonstration
+                },
+                error: function(xhr, status, error) {
+                    // Handle error response
+                    console.error(xhr.responseText);
+                }
+            });
+        });
+    });
+</script> {% endcomment %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $('input[name="statustab"]').change(function(){
+            $("#statuschangeform").submit();
+        });
+    });
+</script>
+
+<script>
+     function handleButtonClick(button) {
+        var requestId = $(button).data("request_id");
+        $("#modalRequestId").val(requestId);
+        var buttonUrl = $(button).data("href");
+        $("#newSalesmanSubmitBtn").attr("href", buttonUrl);
+    };
+    function clearForm() {
+        // Clear the form fields
+        document.getElementById('modalRequestId').value = '';
+        document.getElementById('modalCouponBookNo').value = '';
+        }
+    </script>
+    <script>
+        $("#reassignBtn").click(function(){
+            var requestId = $("#modalRequestId").val();
+            var newSalesman = $("#newSalesman").val();
+            var newDeliveryDate = $("#newDeliveryDate").val();
+            console.log("newDeliveryDate",newDeliveryDate)
+
+            console.log("newSalesman",newSalesman)
+            var url = ""
+    
+            $.ajax({
+                type: 'GET',
+                url: url,
+                dataType: 'json',
+                data: {
+                    'request_id': requestId,
+                    'new_salesman': newSalesman,
+                    'new_delivery_date': newDeliveryDate,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'  // Add CSRF token
+                },
+                success: function(response) {
+                    // Show success message returned from server
+                    location.reload(); 
+                    alert(response.message);
+                    // Optionally, you can redirect or perform any other action here
+                },
+               
+            });
+        }); 
+</script>
+
+
+{% endblock %}

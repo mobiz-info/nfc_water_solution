@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% block title %}Outstanding Amount Collected Report{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Outstanding Amount Collected Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Sales Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Outstanding Amount Collected Report</li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Outstanding Amount Collected Report
+                        </div>
+                    </div>
+                    <div class="mt">
+                        <form method="GET" action="{% url 'outstanding_amount_collected' %}">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-4">
+                                        <label for="date">Date:</label>
+                                        <input type="date" class="form-control" id="date" name="date" value="{{ filter_data.filter_date }}">
+                                    </div>
+                                    <div class="col-4">
+                                        <label for="route_name">Routes :</label>
+                                        <select name="route_name" class="form-select">
+                                            <option value="">All Routes</option>
+                                            {% for route in routes_instances %}
+                                                <option value="{{ route.route_name }}" {% if route.route_name == filter_data.route_name %}selected{% endif %}>{{ route.route_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <!-- Print Button -->
+                                    
+
+                                    <div class="col d-flex align-items-end justify-content-end">
+                                        <input type="submit" class="btn btn-primary btn-sm mx-1" value="Apply Filter">
+                                        {% if data_filter %}
+                                            <button type="button" class="btn btn-secondary btn-sm mx-1" onclick="resetFilters()" style="width:max-content">Reset Filter</button>
+                                        {% endif %}
+                                        <div>
+                                            <a class="btn btn-outline-success">
+                                                <i class="fas fa-file-excel"></i> Print
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    {% if data_filter %}
+                        <div>
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-4">
+                                        <p><strong>Salesman: {{ van_route.van.salesman.get_fullname }}</strong></p>
+                                    </div>
+                                    <div class="col-4">
+                                        <p><strong>Driver: {{ van_route.van.driver.get_fullname }}</strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="table-container" style="overflow:scroll;">
+                            <div class="card-body">
+                                <table class="table table-bordered text-wrap" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align:center;" scope="col">Sl.no</th>
+                                            <th style="text-align:center;" scope="col">Customer Name</th>
+                                            <th style="text-align:center;" scope="col">Building Name/Room no</th>
+                                            <th style="text-align:center;" scope="col">Customer Type</th>
+                                            <th style="text-align:center;" scope="col">Amount Collected</th>
+                                            <th style="text-align:center;" scope="col">Mode</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for instance in dialy_collections %}
+                                        <tr>
+                                            <td style="text-align:center;">{{ forloop.counter }}</td>
+                                            <td>{{ instance.customer.customer_name }}</td>
+                                            <td>{{ instance.customer.building_name }} {% if instance.customer.door_house_no %} / {{ instance.customer.door_house_no }} {% endif %}</td>
+                                            <td style="text-align:center;">{{ instance.customer.customer_type }}</td>
+                                            <td style="text-align:center;">{{ instance.amount_received }}</td>
+                                            <td style="text-align:center;">{{ instance.payment_method }}</td>
+                                        </tr>
+                                    {% endfor %} 
+                                    </tbody>
+                                    {% comment %} <tfoot>
+                                        <tr>
+                                            <td colspan="4" style="text-align: right;">Total:</td>
+                                            
+                                            <td style="text-align:center;">{{ outstanding_total_amount_collected }}</td>
+                                            <td style="text-align:center;"></td>
+                                        </tr>
+                                    </tfoot> {% endcomment %}
+                                </table>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+function resetFilters() {
+    window.location.href = "{% url 'outstanding_amount_collected' %}";
+}
+</script>
+
+{% endblock %}

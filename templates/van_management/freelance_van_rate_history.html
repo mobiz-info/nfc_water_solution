@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% block title %} Freelance Van Rate History {% endblock %}
+{% load van_template_tags %}
+{% block content %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Freelance Van Rate History</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Van Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Freelance Van Rate History</li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Freelance Van Rate History
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row m-0">
+                            <div class="col-xl-12">
+                                <div class="card custom-card m-0 p-0">
+                                    <div class="card-body row g-3 pt-0" style="background-color: antiquewhite;">
+                                        <div class="col-md-4">
+                                            <div class="form-group required">
+                                                <label class='control-label'>Van Make</label>
+                                                <input type="text" class="form-control" disabled value="{{van_instance.van_make}}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group required">
+                                                <label class='control-label'>Plate</label>
+                                                <input type="text" class="form-control" disabled value="{{van_instance.plate}}">
+                                            </div>
+                                        </div>
+                                       
+                                       
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <!-- Start:: row-1 -->
+        <div class="row">
+            <div class="col-9">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Freelance Van 5 Gallon Rate Change History
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered text-wrap" style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center; !important width:5%;" scope="col">Sl.No</th>
+                                    <th style="text-align:left; !important" scope="col">Created Date</th>
+                                    <th style="text-align:left; !important" scope="col">Created By</th>
+                                    <th style="text-align:center; !important" scope="col">Old Rate</th>
+                                    <th style="text-align:center; !important" scope="col">New Rate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for van_rate_instance in van_rate_instances %}
+                                    <tr>
+                                        <td style="text-align:right;">{{ forloop.counter }}</td>
+                                        <td style="text-align:left;">{{ van_rate_instance.created_date|date:"d-m-Y" }}</td>
+                                        <td style="text-align:left;">{{ van_rate_instance.created_by }}</td>
+                                        <td style="text-align:left;">{{ van_rate_instance.old_rate }}</td>
+                                        <td style="text-align:left;">{{ van_rate_instance.new_rate }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-3">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Change Freelance Van Rate
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form action="." role="form" method="post" enctype="multipart/form-data"  class="row g-3 ajax redirect" autocomplete="off" novalidate>
+                            {% csrf_token %}
+                            {{ new_rate_form.as_p }}
+                            <button type="submit"  class="btn btn-primary">Update Rate</button>
+                        </form>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Other Products Section -->
+    <div class="container-fluid">
+        <!-- Start:: row-1 -->
+        <div class="row">
+            <div class="col-9">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Freelance Van Other Product Rate Change History
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered text-wrap" style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center; !important width:5%;" scope="col">Sl.No</th>
+                                    <th style="text-align:left; !important" scope="col">Created Date</th>
+                                    <th style="text-align:left; !important" scope="col">Created By</th>
+                                    <th style="text-align:left; !important" scope="col">Product Name</th>
+                                    <th style="text-align:center; !important" scope="col">Old Rate</th>
+                                    <th style="text-align:center; !important" scope="col">New Rate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for other_rate in other_product_rate_instances %}
+                                    <tr>
+                                        <td style="text-align:right;">{{ forloop.counter }}</td>
+                                        <td style="text-align:left;">{{ other_rate.created_date|date:"d-m-Y" }}</td>
+                                        <td style="text-align:left;">{{ other_rate.created_by }}</td>
+                                        <td style="text-align:left;">{{ other_rate.product_item.product_name }}</td>
+                                        <td style="text-align:left;">{{ other_rate.privious_rate }}</td>
+                                        <td style="text-align:left;">{{ other_rate.current_rate }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Change Other Product Freelance Van Rate
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form action="{% url 'freelance_other_product_rate_change' pk=van_instance.pk %}" role="form" method="post" enctype="multipart/form-data"  class="row g-3 ajax redirect" autocomplete="off" novalidate>
+                            {% csrf_token %}
+                            {% if not other_product_rate_instances %}
+                                {% for product_item in product_items %}
+                                {% other_product_rate van_instance.pk product_item.pk as opr %}
+                                <label for="id_{{product_item.pk}}">{{product_item.product_name}} :</label>
+                                <input type="text" name="{{product_item.pk}}" value="{{opr}}" class="form-control product_rates" id="id_{{product_item.pk}}">
+                                {% endfor %}
+                            {% else %}
+                                <label for="id_other_product_items">product item :</label>
+                                <select id="id_other_product_items" name="other_product_item" class="form-control">
+                                    {% for product_item in product_items %}
+                                    <option value="" data-current_amount="0">Select Item</option>
+                                    {% other_product_rate van_instance.pk product_item.pk as opr %}
+                                    <option value="{{product_item.pk}}" data-current_amount="{{opr}}">{{product_item.product_name}}</option>
+                                    {% endfor %}
+                                </select>
+                                <input type="text" name="other_product_item_value" class="form-control product_rates" id="id_other_product_item_value">
+                            {% endif %}
+                            <button type="submit"  class="btn btn-primary">Update Rate</button>
+                        </form>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block static %}
+<script>
+    // Select all elements with the class 'product_rates'
+    const inputs = document.getElementsByClassName('product_rates');
+
+    // Add an event listener to each input field
+    Array.from(inputs).forEach(input => {
+        input.addEventListener('input', function (e) {
+            // Remove all non-numeric characters except the dot
+            let value = e.target.value.replace(/[^0-9.]/g, '');
+            // Ensure only one dot exists
+            value = value.replace(/(\..*?)\..*/g, '$1');
+            e.target.value = value;
+        });
+    });
+</script>
+<script>
+    $('#id_other_product_items').on('change', function () {
+        const selectedOption = $(this).find(':selected');
+        const currentAmount = selectedOption.data('current_amount');
+        $('#id_other_product_item_value').val(parseFloat(currentAmount));
+    });
+</script>
+{% endblock static %}

@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block title %} Client Details {% endblock %}
+{% block content %}
+{% load static %}
+<!-- End::app-sidebar -->
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Client Management</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+    </ol>
+</div>
+<!-- Page Header Close -->
+<!-- Start::app-content -->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">Client Details</div>
+                        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-rsLC9ZeaaNWO4Z6+xSiqdoPjOoT3z+vhTOzVwYLBs5H7DDhf6Qr5Y06RWDG41IbYRxK5jgclSyINvVMeTnslHQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered text-nowrap" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Sl.No</th>
+                                    <th scope="col">Customer Name</th>
+                                    <th scope="col">Address</th>
+                                    <th scope="col">Contact</th>
+                                    <th scope="col">Customer Type</th>                
+                                    <th scope="col">Sales Type</th>
+                                    
+                                </tr>
+                            </thead>
+                            <!-- Updated table body section with buttons -->
+                                <tbody>
+                                    {% load el_pagination_tags %}
+                                    {% paginate 20 instances %}
+                                    {% for customer in instances %}
+                                    <tr>
+                                        <td style="text-align:center;">{{forloop.counter}}</td>
+                                        <td style="text-align:center;">{{customer.customer_name}}</td>
+                                        <td style="text-align:center;">{{customer.building_name}} {{customer.door_house_no}}</td>
+                                        <td style="text-align:center;">{{customer.mobile_no}}</td>
+                                        <td style="text-align:center;">{{customer.customer_type}}</td>
+                                        <td style="text-align:center;">{{customer.sales_type}}</td>
+                                        <td style="text-align:center;">
+                                            <!-- Download PDF button with icon -->
+                                            <a href="{% url 'clientdownload_pdf' customer.customer_id %}" class="btn btn-primary me-2 mb-2" target="_blank">
+                                                <i class="fa fa-file-pdf-o"></i> Download PDF
+                                            </a>
+                                            <!-- Export to CSV button with icon -->
+                                            <a href="{% url 'clientexport_to_csv' customer.customer_id %}" class="btn btn-success me-md-2 mb-2">
+                                                <i class="fa fa-file-excel-o"></i> Export to CSV
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+
+                        </table>
+
+                        {% get_pages %}
+                        <div class="clearfix"></div>
+                        <div class="row pagi my-3">
+                            <div class="col-sm-6 col-xs-6 tot my-pagination">
+                                <div class="m-t-10 text-start">
+                                    Showing {{title}}
+                                    <span class="current_page_index">{{ pages.current_start_index }}</span> - <span
+                                    class="current_end_status">{{ pages.current_end_index }}</span> of <span
+                                    class="total_count">{{ pages.total_count }}</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xs-6 text-end pagination-btn-div">{% show_pages %}</div>
+                        </div>
+                        {% comment %} <div class="col-12 text-end mt-5">
+                            <a href="download_productstock_pdf" class="btn btn-primary me-2 mb-2" onclick="downloadPDF()">Download PDF</a>
+                            <a href="product_stock_excel_download" class="btn btn-success me-md-2 mb-2" onclick="exportToCSV()">Export to CSV</a>
+                        </div> {% endcomment %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End:: row-2 -->
+    </div>
+</div>
+
+<!-- End::app-content -->
+
+<script>
+    function downloadPDF() {
+        // Logic to download PDF
+        // Example: window.open('path/to/pdf', '_blank');
+        //alert('PDF download functionality will be implemented soon.');
+    }
+
+    function exportToCSV() {
+        // Logic to export to CSV
+        // Example: window.location.href = 'path/to/csv';
+       // alert('CSV export functionality will be implemented soon.');
+    }
+</script>
+{% endblock %}

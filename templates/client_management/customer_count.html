@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %} Trip Schedule {{route.route_name}} {% endblock %}
+{% block content %}
+
+<!-- Page Header -->
+    <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+        <h4 class="fw-medium mb-0">Route Wise Customer Count</h4>
+        <h4 class="fw-medium mb-0"></h4>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Clients</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Customer Count </li>
+        </ol>
+    </div>
+    <div class="main-content app-content">
+        <div class="container-fluid">
+            <div>
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card custom-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                Route Wise Customer Count
+                            </div>
+                        </div>
+                         <div class="card-body" style="margin-top: 3em;">
+                            <table id="datatable-basic" class="table table-bordered text-wrap " style="width: 100%;"  data-page-length="50">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align:center !important;width:5%;" scope="col">Sl No</th>
+                                        <th style="text-align:center !important;" scope="col">Route Name</th>
+                                        <th style="text-align:center !important;" scope="col">Sales man</th>
+                                        <th style="text-align:center !important;" scope="col">Cash</th>
+                                        <th style="text-align:center !important;" scope="col">Credit</th>
+                                        <th style="text-align:center !important;" scope="col">Coupon</th>
+                                        <th style="text-align:center !important;" scope="col">FOC</th>
+
+                                        <th style="text-align:center !important;" scope="col">Total</th>
+                                    </tr> 
+                                </thead>
+                                <tbody>
+                                    {% for count in customer_counts %}
+                                    <tr>
+                                        <td style="text-align:center;">{{ forloop.counter }}</td>
+                                        <td style="text-align:left;">{{ count.route_name }}</td>
+                                        <td style="text-align:let;">{{ count.sales_man }}</td>
+                                        <td style="text-align:right;">{{ count.cash_count }}</td>
+                                        <td style="text-align:right;">{{ count.credit_count }}</td>
+                                        <td style="text-align:right;">{{ count.coupon_count }}</td>
+                                        <td style="text-align:right;">{{ count.foc_count }}</td>
+                                        <td style="text-align:right;">{{ count.total_customer }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                    
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td style="border-top: solid rgb(0, 0, 0) 1px;"></td>
+                                        <td style="border-top: solid rgb(0, 0, 0) 1px;"></td>
+                                        <td style="font-weight: bold; border-top: solid rgb(0, 0, 0) 1px;">Total</td>
+                                        <td style="font-weight: bold; border-top: solid rgb(0, 0, 0) 1px;">{{ total_cash }}</td>
+                                        <td style="font-weight: bold; border-top: solid rgb(0, 0, 0) 1px;">{{ total_credit }}</td>
+                                        <td style="font-weight: bold; border-top: solid rgb(0, 0, 0) 1px;">{{ total_coupon }}</td>
+                                        <td style="font-weight: bold; border-top: solid rgb(0, 0, 0) 1px;">{{ total_foc }}</td>
+
+                                        <td style="font-weight: bold; border-top: solid rgb(0, 0, 0) 1px;">{{ total_customers }}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% block title %} Monthly Sales Report {% endblock %}
+{% block content %}
+{% load sales_templatetags %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Monthly Sales Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Sales Management </a></li>
+        <li class="breadcrumb-item active" aria-current="page">Monthly Sales Report</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                             Monthly Sales Report
+                        </div>
+                    </div>
+                    <div class="mt">
+                        <form method="GET">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-4 ">
+                                        <label for="month">Select Month:</label>
+                                        <select name="month" id="month" class="form-select">
+                                            {% for m, month_name in month_choices %}
+                                                <option value="{{ m }}" {% if m == month %}selected{% endif %}>
+                                                    {{ month_name }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-6 pt-3">
+                                       
+                                            <input type="submit" class="btn btn-primary btn-sm mx-1" value="Apply Filter">
+                                            <a href="{% url 'monthly_sales_report_print' %}?month={{ month }}" target="_blank" class="btn btn-secondary btn-sm">Print</a>
+                                    </div>  
+                                    <div class="text-end">
+                                        
+                                    </div>  
+                                </div>
+                            </div>
+                    
+                            
+                        </form>
+                        
+                        <div id="table-container" style="overflow:scroll;">
+                            <div class="card-body">
+
+                                    <table id="responsiveDataTable" class="table table-bordered text-wrap" style="width: 100%">
+                                        <thead>
+                                            <tr>
+                                                <th>Salesman</th>
+                                                <th> Grand Total</th>
+                                                <th> Discount</th>
+                                                <th> Net Payable</th>
+                                                <th> VAT</th>
+                                                <th> Subtotal</th>
+                                                <th> Amount Received</th>
+                                                <th> Supply Quantity</th>
+                                                <th> Coupons Received</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% if sales_data %}
+                                                {% for sale in sales_data %}
+                                                    <tr>
+                                                        <td>{{ sale.salesman__username }}</td>
+                                                        <td>{{ sale.total_grand_total }}</td>
+                                                        <td>{{ sale.total_discount }}</td>
+                                                        <td>{{ sale.total_net_payable }}</td>
+                                                        <td>{{ sale.total_vat }}</td>
+                                                        <td>{{ sale.total_subtotal }}</td>
+                                                        <td>{{ sale.total_amount_received }}</td>
+                                                        <td>{{ sale.total_supply_qty }}</td>
+                                                        <td>
+                                                            Manual: {{ sale.total_coupon_received.manual_coupon }},
+                                                            Digital: {{ sale.total_coupon_received.digital_coupon }}
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            {% else %}
+                                                <tr>
+                                                    <td colspan="9" style="text-align: center;">No sales data available for this month.</td>
+                                                </tr>
+                                            {% endif %}
+                                        </tbody>
+                                    </table>
+
+                                
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    function resetFilters() {
+        // Redirect to the same page
+        location.href = "{% url 'monthly_sales_report' %}";
+    }
+    function resetFilters() {
+            document.getElementById('start_date').value = '';
+            document.getElementById('end_date').value = '';
+            document.querySelector('select[name="route_name"]').value = '';
+        }
+        
+</script>
+
+{% endblock %}

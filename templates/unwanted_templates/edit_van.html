@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Edit Van</h4>
+      <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboard</a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">Van</li>
+      </ol>
+  </div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+             <!-- Start:: row-1 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title mx-auto">
+                        Edit Van</div>
+                    </div>
+                    <div class="card-body">
+                        <form enctype="multipart/form-data" role="form" method="post"
+            class="row g-3 needs-validation">
+                            {% csrf_token %}
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>VanMake </label>
+                                    {{form.van_make}}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Plate</label>
+                                    {{form.plate}}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Renewal Date</label>
+                                    {{form.renewal_date}}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Insurance Expiry Date</label>
+                                    {{form.insurance_expiry_date}}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Capacity</label>
+                                    {{form.capacity}}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Driver</label>
+                                    {{form.driver}}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Salesman</label>
+                                    {{form.salesman}}
+                                </div>
+                            </div>
+                            <div class="col-12 text-end mt-5">
+                                <input type="submit" class="btn btn-primary me-2 mb-2" value="Submit">
+                                <button class="btn btn-success   me-md-2  mb-2" type="button"
+                                    onClick="javascript:history.go(-1);">
+                                    <i class="bi bi-backspace-fill pe-1"></i>Back</button>
+                                <a class="btn btn-success me-md-2  mb-2" href="{% url 'van' %}">
+                                    <i class="bi bi-backspace-fill pe-1"></i> Back to Dashboard
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

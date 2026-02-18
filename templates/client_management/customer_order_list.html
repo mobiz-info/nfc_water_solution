@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% block title %} Customer Orders {% endblock %}
+{% block content %}
+{% load static %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Customer Orders</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Client Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Customer Orders</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Customer Orders
+                        </div>
+                        
+                        <div class="ms-auto">
+                            {% comment %} <a href="{% url 'create_customer_outstanding' %}{% if customer_pk %}?customer_pk={{customer_pk}}{% endif %}">
+                                <button type="button" class="btn btn-success btn-wave text-end d-flex me-4 my-auto"><i class="bi bi-plus-circle me-1"></i>Create</button>
+                            </a> {% endcomment %}
+                        </div>
+                        <div style="float:right;padding:10px 10px">
+                            <form method="GET">
+                                <div class="input-group">
+                                    <select name="route_name" class="form-select">
+                                        <option value="">All Routes</option>
+                                        {% for route in route_li %}
+                                            <option value="{{ route.route_name }}">{{ route.route_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-search"></i> Search
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div id="table-container">
+                        <div class="card-body">
+                            {% comment %} <div style="float:right;padding:10px 0px">
+                                <form method="GET">
+                                    <div class="input-group">
+                                        <input type="text" name="q" class="form-control" placeholder="Search ..." value="{{ filter_data.q }}" >
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-search"></i> Search
+                                        </button>
+                                    </div>
+                                </form>
+                            </div> {% endcomment %}
+                            
+                            <table  id="datatable-basic" class="table table-bordered text-wrap" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th>Sl No</th>
+                                        <th>Customer</th>
+                                        <th>Building No</th>
+                                        <th>Room No/Floor No</th>
+                                        <th>Route</th>
+                                        <th>Delivery Date</th>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>No.Empty Bottle Return</th>
+                                        <th>Empty Bottle Required</th>
+                                        <th>No.Empty Bottle Required</th>
+                                        <th>Empty Bottle Amount</th>
+                                        <th>Total Net Amount</th>
+                                        <th>Total Amount</th>
+                                        <th>Payment Option</th>
+                                        <th>Order Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in instances %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ item.customer.customer_name }}</td>
+                                        <td>{{ item.customer.building_name }}</td>
+                                        <td>{{ item.customer.door_house_no }}</td>
+                                        <td>{{ item.customer.routes.route_name}}</td>
+                                        <td>{{ item.delivery_date }}</td>
+                                        <td>{{ item.product.product_name }}</td>
+                                        <td>{{ item.quantity }}</td>
+                                        <td>{{ item.no_empty_bottle_return }}</td>
+                                        <td>{{ item.empty_bottle_required }}</td>
+                                        <td>{{ item.no_empty_bottle_required }}</td>
+                                        <td>{{ item.empty_bottle_amount }}</td>
+                                        <td>{{ item.total_net_amount }}</td>
+                                        <td>{{ item.total_amount }}</td>
+                                        <td>{{ item.get_payment_option_display }}</td>
+                                        <td>{{ item.get_order_status_display }}</td>
+                                        <td style="text-align:center;">
+                                            <form action="{% url 'customer_order_status_acknowledge' pk=item.pk %}" role="form" method="post" enctype="multipart/form-data"  class="row g-3 ajax reload" autocomplete="off" novalidate>
+                                                {% csrf_token %}
+                                                <div class="input-group"> 
+                                                    {{acknowledge_form.order_status}}
+                                                    <div class="input-group-append">
+                                                        <button class="btn btn-outline-success" type="submit"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-save"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block static %}
+{% load static %}
+{% comment %} <script>
+    function handleButtonClick(button) {
+        var requestId = $(button).data("request_id");
+        $("#modalRequestId").val(requestId);
+        
+        $.ajax({
+            url: "{% url 'get_coupon_bookno' %}",
+            method: "GET",
+            data: {
+                request_id: requestId
+            },
+            success: function(response) {
+                
+            },
+            error: function(xhr, status, error) {
+                // Handle error
+                console.error(xhr.responseText);
+            }
+        });
+    }
+</script> {% endcomment %}
+{% endblock %}

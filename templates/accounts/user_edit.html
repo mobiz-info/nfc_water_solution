@@ -1,0 +1,329 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Edit User</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">User</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+             <!-- Start:: row-1 -->
+             <div class="row">
+                <div class="col-xl-12">
+                    <div class="card custom-card">
+                        <div class="card-header">
+                            <div class="card-title mx-auto">
+                            Edit User</div>
+                        </div>
+                        <div class="card-body">
+                            <form enctype="multipart/form-data" role="form" method="post"
+                                class="row g-3 needs-validation">
+                                {% csrf_token %}
+                                <!--row 1-->
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Name</label>
+                                        {{ form.first_name }}
+                                        {{ form.first_name.errors }}
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <span style="color: red;" class="required-star">*</span>
+                                        <label class='control-label'>User Type</label>
+                                        {{ form.user_type }}
+                                        <span style="color: red;">{{ form.user_type.errors }}</span>
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Username</label>
+                                        {{ form.username }}
+                                        {{ form.username.errors }}
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Branch</label>
+                                        {{ form.branch_id }}
+                                        {{ form.branch_id.errors }}
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+
+
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Staff ID</label>
+                                        {{ form.staff_id }}
+                                        {{ form.staff_id.errors }}
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Designation</label>
+                                        {{ form.designation_id }}
+                                        {{ form.designation_id.errors }}
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Mobile no</label>
+                                        {{ form.phone }}
+                                        {{ form.phone.errors }}
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Email</label>
+                                        {{ form.email }}
+                                        {{ form.email.errors }}
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class='control-label'>Blood Group</label>
+                                        {{ form.blood_group }}
+                                        <span style="color: red;">{{ form.blood_group.errors }}</span>
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Permanent Address</label>
+                                        {{ form.permanent_address }}
+                                        <span style="color: red;">{{ form.permanent_address.errors }}</span>
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Present Address</label>
+                                        {{ form.present_address }}
+                                        <span style="color: red;">{{ form.present_address.errors }}</span>
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Blue Diamond ity</label>
+                                        {{ form.nationality }}
+                                        <span style="color: red;">{{ form.nationality.errors }}</span>
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+                                <!---->
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Labour Card Number</label>
+                                        {{ form.labour_card_no }}
+                                        <span style="color: red;">{{ form.labour_card_no.errors }}</span>
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Labour Card Expiry</label>
+                                        {{ form.labour_card_expiry }}
+                                        <span style="color: red;">{{ form.labour_card_expiry.errors }}</span>
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+        
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Driving Licence Number</label>
+                                        {{ form.driving_licence_no }}
+                                        <span style="color: red;">{{ form.driving_licence_no.errors }}</span>
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Driving Licence Expiry</label>
+                                        {{ form.driving_licence_expiry }}
+                                        <span style="color: red;">{{ form.driving_licence_expiry.errors }}</span>
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Licence Issued By</label>
+                                        {{ form.licence_issued_by }}
+                                        <span style="color: red;">{{ form.licence_issued_by.errors }}</span>
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Visa Issued By</label>
+                                        {{ form.visa_issued_by }}
+                                        {{ form.visa_issued_by.errors }}
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Visa No.</label>
+                                        {{ form.visa_no }}
+                                        {{ form.visa_no.errors }}
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Visa Type</label>
+                                        {{ form.visa_type }}
+                                        {{ form.visa_type.errors }}
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Visa Expiry</label>
+                                        {{ form.visa_expiry }}
+                                        {{ form.visa_expiry.errors }}
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Emirites ID </label>
+                                        {{ form.emirates_id_no }}
+                                        {{ form.emirates_id_no.errors }}
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Expiry</label>
+                                        {{ form.emirates_expiry }}
+                                        {{ form.emirates_expiry.errors }}
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Health Card No.</label>
+                                        {{ form.health_card_no}}
+                                        {{ form.health_card_no.errors }}
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Expiry Date</label>
+                                        {{ form.health_card_expiry }}
+                                        {{ form.health_card_expiry.errors }}
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Base Salary</label>
+                                        {{ form.base_salary }}
+                                        {{ form.base_salary.errors }}
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>WPS %</label>
+                                        {{ form.wps_percentage}}
+                                        {{ form.wps_percentage.errors }}
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>WPS Ref. No.</label>
+                                        {{ form.wps_ref_no }}
+                                        {{ form.wps_ref_no.errors }}
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+
+                                
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Insurance Company</label>
+                                        {{ form.insurance_company}}
+                                        {{ form.insurance_company.errors }}
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Insurance No.</label>
+                                        {{ form.insurance_no }}
+                                        {{ form.insurance_no.errors }}
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Insurance Expiry</label>
+                                        {{ form.insurance_expiry }}
+                                        {{ form.insurance_expiry.errors }}
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Joining Date</label>
+                                        {{ form.joining_date }}
+                                        {{ form.joining_date.errors }}
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Passport Number</label>
+                                        {{ form.passport_number }}
+                                        {{ form.passport_number.errors }}
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Passport Expiry</label>
+                                        {{ form.passport_expiry }}
+                                        {{ form.passport_expiry.errors }}
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+                                <div class="col-12 text-end mt-5">
+                                    <input type="submit" class="btn btn-primary me-2 mb-2" value="Submit">
+                                <button class="btn btn-success   me-md-2  mb-2" type="button" onClick="javascript:history.go(-1);">
+                                    <i class="bi bi-backspace-fill pe-1"></i>Back</button>
+                                <a class="btn btn-success me-md-2  mb-2"
+                            href="{% url 'dashboard' %}"><i class="bi bi-backspace-fill pe-1"></i> Back to Dashboard </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+{% endblock %}

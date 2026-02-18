@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block title %} van {% endblock %}
+{% block content %}
+{% load static %}
+<!-- End::app-sidebar -->
+        <!-- Page Header -->
+        {% for message in messages %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+        {% endfor %}
+
+        <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+            <h4 class="fw-medium mb-0">Sale History</h4>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Sale History</li>
+            </ol>
+        </div>
+        <div class="main-content app-content">
+            <div class="container-fluid">
+
+                <!-- Start:: row-2 -->
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card custom-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    Sale Entry Logs
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="tbl table-responsive">
+                                    <table id="datatable-basic" class="table table-bordered text-nowrap dataTable no-footer" style="width: 100%">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">ID</th>
+                                                <th scope="col">Order Number</th>
+                                                <th scope="col">Customer</th>
+                                                <th scope="col">Last Delivery Date</th>
+                                                <th scope="col">Default LT Bottle Count</th>
+                                                <th scope="col">Outstanding Coupons</th>
+                                                <th scope="col">Cash</th>
+                                                <th scope="col">Empty Bottles</th>
+                                                <th scope="col">Total Amount</th>
+                                                <th scope="col">Discount</th>
+                                                <th scope="col">Net Taxable</th>
+                                                <th scope="col">VAT</th>
+                                                <th scope="col">Received Amount</th>
+                                                <th scope="col">Balance</th>
+                                                <th scope="col">Quantity</th>
+                                                <th scope="col">Product</th>
+                                                <th scope="col">Coupon</th>
+                                                <th scope="col">Extras</th>
+                                                <th scope="col">Order Number</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for sale_entry_log in sale_entry_logs %}
+                                            <tr>
+                                                <td>{{ sale_entry_log.id }}</td>
+                                                <td>{{ log.order_number }}</td>
+                                                <td>{{ sale_entry_log.customer }}</td>
+                                                <td>{{ sale_entry_log.last_delivery_date }}</td>
+                                                <td>{{ sale_entry_log.default_lt_bottle_count }}</td>
+                                                <td>{{ sale_entry_log.outstanding_coupons }}</td>
+                                                <td>{{ sale_entry_log.cash }}</td>
+                                                <td>{{ sale_entry_log.empty_bottles }}</td>
+                                                <td>{{ sale_entry_log.total_amount }}</td>
+                                                <td>{{ sale_entry_log.discount }}</td>
+                                                <td>{{ sale_entry_log.net_taxable }}</td>
+                                                <td>{{ sale_entry_log.vat }}</td>
+                                                <td>{{ sale_entry_log.received_amount }}</td>
+                                                <td>{{ sale_entry_log.balance }}</td>
+                                                <td>{{ sale_entry_log.quantity }}</td>
+                                                <td>{{ sale_entry_log.product }}</td>
+                                                <td>{{ sale_entry_log.coupon }}</td>
+                                                <td>{{ sale_entry_log.extras }}</td>
+                                                <td>{{ sale_entry_log.order_number }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+            </div>
+        </div>
+
+{% endblock %}

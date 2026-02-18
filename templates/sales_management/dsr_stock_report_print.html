@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load van_template_tags %}
+    {% load sales_templatetags %}
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Stock Report - Print</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles for printing */
+        @media print {
+            /* Hide unnecessary elements */
+            .no-print {
+                display: none !important;
+            }
+            /* Set page margins and other print-specific styles */
+            body {
+                margin: 0;
+                padding: 10px;
+            }
+            .card {
+                border: none !important;
+                box-shadow: none;
+                margin-bottom: 20px;
+            }
+            .table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            .table-bordered th,
+            .table-bordered td {
+                border: 1px solid #dee2e6;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                             Stock Report
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <div>
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-4">
+                                        <p><strong>Salesman: {{van_route.van.salesman.get_fullname}}</strong></p>
+                                    </div>
+                                    <div class="col-4">
+                                        <p><strong>Driver: {{van_route.van.driver.get_fullname}}</strong></p>
+                                    </div>
+                                </div>
+                                <div class="row align-items-center">
+                                    <div class="col-4">
+                                        <p>Route: {{van_route.routes.route_name}}</p>
+                                    </div>
+                                    <div class="col-4">
+                                        <p>From: {{ filter_data.filter_from_date }} To: {{ filter_data.filter_to_date }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    
+                        
+    
+                        <div id="table-container">
+                            <div class="card-body">
+                                <table  class="table table-bordered text-wrap" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center text-bold" colspan="10">Stock Report</th>
+                                        </tr>
+                                        <tr>
+                                            <th scope="col" style="text-align:center;">Product Name</th>
+                                            <th scope="col" style="text-align:center;">Opening Stock</th>
+                                            <th scope="col" style="text-align:center;">Issued</th>
+                                            <th scope="col" style="text-align:center;">Sold</th>
+                                            <th scope="col" style="text-align:center;">FOC</th>
+                                            <th scope="col" style="text-align:center;">Returned</th>
+                                            <th scope="col" style="text-align:center;">Damage Bottle</th>
+                                            <th scope="col" style="text-align:center;">Empty Bottle</th>
+                                            <th scope="col" style="text-align:center;">Fresh Stock</th>
+                                            <th scope="col" style="text-align:center;">Closing</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for van_data in van_product_stock %}
+                                        {% get_van_product_wise_stock filter_data.from_date van_data.van.pk van_data.product.pk as stock_details %}
+                                        <tr>
+                                            <td style="text-align:center;">{{van_data.product.product_name}}</td>
+                                            <td style="text-align:center;">{{van_data.opening_count}}</td>
+                                            <td style="text-align:center;">{{stock_details.issued_count}}</td>
+                                            <td style="text-align:center;">{{van_data.sold_count }}</td>
+                                            <td style="text-align:center;">{{van_data.foc }}</td>
+                                            <td style="text-align:center;">{{van_data.return_count}}</td>
+                                            <td style="text-align:center;">{{van_data.damage_count}}</td>
+                                            <td style="text-align:center;">{{van_data.empty_can_count}}</td>
+                                            <td style="text-align:center;">{{stock_report_total}}</td>
+                                            <td style="text-align:center;">{{van_data.closing_count}}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        
+                    
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap JS (optional) -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        window.onload = function() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

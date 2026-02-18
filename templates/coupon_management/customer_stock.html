@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% block title %}Customer Stock{% endblock %}
+{% block content %}
+<style>
+    /* Table styles */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+    }
+    th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+    tr:nth-child(odd) {
+        background-color: #f9f9f9;
+    }
+    tr:nth-child(even) {
+        background-color: #fff;
+    }
+    tr:hover {
+        background-color: #f1f1f1;
+    }
+</style>
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Customer Stock</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Coupon Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Customer Stock</li>
+    </ol>
+</div>
+<!-- Page Header Close -->
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <div style="float:right;padding:10px 10px;">
+                            <form method="GET" class="mb-3">
+                                <div class="input-group">
+                                    <select name="route_name" class="form-select">
+                                        <option value="">All Routes</option>
+                                        {% for route in route_li %}
+                                            <option value="{{ route.route_name }}" {% if request.GET.route_name == route.route_name %}selected{% endif %}>{{ route.route_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <label for="created_date" class="visually-hidden">Created Date:</label>
+                                    <input type="date" id="created_date" name="created_date" value="{% if request.GET.created_date %}{{ request.GET.created_date }}{% endif %}" class="form-control" placeholder="Created Date">
+                                    <button type="submit" class="btn btn-primary me-2">
+                                        <i class="bi bi-search"></i> Search
+                                    </button>
+                                    <div class="btn-group" role="group">
+                                        <a href="{% url 'generate_excel' %}" class="btn btn-sm btn-success me-2">Download Excel</a>
+                                        <a href="{% url 'customer_stock_pdf' %}?route_name={{ request.GET.route_name }}" class="btn btn-sm btn-danger">Download PDF</a>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div style="display: inline-block;">
+                            <h4>Route: {{ request.GET.route_name }}  , {{ request.user }} </h4>
+                            {% if request.GET.created_date %}
+                                <p>Selected Date: {{ request.GET.created_date }}</p>
+                            {% endif %}
+                        </div>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Sl.No</th>
+                                    <th scope="col">Customer Name / Mobile No</th>
+                                    <th scope="col">Building Name / House No</th>
+                                    <th scope="col" colspan="2">Coupon Method</th>
+                                    <th scope="col">Total Count</th>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th>Digital</th>
+                                    <th>Manual</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                {% load el_pagination_tags %}
+                                {% paginate 50 coupenstock %}
+                                {% for stock in coupenstock %}
+                                    <tr>
+                                        <td style="text-align:center;">{{ forloop.counter }}</td>
+                                        <td>{{ stock.customer.customer_name }},<br>{{ stock.customer.mobile_no }}</td>
+                                        <td>{{ stock.customer.building_name }},<br>{{ stock.customer.door_house_no }}</td>
+                                        <td>{% if stock.coupon_method == 'digital' %}{{ stock.count }}{% endif %}</td>
+                                        <td>{% if stock.coupon_method == 'manual' %}<a href="{% url 'customer_stock_coupon_details' customer=stock.customer.pk %}" target="__blank">{{ stock.count }}</a>{% endif %}</td>
+                                        <td>{{ stock.count }}</td>
+                                    </tr>
+
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                     {% get_pages %}
+                    <div class="clearfix"></div>
+                        <div class="row pagi my-3">
+                            <div class="col-sm-6 col-xs-6 tot my-pagination">
+                                <div class="m-t-10 text-start">
+                                    Showing {{title}}
+                                    <span class="current_page_index">{{ pages.current_start_index }}</span> - <span
+                                    class="current_end_status">{{ pages.current_end_index }}</span> of <span
+                                    class="total_count">{{ pages.total_count }}</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xs-6 text-end pagination-btn-div">{% show_pages %}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<style>
+    @keyframes scroll {
+    0% { opacity: 1; transform: translateY(0); }
+    25% { opacity: 1; transform: translateY(-10px); }
+    75% { opacity: 1; transform: translateY(-10px); }
+    100% { opacity: 0; transform: translateY(-20px); }
+    }
+
+    .placeholder-animation {
+        animation: scroll 5s forwards;
+    }
+</style>
+
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Create A Vacation</h4>
+      <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">User</li>
+      </ol>
+  </div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+             <!-- Start:: row-1 -->
+             <div class="row">
+                <div class="col-xl-12">
+                    <div class="card custom-card">
+                        <div class="card-header">
+                            <div class="card-title mx-auto">
+                            Create Vacation</div>
+                        </div>
+                        <div class="card-body">
+                            <form method="get" class="d-flex">
+                                <input type="text" name="search_query" id="search_query" class="form-control" style="height: 2em; width: 15em;" placeholder="Search" />
+                                <input type="hidden" name="route" value="{{selected_route}}">
+                                <button type="submit" class="btn btn-success  btn-sm " style="margin-left: 1em;">Filter</button>
+                            </form>
+
+                            <form enctype="multipart/form-data" role="form" method="post" class="row g-3 needs-validation">
+                                {% csrf_token %}
+                                <!-- Form fields -->
+                                <div class="col-9 form-group-required">
+                                    <span style="color: red;" class="required-star">*</span>
+                                    <label class="control-label" aria-required="true">Customer</label>
+                                    <select name="customer" class="form-control required">
+                                        {% if customers %}
+                                            {% for customer in customers %}
+                                                <option value="{{ customer.pk }}">{{ customer.customer_name }}</option>
+                                            {% endfor %}
+                                        {% else %}
+                                        <option disabled>No customer please check the filters</option>
+                                        {% endif %}
+                                    </select>
+                                    <span style="color: red;">{%if form.customer.errors %} This field is reqired {% endif %}</span>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <span style="color: red;" class="required-star">*</span>
+                                        <label class="control-label">Start Date</label>
+                                        {{ form.start_date }}
+                                        <span style="color: red;">{{ form.start_date.errors }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <span style="color: red;" class="required-star">*</span>
+                                        <label class="control-label">End Date</label>
+                                        {{ form.end_date }}
+                                        <span style="color: red;">{{ form.end_date.errors }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <span style="color: red;" class=""></span>
+                                        <label class="control-label">Note</label>
+                                        {{ form.note }}
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12 text-end mt-5">
+                                    <input type="submit" class="btn btn-primary me-2 mb-2" value="Submit">
+                                    <button class="btn btn-success me-md-2 mb-2" type="button" onClick="javascript:history.go(-1);">
+                                        <i class="bi bi-backspace-fill pe-1"></i>Back</button>
+                                    <a class="btn btn-success me-md-2 mb-2" href="{% url 'vacation_list' %}">
+                                        <i class="bi bi-backspace-fill pe-1"></i> Back to Dashboard
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+<script>
+    var searchBox = document.getElementById('search_query');
+    var placeholders = [" Customer name",  " Mobile number", " Search here", " Name of building" ];
+    var currentIndex = 0;
+    setInterval(function() {
+        searchBox.placeholder = placeholders[currentIndex];
+        currentIndex = (currentIndex + 1) % placeholders.length;
+    }, 3000); 
+</script>
+{% endblock %}

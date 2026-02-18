@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+{% block title %} All Transactions {% endblock %}
+{% block content %}
+{% load static %}
+{% load client_templatetags %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Customer Outstanding Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Client Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">All Transactions</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="mt">
+                        <form method="GET" action=".">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <!-- Routes Dropdown -->
+                                    <div class="col-3">
+                                        <label for="product">Routes :</label>
+                                        <select name="route" class="form-select">
+                                            <option value="">All Routes</option>
+                                            {% for route in routes %}
+                                                <option value="{{ route.pk }}" {% if route.pk|stringformat:"s" == filter_data.route|stringformat:"s" %}selected{% endif %}>
+                                                    {{ route.route_name }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                    <!-- Date input -->
+                                    <div class="col-3">
+                                        <label for="id_closing_date">Closing Date:</label>
+                                        <input type="date" class="form-control" id="id_closing_date" name="closing_date" value="{{ filter_data.filter_closing_date }}">
+                                    </div>
+
+                                    <!-- Date input -->
+                                    <div class="col-3">
+                                        <label for="id_to_date">To Date:</label>
+                                        <input type="date" class="form-control" id="id_to_date" name="to_date" value="{{ filter_data.filter_to_date }}">
+                                    </div>
+
+                                    <!-- Submit Button -->
+                                    <div class="col d-flex align-items-end justify-content-end">
+                                        <input type="submit" class="btn btn-primary btn-sm mx-1" value="Apply Filter">
+                                        {% if data_filter %}
+                                            <button type="button" class="btn btn-secondary btn-sm mx-1" onclick="resetFilters()" style="width:max-content">Reset Filter</button>
+                                        {% endif %}
+                                        <a href="{% url 'customer_outstanding_report' %}{% if filter_data %}?{% if filter_data.filter_closing_date %}closing_date={{filter_data.filter_closing_date}}&{% endif %}{% if filter_data.filter_to_date %}to_date={{filter_data.filter_to_date}}&{% endif %}{% if filter_data.filter_route %}route={{filter_data.filter_route}}{% endif %}&{% endif %}print=true" class="btn btn-outline-success btn-sm mx-1" target="_blank">
+                                            <i class="fas fa-file-excel"></i> Print
+                                        </a>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <hr>
+
+                    <div class="mt">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+
+                                <!-- Routes Dropdown or Display -->
+                                <div class="col-md-1 mb-3">
+                                    <label class="form-label">Route:</label>
+                                    <input type="text" class="form-control text-center" readonly value="{{ filter_data.filter_route_name }}" style="height: 65px;font-size: x-large;font-weight: bolder;">
+                                </div>
+                                
+                                <div class="col-md-5 mb-3">
+                                </div>
+                                <!-- Opening Date -->
+                                <div class="col-md-2 mb-3">
+                                    <label class="form-label">Opening Date:</label>
+                                    <input type="text" class="form-control text-center" readonly value="{{ filter_data.filter_opening_date_display }}" style="height: 65px;font-size: x-large;font-weight: bolder;">
+                                </div>
+
+                                <!-- To Date -->
+                                <div class="col-md-2 mb-3">
+                                    <label class="form-label">To Date:</label>
+                                    <input type="text" class="form-control text-center" readonly value="{{ filter_data.filter_to_date_display }}" style="height: 65px;font-size: x-large;font-weight: bolder;">
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    <div id="table-container">
+                        <div class="card-body">
+                            <table class="table table-bordered text-wrap" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">Sl No</th>
+                                        <th class="text-center">Customer ID</th>
+                                        <th class="text-center">Customer Name</th>
+                                        <th class="text-center">Opening<br>Outstanding Amount</th>
+                                        <th class="text-center">Collection<br>Amount Up to<br>{{filter_data.filter_to_date_display}}</th>
+                                        <th class="text-center">Balance<br>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% load el_pagination_tags %}
+                                    {% paginate 20 customer_instances %}
+                                    {% for instance in customer_instances %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ instance.custom_id }}</td>
+                                        <td>{{ instance.customer_name }}</td>
+                                        {% get_customer_wise_outstanding_details instance.pk filter_data.filter_closing_date filter_data.filter_to_date as outstanding_details %}
+                                        <td class="opening_amount" style="text-align:right;">{{ outstanding_details.opening_amount }}</td>
+                                        <td class="collection_upto" style="text-align:right;">{{ outstanding_details.collection_upto }}</td>
+                                        <td class="balance_amount" style="text-align:right;">{{ outstanding_details.balance_amount }}</td>
+
+                                    </tr>
+                                    {% endfor %}
+                                    <tr class="total-row">
+                                        <td colspan="3" style="text-align:right;font-weight: bolder;">Total</td>
+                                        <td id="total_opening" style="text-align:right;font-weight: bolder;"></td>
+                                        <td id="total_collection" style="text-align:right;font-weight: bolder;"></td>
+                                        <td id="total_balance" style="text-align:right;font-weight: bolder;"></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="6"></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:right;font-weight: bolder;" colspan="3">Grand Total</td>
+                                        <td style="text-align:right;font-weight: bolder;">{{ total_opening_amount }}</td>
+                                        <td style="text-align:right;font-weight: bolder;">{{ total_collection_upto }}</td>
+                                        <td style="text-align:right;font-weight: bolder;">{{ total_balance_amount }}</td>
+                                    <tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        {% get_pages %}
+                        <div class="clearfix"></div>
+                        <div class="row pagi my-3">
+                            <div class="col-sm-6 col-xs-6 tot my-pagination">
+                                <div class="m-t-10 text-start">
+                                    Showing {{ title }}
+                                    <span class="current_page_index">{{ pages.current_start_index }}</span> - <span class="current_end_status">{{ pages.current_end_index }}</span> of <span class="total_count">{{ pages.total_count }}</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xs-6 text-end pagination-btn-div">
+                                {% show_pages %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block static %}
+{% load static %}
+<script>
+    function calculateTotals() {
+        let openingTotal = 0;
+        let collectionTotal = 0;
+        let balanceTotal = 0;
+
+        $(".opening_amount").each(function () {
+            openingTotal += parseFloat($(this).text().replace(/,/g, '') || 0);
+        });
+
+        $(".collection_upto").each(function () {
+            collectionTotal += parseFloat($(this).text().replace(/,/g, '') || 0);
+        });
+
+        $(".balance_amount").each(function () {
+            balanceTotal += parseFloat($(this).text().replace(/,/g, '') || 0);
+        });
+
+        // Format with commas if needed
+        $("#total_opening").text(openingTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 }));
+        $("#total_collection").text(collectionTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 }));
+        $("#total_balance").text(balanceTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 }));
+    }
+
+    $(document).ready(function () {
+        calculateTotals();
+    });
+</script>
+{% endblock static %}

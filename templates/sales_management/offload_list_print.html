@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offloded Detail List - Print</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles for printing */
+        @media print {
+            /* Hide unnecessary elements */
+            .no-print {
+                display: none !important;
+            }
+            /* Page layout for print */
+            body {
+                margin: 0;
+                padding: 10px;
+            }
+            .card {
+                border: none !important;
+                box-shadow: none;
+                margin-bottom: 20px;
+            }
+            .table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            .table-bordered th,
+            .table-bordered td {
+                border: 1px solid #dee2e6;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Container -->
+    <div class="container mt-4">
+        <!-- Header -->
+        <div class="text-center mb-4">
+            <h1 class="h4">Offloded Detail List Report</h1>
+        </div>
+
+        <!-- Report Table -->
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered text-nowrap align-middle">
+                        <thead>
+                                    <tr>
+                                        <th>Sl.No</th>
+                                        <th>Created Date</th>
+                                        <th>Salesman</th>
+                                        <th>Van</th>
+                                        <th>Route</th>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>Stock Type</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for offloads in offloaded_data %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ offloads.created_date|date:"d-m-Y" }}</td>
+                                            <td>{{ offloads.salesman }}</td>
+                                            <td>{{ offloads.van }}</td>
+                                            <td>{{ offloads.route_name }}</td>
+                                            <td>{{ offloads.product_name }}</td>
+                                            <td>{{ offloads.quantity }}</td>
+                                            <td>{{ offloads.stock_type }}</td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="7" class="text-center text-muted">No data available.</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS (optional, for compatibility) -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Auto-print script -->
+    <script>
+        window.onload = function() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

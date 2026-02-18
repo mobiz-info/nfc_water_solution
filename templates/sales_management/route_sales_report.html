@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% block title %} Sales Report {% endblock %}
+{% block content %}
+{% load sales_templatetags %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Sales Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Sales Management </a></li>
+        <li class="breadcrumb-item active" aria-current="page">Sales Report</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Sales Report
+                        </div>
+                    </div>
+                    <div class="mt">
+                        <form method="GET">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <!-- <div class="col-2">
+                                        <label for="years">Select Year:</label>
+                                        <select name="year" class="form-select">
+                                            {% for year, year_display in year_choices %}
+                                                <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>{{ year_display }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div> -->
+                                    <!-- <div class="col-2">
+                                        <label for="month">Select Month:</label>
+                                        <select name="month" class="form-select">
+                                            {% for month_value, month_display in month_choices %}
+                                                <option value="{{ month_value }}" {% if month_value == selected_month %}selected{% endif %}>{{ month_display }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div> -->
+                                    <div class="col-md-2">
+                                        <label for="from_date">From Date:</label>
+                                        <input type="date" name="from_date" class="form-control" value="{{ from_date }}">
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <label for="to_date">To Date:</label>
+                                        <input type="date" name="to_date" class="form-control" value="{{ to_date }}">
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <label for="route_name">Routes:</label>
+                                        <select name="route_name" class="form-select">
+                                            <option value="">All Routes</option>
+                                            {% for route in all_routes %}
+                                                <option value="{{ route.route_name }}"
+                                                    {% if route.route_name == selected_route %}selected{% endif %}>
+                                                    {{ route.route_name }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-2 pt-3">
+                                        <input type="submit" class="btn btn-primary btn-sm mx-1" value="Apply Filter">
+                                        <a href="{% url 'print_sales_report' %}?year={{ selected_year }}&month={{ selected_month }}&from_date={{ from_date }}&to_date={{ to_date }}" target="_blank" class="btn btn-secondary btn-sm">Print</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        
+                        <div id="table-container" style="overflow:scroll;">
+                            <div class="card-body">
+                                <table id="responsiveDataTable" class="table table-bordered text-wrap" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Route</th>
+                                            <th>Sales Quantity</th>
+                                            <th>Avg Price</th>
+                                            <th>Cash Sale QTY</th>
+                                            <th>Cash Sale Amount</th>
+                                            <th>Credit Sale QTY</th>
+                                            <th>Credit Sale Amount</th>
+                                            <th>Coupon Supply QTY</th>
+                                            <th>Coupon Sale QTY</th>
+                                            <th>Coupon Sale Amount</th>
+                                            <th>FOC</th>
+                                            <th>Credit Collection</th>
+                                            <th>Expense</th>
+                                            <th>Net Paid</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                            {% for data in routes %}
+                                            {% get_sales_report data.route_id start_date end_date as sales_report %}
+                                            <tr>
+                                                <td>{{ data.route_name }}</td>
+                                                <td>{{ sales_report.sales_quantity}}</td>
+                                                <td>{{ sales_report.avg_price|floatformat:2 }}</td>
+                                                <td>{{ sales_report.cash_sales_qnty|floatformat:2 }}</td>
+                                                <td>{{ sales_report.cash_sales|floatformat:2 }}</td>
+                                                <td>{{ sales_report.credit_sales_qnty|floatformat:2 }}</td>
+                                                <td>{{ sales_report.credit_sales|floatformat:2 }}</td>
+                                                <td>{{ sales_report.coupon_sales_qnty|floatformat:2 }}</td>
+                                                <td>{{ sales_report.coupon_sale_qty }}</td>
+                                                <td>{{ sales_report.coupon_sales|floatformat:2 }}</td>
+                                                <td>{{ sales_report.foc_sales|floatformat:2 }}</td>
+                                                <td>{{ sales_report.credit_collection|floatformat:2 }}</td>
+                                                <td>{{ sales_report.total_expense|floatformat:2 }}</td>
+                                                <td>{{ sales_report.net_paid|floatformat:2 }}</td>
+                                                <td>
+                                                    <div class="g-2">
+                                                        <a href="{% url 'routewise_sales_report' data.route_id %}?year={{ selected_year }}&month={{ selected_month }}" aria-label="anchor" class="btn btn-warning-light btn-sm" data-bs-toggle="tooltip" data-bs-original-title="View">
+                                                            <span class="bi bi-eye fs-14"></span>
+                                                        </a>
+                                                    </div>
+                                                </td> 
+                                            </tr>
+                                            {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function resetFilters() {
+        location.href = "{% url 'route_sales_report' %}";
+    }
+</script>
+
+
+{% endblock %}

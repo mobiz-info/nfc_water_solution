@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block title %} van {% endblock %}
+{% block content %}
+{% load static %}
+<!-- End::app-sidebar -->
+        <!-- Page Header -->
+        {% for message in messages %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+        {% endfor %}
+
+        <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+            <h4 class="fw-medium mb-0">Van Management</h4>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Van</li>
+            </ol>
+        </div>
+        <div class="main-content app-content">
+            <div class="container-fluid">
+                         <!-- Start:: row-2 -->
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card custom-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    Van
+                                </div>
+                                <div class="ms-auto">
+                                <a href="{% url 'create_van' %}"><button type="button" class="btn btn-success btn-wave text-end d-flex me-4 my-auto"><i class="bi bi-plus-circle me-1"></i>Create</button>
+                                </a>
+                                </div>  
+                            </div>
+                            <div class="card-body">
+                                <table id="datatable-basic" class="table table-bordered text-nowrap" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Sl No</th>
+                                            <th scope="col">Plate</th>
+                                            <th scope="col">Renewal Date</th>
+                                            <th scope="col">Insurance Expiry Date</th>
+                                            <th scope="col">Actions</th>
+                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        
+                                            {% for van in all_van %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{van.van_make}}</td>
+                                                <td>{{van.renewal_date|date:"d-m-Y"}}</td>
+                                                <td>{{van.insurance_expiry_date|date:"d-m-Y"}}</td>
+                                                <td>
+                                                    <div class="g-2">
+                                                        <a href="{% url 'view_van' van.van_id %}" aria-label="anchor" class="btn  btn-warning-light btn-sm" data-bs-toggle="tooltip" data-bs-original-title="View">
+                                                            <span class="bi bi-eye fs-14"></span>
+                                                        </a>
+                                                        <a href="{% url 'edit_van' van.van_id %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Edit">
+                                                            <span class="ri-pencil-line fs-14"></span>
+                                                        </a>
+
+                                                        <a href="{% url 'route_assign' van.van_id %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Assign Routes">
+                                                            <span class="ri-arrow-right-s-line fs-14"></span>
+                                                        </a>
+                                                        
+                                                        <a href="{% url 'delete_van' van.van_id %}"  aria-label="anchor" class="btn btn-danger-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Delete">
+                                                            <span class="ri-delete-bin-7-line fs-14"></span>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+{% endblock %}

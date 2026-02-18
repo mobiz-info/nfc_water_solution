@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block title %}Visit Statistics Report{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Visit Statistics Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Sales Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Visit Statistics Report</li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Visit Statistics Report
+                        </div>
+                    </div>
+                    <div class="mt">
+                        <form method="GET" action="{% url 'visitstatistics_report' %}">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-3">
+                                        <label for="from_date">From Date:</label>
+                                        <input type="date" class="form-control" id="from_date" name="from_date" value="{{ filter_data.filter_from_date }}">
+                                    </div>
+                                    <div class="col-3">
+                                        <label for="to_date">To Date:</label>
+                                        <input type="date" class="form-control" id="to_date" name="to_date" value="{{ filter_data.filter_to_date }}">
+                                    </div>
+                                    <div class="col-3">
+                                        <label for="route_name">Routes :</label>
+                                        <select name="route_name" class="form-select">
+                                            <option value="">All Routes</option>
+                                            {% for route in routes_instances %}
+                                                <option value="{{ route.route_name }}" {% if route.route_name == filter_data.route_name %}selected{% endif %}>{{ route.route_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                    <div class="col d-flex align-items-end justify-content-end">
+                                        <input type="submit" class="btn btn-primary btn-sm mx-1" value="Apply Filter">
+                                        {% if data_filter %}
+                                            <button type="button" class="btn btn-secondary btn-sm mx-1" onclick="resetFilters()" style="width:max-content">Reset Filter</button>
+                                        {% endif %}
+                                        <div>
+                                            <a href="{% url 'visitstatistics_report_print' %}?from_date={{ filter_data.filter_from_date }}&to_date={{ filter_data.filter_to_date }}&route_name={{ filter_data.route_name }}" target="_blank" class="btn btn-outline-success">
+                                                <i class="fas fa-print"></i> Print
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    {% if routes_statistics %}
+                        <div id="table-container" style="overflow:scroll;">
+                            <div class="card-body">
+                                <table class="table table-bordered text-wrap" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Route</th>
+                                            <th scope="col">Salesman</th>
+                                            <th scope="col">Driver</th>
+                                            <th scope="col">New Customers Created</th>
+                                            <th scope="col">Planned Visit</th>
+                                            <th scope="col">Actual Visit</th>
+                                            <th scope="col">Non Visited</th>
+                                            <th scope="col">Emergency Supply</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for stat in routes_statistics %}
+                                            <tr>
+                                                <td>{{ stat.route }}</td>
+                                                <td>{{ stat.salesman_name }}</td>
+                                                <td>{{ stat.driver_name }}</td>
+                                                <td style="text-align:center;">{{ stat.new_customers_count }}</td>
+                                                <td style="text-align:center;">{{ stat.planned_visit_count }}</td>
+                                                <td style="text-align:center;">{{ stat.visited_customers_count }}</td>
+                                                <td style="text-align:center;">{{ stat.non_visited_count }}</td>
+                                                <td style="text-align:center;">{{ stat.emergency_supply_count }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="card-body">
+                            <p class="text-center">No data available for the selected filters.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+function resetFilters() {
+    window.location.href = "{% url 'visitstatistics_report' %}";
+}
+</script>
+
+{% endblock %}

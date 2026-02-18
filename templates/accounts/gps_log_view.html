@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block title %} GPS Log List {% endblock %}
+{% block content %}
+{% load static %}
+        <!-- End::app-sidebar -->
+        <!-- Page Header -->
+        <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+            <h4 class="fw-medium mb-0">GPS Log List</h4>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page"> Dashboard</li>
+            </ol>
+        </div>
+        <!-- Page Header Close -->
+
+
+
+        <!-- Start::app-content -->
+        <div class="main-content app-content">
+            <div class="container-fluid">
+
+                
+                         <!-- Start:: row-2 -->
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card custom-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    GPS Log List
+                                </div>
+
+                            </div>
+                            
+                            <div  id="table-container" style="overflow:scroll;">
+                                <div class="card-body">
+                                    {% comment %} <div style="float:right;padding:10px 0px;">
+                                        <form method="get">
+                                            <div class="input-group">
+                                                <input type="date" name="start_date" class="form-control" value="{{ start_date|date:'Y-m-d' }}" placeholder="Start Date">
+                                                <input type="date" name="end_date" class="form-control" value="{{ end_date|date:'Y-m-d' }}" placeholder="End Date">
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="bi bi-filter"></i> Filter
+                                                </button>
+                                                <a href="{% url 'processing_log' %}" class="btn btn-secondary">
+                                                    <i class="bi bi-x-circle"></i> Clear
+                                                </a>
+                                            </div>
+                                        </form>
+                                    </div> {% endcomment %}
+                                    <h3>GPS Log Details for {{ route.route_name }}</h3>
+                                    <table  class="table table-bordered text-wrap"  style="width:100%">
+                                        
+                                            <thead>
+                                                <tr>
+                                                    <th>Route</th>
+                                                    <th>Turn On Time</th>
+                                                    <th>Turn Off Time</th>
+                                                    <th>Status</th>
+                                                    <th>Activated By</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for log in gps_logs %}
+                                                <tr>
+                                                    <td>{{ log.route.route_name}}</td>
+                                                    <td>{{ log.turn_on_time }}</td>
+                                                    <td>{{ log.turn_off_time|default:"Active" }}</td>
+                                                    <td>{% if log.gps_enabled %} Enabled {% else %} Disabled {% endif %}</td>
+                                                    <td>{{ log.user.username|default:"Unknown" }}</td>
+                                                </tr>
+                                                {% empty %}
+                                                <tr>
+                                                    <td colspan="4" class="text-center">No GPS log found</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End:: row-2 -->
+
+                      
+
+            </div>
+        </div>
+        <!-- End::app-content -->
+        {% endblock %}

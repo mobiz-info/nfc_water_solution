@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Reassign</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Reassign New Salesman </li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start Form for Creating Product -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title mx-auto">Reassign</div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <form method="post" action="{% url 'reassign_request' diff_bottle.diffbottles_id  %}" class="row g-3 needs-validation">
+                            {% csrf_token %}
+                            <!-- Row 1 -->
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>New salesman</label><br>
+                                    
+                                    <select name="assign_this_to" class="form-select">
+                                        <option value="">select salesman</option>
+                                       
+                                        {% for salesmans in salesmen %}
+                                            <option value="{{ salesmans.id }}">{{ salesmans.username }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Delivery Date</label><br>
+                                    <input name="delivery_date" type="date" class="form-select"  value="">
+                                    <span style="color: red;">{{ form.van_route_id.errors }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 text-end mt-5">
+                                <input type="submit" class="btn btn-primary me-2 mb-2" value="Submit">
+                                <button class="btn btn-success me-md-2  mb-2" type="button" onClick="javascript:history.go(-1);">
+                                    <i class="bi bi-backspace-fill pe-1"></i>Back
+                                </button>
+                               <a class="btn btn-success me-md-2 mb-2" href="{% url 'dashboard' %}">
+                                    <i class="bi bi-backspace-fill pe-1"></i> Back to Dashboard
+                               </a>
+                            </div>
+                        </form>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+        <!-- End Form for Creating Product -->
+
+    </div>
+</div>
+
+{% endblock %}

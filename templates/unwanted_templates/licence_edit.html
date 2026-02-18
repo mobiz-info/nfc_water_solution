@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %} Add Location {% endblock %}
+{% block content %}
+{% load static %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Add Location</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'locations_list' %}" class="text-white-30">Locations</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Add Location</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            <div class="mb-3">
+                                <label for="emirate" class="form-label">Emirate</label>
+                                <select class="form-select" id="emirate" name="emirate" required>
+                                    <!-- Loop through emirate_values and populate options -->
+                                    {% for emirate in emirate_values %}
+                                    <option value="{{ emirate.emirate_id }}">{{ emirate.name }}</option>
+                                    {% endfor %}
+                                </select>   
+                            </div>
+                            <div class="group mb-3">
+                                <label for="expiry_date" class="form-label">Licence Expiry date</label>
+                                <input type="date" class="form-control" name="expiry_date"> 
+                            </div>
+                            
+                           
+                            <button type="submit" class="btn btn-primary">Update Licence</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+{% endblock %}

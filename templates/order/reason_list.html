@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %} order Change reason {% endblock %}
+{% block content %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Order</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Order</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Order change Reason</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Order Change reason
+                        </div>
+                        <div class="ms-auto">
+                            <a href="{% url 'reason_add' %}">
+                                <button type="button" class="btn btn-success btn-wave text-end d-flex me-4 my-auto">
+                                    <i class="bi bi-plus-circle me-1"></i>Create
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <table id="datatable-basic" class="table table-bordered text-wrap " style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th scope="col" style="text-align:center !important;">Sl No</th>
+                                    <th scope="col" style="text-align:center !important;">Reason Name</th>
+                                    <th scope="col" style="text-align:center !important;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for reason in reasons %}
+                                <tr>
+                                    <td style="text-align:center">{{ forloop.counter }}</td>
+                                    <td style="text-align:left">{{ reason  }}</td>
+                                   
+                                    
+                                    <td>
+                                        <div class="g-2">
+                                            <a href="{% url 'reason_edit' reason.pk %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Edit">
+                                                <span class="ri-pencil-line fs-14"></span>
+                                            </a>
+                                            <a href="{% url 'reason_delete' reason.pk %}"  aria-label="anchor" class="btn btn-danger-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Delete">
+                                                <span class="ri-delete-bin-7-line fs-14"></span>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

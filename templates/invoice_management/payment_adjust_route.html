@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Payment Adjust</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="javascript:void(0);" class="text-white-50">Invoice Management</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page"> Invoice</li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+
+        
+
+        <!-- Table Card -->
+        <div class="row justify-content-center">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">Payment Adjust</div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <!-- Filter Section -->
+                        <div class="row mb-3">
+                            <div class="col-xl-12">
+                                <form method="get" class="d-flex justify-content-end gap-2">
+
+                                    <!-- Route -->
+                                    <select name="route_name" class="form-select w-auto">
+                                        {% for route in route_li %}
+                                            <option value="{{ route.route_name }}"
+                                                {% if route.route_name == route_name %}selected{% endif %}>
+                                                {{ route.route_name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                
+                                    <!-- Search -->
+                                    <input
+                                        type="text"
+                                        name="q"
+                                        value="{{ q }}"
+                                        class="form-control w-auto"
+                                        placeholder="Customer name / ID"
+                                    >
+                                
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-search"></i> Filter
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <table class="table table-bordered table-striped text-nowrap">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Sl No</th>
+                                    <th>Customer Code</th>
+                                    <th>Customer Name</th>
+                                    <th>Route</th>
+                                    <th class="text-end">Today Outstanding</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for customer in instances %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ customer.custom_id }}</td>
+                                    <td>{{ customer.customer_name }}</td>
+                                    <td>{{ customer.routes.route_name }}</td>
+                                    <td class="text-end fw-semibold">
+                                        {{ customer.today_outstanding }}
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="{% url 'invoice:invoice_adjust' customer_id=customer.pk %}"
+                                            class="btn btn-sm btn-success">
+                                            <i class="bi bi-sliders"></i> Adjust
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">
+                                        No outstanding found for today.
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="4" class="text-end fw-bold">Total Outstanding</td>
+                                    <td class="fw-bold text-end">{{ total_today_outstanding }}</td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

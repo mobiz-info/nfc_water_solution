@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load client_templatetags %}
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }}</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @media print {
+            /* Add any styles for print-specific layout here */
+            body {
+                font-size: 12px;
+            }
+            .no-print {
+                display: none;
+            }
+            /* Set page margins and other print-specific styles */
+            body {
+                margin: 0;
+                padding: 10px;
+            }
+            .card {
+                border: none !important;
+                box-shadow: none;
+                margin-bottom: 20px;
+            }
+            .table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            .table-bordered th,
+            .table-bordered td {
+                border: 1px solid #dee2e6;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Outstanding Report
+                        </div>
+                    </div>
+                    <table border="1" cellpadding="5" cellspacing="0" style="width: 100%; text-align: left;">
+                        <thead>
+                            <tr>
+                                <th>Sl No</th>
+                                <th>Customer ID</th>
+                                <th>Customer</th>
+                                <th>Building No</th>
+                                <th>Room No/<br>Floor No</th>
+                                <th>Route</th>
+                                <th>Amount</th>
+                                <th>Empty Can</th>
+                                <th>Coupon</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if instances %}
+                                {% for customer in instances %}
+                                {% get_outstanding_amount customer.pk date as outstanding_amount %}
+                                {% if outstanding_amount != 0 %}
+                                {% get_outstanding_bottles customer.pk date as outstanding_bottles %}
+                                {% get_outstanding_coupons customer.pk date as outstanding_coupons %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ customer.custom_id }}</td>
+                                    <td>{{ customer.customer_name }}</td>
+                                    <td>{{ customer.building_name }}</td>
+                                    <td>{{ customer.door_house_no }}</td>
+                                    <td>{{ customer.routes.route_name }}</td>
+                                    <td>{{ customer.outstanding_amount }}</td>
+                                    <td>{{ outstanding_bottles }}</td>
+                                    <td>{{ outstanding_coupons }}</td>
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                                <tr>
+                                    <td colspan="6" class="text-end fw-bold">Total Outstanding Amount:</td>
+                                    <td class="fw-bold">{{ net_total_outstanding }}</td>
+                                    <td class="fw-bold">{{ total_outstanding_bottles }}</td>
+                                    <td class="fw-bold">{{ total_outstanding_coupons }}</td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="9" class="text-center">No outstanding records found.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        window.onload = function() {
+            window.print();
+        }
+    </script>
+
+</body>
+</html>

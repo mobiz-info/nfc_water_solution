@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Missed Customers Report - Print</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles for printing */
+        @media print {
+            body {
+                margin: 0;
+                padding: 10px;
+            }
+            .card {
+                border: none !important;
+                box-shadow: none;
+                margin-bottom: 20px;
+            }
+            .table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            .table-bordered th,
+            .table-bordered td {
+                border: 1px solid #dee2e6;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Missed Customers on Delivery Report
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Date:</strong> {{ date|date:'d-m-Y' }}</p>
+                        <p><strong>Route:</strong> {{ van_route.route_name }}</p>
+
+                        <table class="table table-bordered text-nowrap" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center !important;width:5%;" scope="col">Sl.No</th>
+                                    <th style="text-align:center !important;" scope="col">Missed Customer Name</th>
+                                    <th style="text-align:center !important;" scope="col">Customer ID</th>
+                                    <th style="text-align:center !important;" scope="col">Building Name/<br>House No</th>
+                                    <th style="text-align:center !important;" scope="col">Customer Type</th>
+                                    <th style="text-align:center !important;" scope="col">Default Bottle</th>
+                                    <th style="text-align:center !important;" scope="col">Last Sold Date</th>
+                                    <th style="text-align:center !important;" scope="col">Reason For Non-Visit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for customer in missed_customers %}
+                                    <tr>
+                                        <td style="text-align:center !important;">{{ forloop.counter }}</td>
+                                        <td style="text-align:center !important;">{{ customer.customer_name }}</td>
+                                        <td style="text-align:center !important;">{{ customer.custom_id }}</td>
+                                        <td style="text-align:center !important;">{{ customer.building_name }} {{ customer.door_house_no }}</td>
+                                        <td style="text-align:center !important;">{{ customer.customer_type }}</td>
+                                        <td style="text-align:center !important;">{{ customer.no_of_bottles }}</td>
+                                        <td style="text-align:center !important;">
+                                            {% if customer.last_sold_date %}
+                                                {{ customer.last_sold_date|date:'d-m-Y' }}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                        <td style="text-align:center !important;">
+                                            {% if customer.reason_for_non_visit %}
+                                                {{ customer.reason_for_non_visit.reason_name }}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="6" style="text-align:center !important;">No Missed Customers found.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS (optional) -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        window.onload = function() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

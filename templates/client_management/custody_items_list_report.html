@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block title %} Users List {% endblock %}
+{% block content %}
+{% load static %}
+        <!-- End::app-sidebar -->
+        <!-- Page Header -->
+        <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+            <h4 class="fw-medium mb-0">Customers Custody Report</h4>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+            </ol>
+        </div>
+        <div class="main-content app-content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card custom-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    Report
+                                </div>
+                                {% comment %} <div class="ms-auto">
+                                    <a href="{% url 'vacation_route' %}">
+                                    <button type="button" class="btn btn-success btn-wave text-end d-flex me-4 my-auto"><i class="bi bi-plus-circle me-1"></i>Create</button>
+                                </a> {% endcomment %}
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-bordered text-nowrap" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Sl.No</th>
+                                            <th scope="col">Customer</th>
+                                            <th scope="col">Custody Items</th>
+                                            <th>Agreement No</th>
+                                            <th scope="col">Total Amount</th>
+                                            {% comment %} <th scope="col">Actions</th> {% endcomment %}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% load el_pagination_tags %}
+                                        {% paginate 20 instances %}
+                                        {% for data in instances %}
+                                        <tr>
+                                            <td style="text-align:center;">{{forloop.counter}}</td>
+                                            <td style="text-align:left;">{{data.customer}}</td>
+                                            <td style="text-align:center;">
+                                                <table class="table table-bordered text-nowrap" style="width:100%">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Product</th>
+                                                            <th>QTY</th>
+                                                            <th>Serial No</th>
+                                                            <th>Amount</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for item in data.custodycustomitems_set.all %}
+                                                        <tr>
+                                                            <td class="text-left">{{ item.product.product_name }}</td>
+                                                            <td class="capital-field">{{ item.quantity }}</td>
+                                                            <td class="capital-field">{{ item.serialnumber }}</td>
+                                                            <td class="amount-row text-right">{% if item.amount %}{{ item.amount }}{% else %}--{% endif %}</td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                            <td class="capital-field">{% if data.agreement_no %}{{data.agreement_no}}{% else %}--{% endif %}</td>
+                                            <td style="text-align:center;">{% if data.total_amount %}{{data.total_amount}}{% else %}--{% endif %}</td>
+                                            <!-- <td style="text-align:center;">{{ data.note }}</td> -->
+                                            {% comment %} <td>
+                                                <div class="g-2">
+                                                    
+                                                    <a href="{% url 'vacation_edit' data.vacation_id %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Edit">
+                                                        <span class="ri-pencil-line fs-14"></span>
+                                                    </a>
+                                                    <a href="{% url 'vacation_delete' data.vacation_id %}" aria-label="anchor" class="btn btn-danger-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Delete">
+                                                        <span class="ri-delete-bin-7-line fs-14"></span>
+                                                    </a>
+                                                </div>
+                                            </td> {% endcomment %}
+                                        </tr>
+                                        {%endfor%}
+                                    </tbody>
+                                </table>
+                                {% get_pages %}
+                                <div class="clearfix"></div>
+                                <div class="row pagi my-3">
+                                    <div class="col-sm-6 col-xs-6 tot my-pagination">
+                                        <div class="m-t-10 text-start">
+                                            Showing {{title}}
+                                            <span class="current_page_index">{{ pages.current_start_index }}</span> - <span
+                                            class="current_end_status">{{ pages.current_end_index }}</span> of <span
+                                            class="total_count">{{ pages.total_count }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-xs-6 text-end pagination-btn-div">{% show_pages %}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End::app-content -->
+        {% endblock %}

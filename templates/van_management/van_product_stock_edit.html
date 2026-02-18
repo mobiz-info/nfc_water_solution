@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Edit Van Stock</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Van Management</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Edit Van Stock</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-1 -->
+        <div class="row justify-content-center">
+            <div class="col-auto">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title mx-auto">
+                            Edit Van Stock
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form action="." role="form" method="post" enctype="multipart/form-data" class="row g-3 ajax redirect" autocomplete="off" novalidate>
+                            {% csrf_token %}
+                            <!-- Group fields in sets of 3 -->
+                            <div class="row">
+                                <!-- Opening Count -->
+                                <div class="col-md-4">
+                                    <div class="form-group required">
+                                        <label class="control-label">Opening Count</label>
+                                        {{ van_stock_form.opening_count }}
+                                        <span style="color: red;">{{ van_stock_form.opening_count.errors }}</span>
+                                    </div>
+                                </div>
+                                <!-- Change Count -->
+                                <div class="col-md-4">
+                                    <div class="form-group required">
+                                        <label class="control-label">Change Count</label>
+                                        {{ van_stock_form.change_count }}
+                                        <span style="color: red;">{{ van_stock_form.change_count.errors }}</span>
+                                    </div>
+                                </div>
+                                <!-- Damage Count -->
+                                <div class="col-md-4">
+                                    <div class="form-group required">
+                                        <label class="control-label">Damage Count</label>
+                                        {{ van_stock_form.damage_count }}
+                                        <span style="color: red;">{{ van_stock_form.damage_count.errors }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            <div class="row">
+                                <!-- Empty Count -->
+                                <div class="col-md-4">
+                                    <div class="form-group required">
+                                        <label class="control-label">Empty Count</label>
+                                        {{ van_stock_form.empty_can_count }}
+                                        <span style="color: red;">{{ van_stock_form.empty_can_count.errors }}</span>
+                                    </div>
+                                </div>
+                                <!-- Return Count -->
+                                <div class="col-md-4">
+                                    <div class="form-group required">
+                                        <label class="control-label">Return Count</label>
+                                        {{ van_stock_form.return_count }}
+                                        <span style="color: red;">{{ van_stock_form.return_count.errors }}</span>
+                                    </div>
+                                </div>
+                                <!-- Request Count -->
+                                <div class="col-md-4">
+                                    <div class="form-group required">
+                                        <label class="control-label">Request Count</label>
+                                        {{ van_stock_form.requested_count }}
+                                        <span style="color: red;">{{ van_stock_form.requested_count.errors }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            <div class="row">
+                                <!-- Pending Count -->
+                                <div class="col-md-4">
+                                    <div class="form-group required">
+                                        <label class="control-label">Pending Count</label>
+                                        {{ van_stock_form.pending_count }}
+                                        <span style="color: red;">{{ van_stock_form.pending_count.errors }}</span>
+                                    </div>
+                                </div>
+                                <!-- Sold Count -->
+                                <div class="col-md-4">
+                                    <div class="form-group required">
+                                        <label class="control-label">Sold Count</label>
+                                        {{ van_stock_form.sold_count }}
+                                        <span style="color: red;">{{ van_stock_form.sold_count.errors }}</span>
+                                    </div>
+                                </div>
+                                <!-- Stock Count -->
+                                <div class="col-md-4">
+                                    <div class="form-group required">
+                                        <label class="control-label">Stock Count</label>
+                                        {{ van_stock_form.stock }}
+                                        <span style="color: red;">{{ van_stock_form.stock.errors }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            <div class="row">
+                                <!-- FOC Count -->
+                                <div class="col-md-4">
+                                    <div class="form-group required">
+                                        <label class="control-label">FOC Count</label>
+                                        {{ van_stock_form.foc }}
+                                        <span style="color: red;">{{ van_stock_form.foc.errors }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            <!-- Submit and Back Buttons -->
+                            <div class="row">
+                                <div class="col-12 text-end mt-5">
+                                    <input type="submit" class="btn btn-primary me-2 mb-2" value="Submit">
+                                    <button class="btn btn-success me-md-2 mb-2" type="button" onClick="javascript:history.go(-1);">
+                                        <i class="bi bi-backspace-fill pe-1"></i>Back
+                                    </button>
+                                </div>
+                            </div>
+                        </form>                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

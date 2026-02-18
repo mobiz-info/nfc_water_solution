@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block title %} GPS LOCK {% endblock %}
+{% block content %}
+{% load static %}
+        <!-- End::app-sidebar -->
+        <!-- Page Header -->
+        <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+            <h4 class="fw-medium mb-0">GPS LOCK</h4>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">GPS Lock</li>
+            </ol>
+        </div>
+        <!-- Page Header Close -->
+
+
+
+        <!-- Start::app-content -->
+        <div class="main-content app-content">
+            <div class="container-fluid">
+
+                
+                         <!-- Start:: row-2 -->
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card custom-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    Enable GPS Lock for Customers by Route
+                                </div>
+                                
+                            </div>
+                            
+                            <div class="card-body">
+                                <table id="responsiveDataTable" class="table table-bordered text-nowrap" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align:center;width:5%;" scope="col">Sl.No</th>
+                                            <th style="text-align:center;" scope="col">Route Name</th>
+                                            <th style="text-align:center;" scope="col">Actions</th>
+                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for data in route_li %}
+                                        <tr>
+                                            <td style="text-align:right;">{{forloop.counter}}</td>
+                                            <td style="text-align:left;">{{data.route_name}}</td>
+                                            <td style="text-align:left;">
+                                                <a href="{% url 'gps_active' data.route_id %}" 
+                                                   class="btn btn-sm {% if data.customer_route.all.0.gps_module_active %}btn-danger{% else %}btn-success{% endif %}" 
+                                                   data-bs-toggle="tooltip" 
+                                                   data-bs-original-title="GPS Lock">
+                                                   {% if data.customer_route.all.0.gps_module_active %}
+                                                        Disable GPS
+                                                   {% else %}
+                                                        Enable GPS
+                                                   {% endif %}
+                                                </a>
+
+                                                <a href="{% url 'gps_lock_view' data.route_id %}" class="btn btn-warning-light btn-sm" data-bs-toggle="tooltip" title="View">
+                                                    <span class="bi bi-eye fs-14"></span>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {%endfor%}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End:: row-2 -->
+
+                      
+
+            </div>
+        </div>
+        <!-- End::app-content -->
+        {% endblock %}

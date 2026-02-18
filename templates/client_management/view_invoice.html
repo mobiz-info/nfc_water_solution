@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!-- End::app-sidebar -->
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Invoice List</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Invoice List</li>
+    </ol>
+</div>
+<!-- Page Header Close -->
+<!-- Start::app-content -->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Invoice List
+                        </div>
+
+                        
+                        
+                    </div>
+                    <div class="card-body">
+                        
+
+                        <div class="card-body" style="overflow: auto;">
+                            <table class="table table-bordered text-nowrap" style="width:100%">
+                                <thead>
+                                    <tr>
+                                    <th scope="col" class="text-center">Sl.No</th>
+                                    <th scope="col" class="text-center">Created Date</th>
+                                    <th scope="col" class="text-center">Invoice No</th>
+                                    <th scope="col" class="text-left">Customer Name</th>
+                                    <th scope="col" class="text-left">Customer Id</th>
+                                    <th scope="col" class="text-left">Invoice Type</th>
+                                    <th scope="col" class="text-center">Net Taxeble</th>
+                                    <th scope="col" class="text-center">VAT</th>
+                                    <th scope="col" class="text-center">Total Amount</th>
+                                    <th scope="col" class="text-center">Amount Recieved</th>
+                                    <th scope="col" class="text-right">Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    {% comment %} {% for invoice in invoice %} {% endcomment %}
+                                    <tr>
+                                        <td class="text-center">1</td>
+                                        <td class="text-left">{{invoice.created_date}}</td>
+                                        <td class="text-left">{{invoice.invoice_no}}</td>
+                                        <td class="text-center">{{invoice.customer.customer_name}}</td>
+                                        <td class="text-center">{{invoice.customer.custom_id}}</td>
+                                        <td class="text-center">{{invoice.get_invoice_type_display}}</td>
+                                        <td class="text-center">{{invoice.net_taxable}}</td>
+                                        <td class="text-center">{{invoice.vat}}%</td>
+                                        <td class="text-center">{{invoice.amout_total}}</td>
+                                        <td class="text-center">{{invoice.amout_recieved}}</td>
+                                        <td class="text-right">
+                                            <div class="g-2">
+                                                {% if invoice.can_edit %}
+                                                <a href="{% url 'invoice:edit_invoice' pk=invoice.pk %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Edit">
+                                                    <span class="ri-pencil-line fs-14"></span>
+                                                </a>
+                                                <a aria-label="anchor" class="action-button remove btn btn-danger-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Delete"
+                                                    data-id="{{invoice.pk}}" data-text="{{confirm_delete_message}}" data-title="Are you sure?" href="{% url 'invoice:delete_invoice' pk=invoice.pk %}"><span class="ri-delete-bin-7-line fs-14"></span>
+                                                </a>
+                                                {% endif %}
+                                                <a href="{% url 'invoice:invoice' pk=invoice.pk %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Invoice Info">
+                                                    <span class="ri-printer-fill fs-14"></span>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% comment %} {%endfor%} {% endcomment %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End:: row-2 -->
+    </div>
+</div>
+<!-- End::app-content -->
+{% endblock %}

@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% block title %} Cash Sales Report {% endblock %}
+{% block content %}
+{% load static %}
+{% load van_template_tags %}
+{% load sales_templatetags %}
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Cash Sales Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Sales Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Cash Sales Report</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Cash Sales Report
+                        </div>
+                    </div>
+                    <div class="mt">
+                        <form method="GET" action="{% url 'cashsales_report' %}">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-3">
+                                        <label for="date_from">From Date:</label>
+                                        <input type="date" class="form-control" id="date_from" name="date_from" value="{{ filter_data.filter_date_from }}">
+                                    </div>
+                                    <div class="col-3">
+                                        <label for="date_to">To Date:</label>
+                                        <input type="date" class="form-control" id="date_to" name="date_to" value="{{ filter_data.filter_date_to }}">
+                                    </div>
+                                    <div class="col-3">
+                                        <label for="route_name">Routes:</label>
+                                        <select name="route_name" class="form-select">
+                                            <option value="">All Routes</option>
+                                            {% for route in routes_instances %}
+                                                <option value="{{ route.route_name }}" {% if route.route_name == filter_data.route_name %}selected{% endif %}>{{ route.route_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col d-flex align-items-end justify-content-end">
+                                        <input type="submit" class="btn btn-primary btn-sm mx-1" value="Apply Filter">
+                                        {% if data_filter %}
+                                            <button type="button" class="btn btn-secondary btn-sm mx-1" onclick="resetFilters()" style="width:max-content">Reset Filter</button>
+                                        {% endif %}
+                                        <a href="{% url 'cashsales_report_print' %}?date_from={{ filter_data.filter_date_from }}&date_to={{ filter_data.filter_date_to }}&route_name={{ filter_data.route_name }}" class="btn btn-outline-success btn-sm mx-1" target="__blank"><i class="fas fa-file-excel"></i> Print</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        
+                    </div>
+                    {% if data_filter %}
+                    <div >
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-4">
+                                    <p><strong>Salesman: {{van_route.van.salesman.get_fullname}}</strong></p>
+                                </div>
+                                <div class="col-4">
+                                    <p><strong>Driver: {{van_route.van.driver.get_fullname}}</strong></p>
+                                </div>
+                            </div>
+                            {% comment %} <div class="row align-items-center">
+                                <div class="col-4">
+                                    <p>Route: {{van_route.routes.route_name}}</p>
+                                </div>
+                                <div class="col-4">
+                                    <p>Date: {{ filter_data.filter_date }}</p>
+                                </div>
+                            </div> {% endcomment %}
+                        </div>
+                    </div>
+                    <div id="table-container">
+                        <div class="card-body">
+                            <table  class="table table-bordered text-wrap" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center text-bold" colspan="8">Cash Sales</th>
+                                    </tr>
+                                    <tr>
+                                        <th style="text-align:center;">Sl No</th>
+                                        <th style="text-align:center;" scope="col">Reference No</th>
+                                        <th style="text-align:center;" scope="col">Customer Id</th>
+                                        <th style="text-align:center;" scope="col">Customer Name</th>
+                                        <th style="text-align:center;" scope="col">Total QTY</th>
+                                        <th style="text-align:center;" scope="col">Rate</th>
+                                        {% comment %} <th style="text-align:center;" scope="col">Vat</th> {% endcomment %}
+                                        <th style="text-align:center;" scope="col">Grand Total</th>
+                                        <th style="text-align:center;" scope="col">Net Payable</th>
+                                        <th style="text-align:center;" scope="col">Cash Recieved</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for sale in cash_sales %}
+                                    <tr>
+                                        <td style="text-align:center;">{{forloop.counter}}</td>
+                                        <td style="text-align:center;">{{sale.reference_number}}</td>
+                                        <td>{{sale.customer.custom_id}}</td>
+                                        <td>{{sale.customer.customer_name}}</td>
+                                        <td style="text-align:center;">{{sale.get_total_supply_qty}}</td>
+                                        <td style="text-align:center;">{{sale.customer.get_water_rate}}</td>
+                                        {% comment %} <td style="text-align:center;">{{sale.vat}}</td> {% endcomment %}
+                                        <td style="text-align:center;">{{sale.subtotal}}</td>
+                                        <td style="text-align:center;">{{sale.net_payable}}</td>
+                                        <td style="text-align:center;">{{sale.amount_recieved}}</td>
+                                    </tr>
+                                    {% endfor %}
+                                    {% for sale in recharge_cash_sales %}
+                                    <tr>
+                                        <td style="text-align:center;background-color:#ff9a44 !important;">{{forloop.counter}}</td>
+                                        <td style="text-align:center;background-color:#ff9a44 !important;">{{sale.reference_number}}</td>
+                                        <td style="background-color:#ff9a44 !important;">{{sale.customer.customer_name}}</td>
+                                        <td style="text-align:center;background-color:#ff9a44 !important;">1</td>
+                                        <td style="text-align:center;background-color:#ff9a44 !important;">{{sale.display_coupon_rates}}</td>
+                                        {% comment %} <td style="text-align:center;">0</td> {% endcomment %}
+                                        <td style="text-align:center;background-color:#ff9a44 !important;">{{sale.grand_total}}</td>
+                                        <td style="text-align:center;background-color:#ff9a44 !important;">{{sale.net_amount}}</td>
+                                        <td style="text-align:center;background-color:#ff9a44 !important;">{{sale.amount_recieved}}</td>
+                                    </tr>
+                                {% endfor %}  
+                                </tbody>
+                                <!-- Table Footer -->
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="4" style="text-align: right;">Total:</td>
+                                        <td style="text-align:center;">{{ cash_total_qty }}</td>
+                                        <td style="text-align:center;">-</td>
+                                        <td style="text-align:center;">{{ cash_total_subtotal }}</td>
+                                        <td style="text-align:center;">{{ cash_total_net_taxable }}</td>
+                                        <td style="text-align:center;">{{ cash_total_amount_recieved }}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<script>
+ $('#submit').click(function(e){ 
+    e.preventDefault();       
+            // Show the table when dates are selected
+            $('#table-container').show();
+    });
+
+    function resetFilters() {
+        // Redirect to the same page
+        location.href = "{% url 'cashsales_report' %}";
+    }
+</script>
+
+{% endblock %}

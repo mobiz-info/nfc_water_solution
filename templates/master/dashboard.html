@@ -1,0 +1,283 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="main-content app-content">
+    <div class="container-fluid">
+
+        <div class="d-md-flex d-block align-items-center justify-content-between my-4 page-header-breadcrumb">
+            
+            <!-- <div class="ms-md-1 ms-0"> -->
+                <!-- <nav>
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+                    </ol>
+                </nav> -->
+            <!-- </div> -->
+        </div>
+
+        <div class="row">
+            <div class="col-xxl-3 col-xl-6 col-lg-6 col-md-6">
+                <div class="card custom-card overflow-hidden">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start">
+                            <div class="me-3">
+                                <span class="avatar avatar-md avatar-rounded bg-success-transparent">
+                                    <i class="bx bx-money fs-18"></i>
+                                </span>
+                            </div>
+                            <div class="flex-fill">
+                                <p class="text-muted mb-0">Today's Collection</p>
+                                <h4 class="fw-semibold mt-1 text-success">₹ {{ today_collection|floatformat:2 }}</h4>
+                                <a class="text-success fs-12" href="{% url 'collection_list' %}">View Details <i class="ti ti-arrow-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xxl-3 col-xl-6 col-lg-6 col-md-6">
+                <div class="card custom-card overflow-hidden">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start">
+                            <div class="me-3">
+                                <span class="avatar avatar-md avatar-rounded bg-primary-transparent">
+                                    <i class="bx bx-trending-up fs-18"></i>
+                                </span>
+                            </div>
+                            <div class="flex-fill">
+                                <p class="text-muted mb-0">MTD Sales</p>
+                                <h4 class="fw-semibold mt-1 text-primary">₹ {{ mtd_sales|floatformat:2 }}</h4>
+                                <span class="text-muted fs-11">Month-to-Date Performance</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xxl-3 col-xl-6 col-lg-6 col-md-6">
+                <div class="card custom-card overflow-hidden">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start">
+                            <div class="me-3">
+                                <span class="avatar avatar-md avatar-rounded bg-info-transparent">
+                                    <i class="bx bx-bar-chart-alt-2 fs-18"></i>
+                                </span>
+                            </div>
+                            <div class="flex-fill">
+                                <p class="text-muted mb-0">MTD Collection</p>
+                                <h4 class="fw-semibold mt-1 text-info">₹ {{ mtd_collection|floatformat:2 }}</h4>
+                                <span class="text-muted fs-11">Total Monthly Received</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xxl-3 col-xl-6 col-lg-6 col-md-6">
+                <div class="card custom-card overflow-hidden">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start">
+                            <div class="me-3">
+                                <span class="avatar avatar-md avatar-rounded bg-warning-transparent">
+                                    <i class="bx bx-credit-card fs-18"></i>
+                                </span>
+                            </div>
+                            <div class="flex-fill">
+                                <p class="text-muted mb-0">Credit Outstanding</p>
+                                <h4 class="fw-semibold mt-1 text-warning">₹ {{ credit_outstanding|floatformat:2 }}</h4>
+                                <span class="text-muted fs-11 text-nowrap">Total Pending Payments</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xxl-9 col-xl-9">
+                <div class="card custom-card">
+                    <div class="card-header justify-content-between">
+                        <div class="card-title">Sales vs Collection Trend (Last 7 Days)</div>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="salesChart" height="340"></canvas>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="col-xxl-3 col-xl-3">
+                <div class="card custom-card">
+                    <div class="card-body py-4">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <p class="text-muted mb-1">Active Customers</p>
+                                <h4 class="fw-semibold mb-0">{{ active_customers }}</h4>
+                            </div>
+                            <span class="avatar avatar-md bg-teal-transparent avatar-rounded">
+                                <i class="bx bx-user-check fs-20"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="card custom-card">
+                    <div class="card-body py-4">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <p class="text-muted mb-1">Collection Efficiency</p>
+                                <h4 class="fw-semibold mb-0 text-purple">{{ collection_rate }}%</h4>
+                            </div>
+                            <span class="avatar avatar-md bg-purple-transparent avatar-rounded">
+                                <i class="bx bx-target-lock fs-20"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xxl-6">
+                <div class="card custom-card">
+                    <div class="card-header justify-content-between">
+                        <div class="card-title">Recent Invoices</div>
+                        <a href="{% url 'invoice:invoice_list' %}" class="btn btn-sm btn-primary-light">View All</a>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table text-nowrap table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Invoice No</th>
+                                        <th>Customer</th>
+                                        <th class="text-end">Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for invoice in recent_invoices %}
+                                    <tr>
+                                        <td><span class="fw-semibold text-primary">{{ invoice.invoice_no }}</span></td>
+                                        <td>{{ invoice.customer.customer_name }}</td>
+                                        <td class="text-end">₹ {{ invoice.amout_total|floatformat:2 }}</td>
+                                        <td>
+                                            {% if invoice.amout_total == invoice.amout_recieved %}
+                                                <span class="badge bg-success-transparent">Paid</span>
+                                            {% else %}
+                                                <span class="badge bg-warning-transparent">Pending</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr><td colspan="4" class="text-center py-4">No recent invoices</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xxl-6">
+                <div class="card custom-card">
+                    <div class="card-header justify-content-between">
+                        <div class="card-title">Recent Collections</div>
+                        <a href="{% url 'collection_list' %}" class="btn btn-sm btn-success-light">View All</a>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table text-nowrap table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Customer</th>
+                                        <th>Method</th>
+                                        <th class="text-end">Amount</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for collection in recent_collections %}
+                                    <tr>
+                                        <td>{{ collection.customer.customer_name }}</td>
+                                        <td><span class="badge bg-info-transparent">{{ collection.payment_method }}</span></td>
+                                        <td class="text-end text-success fw-semibold">₹ {{ collection.amount_received|floatformat:2 }}</td>
+                                        <td>{{ collection.created_date|date:"d M, Y" }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr><td colspan="4" class="text-center py-4">No recent collections</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// 1. Line Chart: Sales vs Collection
+const salesCtx = document.getElementById('salesChart').getContext('2d');
+new Chart(salesCtx, {
+    type: 'line',
+    data: {
+        labels: {{ days|safe }},  // Using your 'days' variable
+        datasets: [
+            {
+                label: 'Sales',
+                data: {{ sales_data|safe }}, // Using your 'sales_data'
+                borderColor: '#845adf',
+                backgroundColor: 'rgba(132, 90, 223, 0.1)',
+                tension: 0.4,
+                fill: true
+            },
+            {
+                label: 'Collection',
+                data: {{ collection_data|safe }}, // Using your 'collection_data'
+                borderColor: '#23b7e5',
+                backgroundColor: 'rgba(35, 183, 229, 0.1)',
+                tension: 0.4,
+                fill: true
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: { beginAtZero: true }
+        }
+    }
+});
+
+// 2. Doughnut Chart: Payment Methods
+{% if payment_labels %}
+const paymentCtx = document.getElementById('paymentChart').getContext('2d');
+new Chart(paymentCtx, {
+    type: 'doughnut',
+    data: {
+        labels: {{ payment_labels|safe }}, // Using your 'payment_labels'
+        datasets: [{
+            data: {{ payment_values|safe }}, // Using your 'payment_values'
+            backgroundColor: [
+                '#845adf', '#23b7e5', '#26bf94', '#f5b849', '#e74c5e'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { position: 'bottom' }
+        }
+    }
+});
+{% endif %}
+</script>
+{% endblock %}

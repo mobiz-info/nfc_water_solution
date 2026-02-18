@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Expense</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Expense</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title mx-auto">
+                            Edit Expense {{expense.expense_t}}</div>
+                        </div>
+                        <div class="card-body">
+                            <form enctype="multipart/form-data" role="form" method="post"
+                                class="row g-3 needs-validation">
+                                {% csrf_token %}
+                                <div class="row">
+                                    
+                                    
+                                    <div class="col-md-6 my-3">
+                                        <div class="form-group required">
+                                            <span style="color: red;" class="required-star">*</span>
+                                            <label class="control-label">Route</label>
+                                            {{ form.route }}
+                                            <span style="color: red;">{{ form.route.errors }}</span>
+                                        </div>
+                                    </div>
+                             
+                                    <div class="col-md-6 ">
+                                        <div class="form-group required  my-3">
+                                            <span style="color: red;" class="required-star">*</span>
+                                            <label class="control-label">Van</label>
+                                            {{ form.van }}
+                                            <span style="color: red;">{{ form.van.errors }}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="form-group required my-3">
+                                            <span style="color: red;" class="required-star">*</span>
+                                            <label class="control-label">amount</label>
+                                            {{ form.amount }}
+                                            <span style="color: red;">{{ form.amount.errors }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group required my-3">
+                                            <span style="color: red;" class="required-star">*</span>
+                                            <label class="control-label">Date</label>
+                                            {{ form.expense_date }}
+                                            <span style="color: red;">{{ form.expense_date.errors }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group required">
+                                            <span style="color: red;" class="required-star my-3">*</span>
+                                            <label class="control-label">Remarks (Optional)</label>
+                                            {{ form.remarks }}
+                                            <span style="color: red;">{{ form.remarks.errors }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 text-end mt-5">
+                                <input type="submit" class="btn btn-primary me-2 mb-2" value="Submit">
+                                <button class="btn btn-success me-md-2 mb-2" type="button" onClick="javascript:history.go(-1);">
+                                    <i class="bi bi-backspace-fill pe-1"></i>Back</button>
+                                <a class="btn btn-success me-md-2 mb-2" href="{% url 'expense_list' %}">
+                                    <i class="bi bi-backspace-fill pe-1"></i> Back to Dashboard
+                                </a>
+                            </div> 
+                            </form>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+{% endblock %}

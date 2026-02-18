@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% block title %}Product Onload Report{% endblock %}
+{% block content %}
+{% load static %}
+{% load el_pagination_tags %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Product Onload Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Reports</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Product Onload Report</li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+        
+        <!-- Filter Section -->
+        <div class="card custom-card">
+            <div class="card-header">
+                <div class="card-title">Product Onload Report</div>
+            </div>
+            <div class="card-body">
+                <form method="GET" action="{% url 'production_onload_report' %}">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <label for="start_date">From Date:</label>
+                            <input type="date" class="form-control" id="start_date" name="start_date" value="{{ filter_data.filter_date_from }}">
+                        </div>
+                        <div class="col">
+                            <label for="end_date">To Date:</label>
+                            <input type="date" class="form-control" id="end_date" name="end_date" value="{{ filter_data.filter_date_to }}">
+                        </div>
+                        {% comment %} <div class="col">
+                            <label for="route_name">Van Route:</label>
+                            <select name="route_name" class="form-select">
+                                <option value="">All Routes</option>
+                                {% for van_route in van_routes %}
+                                    <option value="{{ van_route.routes.route_name }}" {% if van_route.routes.route_name == filter_data.route_name %}selected{% endif %}>
+                                        {{ van_route.routes.route_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div> {% endcomment %}
+                        {% comment %} <div class="col">
+                            <label for="q">Search:</label>
+                            <input type="text" name="q" class="form-control" placeholder="Search ..." value="{{ filter_data.q }}">
+                        </div> {% endcomment %}
+                        <div class="col d-flex align-items-end justify-content-end">
+                            <button type="submit" class="btn btn-primary btn-sm mx-1">Apply Filter</button>
+                            <button type="button" class="btn btn-secondary btn-sm mx-1" onclick="resetFilters()">Reset</button>
+                            <a href="{% url 'production_onload_print' %}?start_date={{ filter_data.filter_date_from }}&end_date={{ filter_data.filter_date_to }}" class="btn btn-outline-success btn-sm mx-1" target="_blank">
+                                <i class="fas fa-file-print"></i> Print
+                            </a>
+                            <a href="{% url 'download_production_onload' %}?start_date={{ filter_data.filter_date_from }}&end_date={{ filter_data.filter_date_to }}" class="btn btn-outline-success btn-sm mx-1" target="_blank">
+                                <i class="fas fa-file-excel"></i> Excel
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Table Section -->
+        <div class="card custom-card mt-4">
+            <div class="card-body">
+                <table class="table table-bordered text-wrap w-100">
+                    <thead>
+                        <tr>
+                            <th>Sl.No</th>
+                            <th>Product Name</th>
+                            <th>Van Name</th>
+                            <th>Order Date</th>
+                            <th>Initial Van Stock</th>
+                            <th>Updated Van Stock</th>
+                            <th>Initial Product Stock</th>
+                            <th>Updated Product Stock</th>
+                            <th>Scrap Stock</th>
+                            <th>Service Count</th>
+                            <th>Used Bottle Count</th>
+                            <th>Fresh Bottle Count</th>
+                            <th>Issued Bottle Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% paginate 50 issued_data %}
+                        {% for data in issued_data %}
+                            <tr>
+                                <td class="text-center">{{ forloop.counter }}</td>
+                                <td>{{ data.product_name }}</td>
+                                <td>{{ data.van_name }}</td>
+                                <td>{{ data.order_date }}</td>
+                                <td>{{ data.initial_van_stock }}</td>
+                                <td>{{ data.updated_van_stock }}</td>
+                                <td>{{ data.initial_product_stock }}</td>
+                                <td>{{ data.updated_product_stock }}</td>
+                                <td>{{ data.scrap_stock }}</td>
+                                <td>{{ data.service_count }}</td>
+                                <td>{{ data.used_bottle_count }}</td>
+                                <td>{{ data.fresh_bottle_count }}</td>
+                                <td>{{ data.issued_bottle_count }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="13" class="text-center text-muted">No data available.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+                <!-- Pagination -->
+                {% get_pages %}
+                <div class="clearfix"></div>
+                <div class="row my-3">
+                    <div class="col-sm-6 text-start">
+                        Showing {{ title }}
+                        <span class="current_page_index">{{ pages.current_start_index }}</span> - 
+                        <span class="current_end_status">{{ pages.current_end_index }}</span> of 
+                        <span class="total_count">{{ pages.total_count }}</span>
+                    </div>
+                    <div class="col-sm-6 text-end">{% show_pages %}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+    function resetFilters() {
+        location.href = "{% url 'production_onload_report' %}";
+    }
+</script>
+{% endblock %}

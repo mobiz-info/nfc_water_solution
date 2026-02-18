@@ -1,0 +1,251 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Create Coupon</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Coupon Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Coupon</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-1 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title mx-auto">
+                            Create Coupon
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form enctype="multipart/form-data" role="form" method="post" class="row g-3 needs-validation ajax redirect">
+                            {% csrf_token %}
+                            <!--row 1-->
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class="control-label">Coupon Type</label>
+                                    {{ form.coupon_type }}
+                                    <span style="color: red;">{{ form.coupon_type.errors }}</span>
+                                </div>
+                            </div>
+                            <input type="hidden" id="coupon_type_freeleaf_count">
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Book No</label>
+                                    {{ form.book_num }}
+                                    <span style="color: red;">{{ form.book_num.errors }}</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Starting Leaf</label>
+                                    <input type="text" id="leaf_starting_no" class="form-control" placeholder="example:A101">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Ending Leaf</label>
+                                    <input type="text" id="leaf_ending_no" class="form-control" placeholder="example:A150">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Free Leaf Starting</label>
+                                    <input type="text" id="free_leaf_starting_no" class="form-control" placeholder="example:A301">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Free Leaf Ending</label>
+                                    <input type="text" id="free_leaf_ending_no" class="form-control" placeholder="example:A205">
+                                </div>
+                            </div>
+                            <!-- Generate Coupons Button -->
+                            <div class="col-12 text-end mt-5">
+                                <button id="generate-btn" class="btn btn-primary me-2 mb-2" type="button">Generate Coupon</button>
+                            </div>
+                            
+                            <div id="error-message" style="color: red;"></div>
+                            
+                            <div class="row" id="leaflet-serial-numbers">
+                                <div class="col-xl-12">
+                                    <div class="card custom-card">
+                                        <h4>Valuable Leaflets: <span id="coupon-book-num"></span></h4>
+                                        <ul id="leaflet-list" class="d-flex"></ul>
+                                        <textarea id="valuable_leafs_numbers" name="valuable_leafs" class="form-control d-none"></textarea>
+                                        <h4 class="free-leaflet-list">Free Leaflets:</h4>
+                                        <ul id="free-leaflet-list" class="d-flex free-leaflet-list"></ul>
+                                        <textarea id="free_leafs_numbers" name="free_leafs" class="form-control d-none"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row my-3 me-1" id="back-button" style="display: none;">
+                                <div class="col-12 text-end">
+                                    <button class="btn btn-success me-md-2 " type="submit"><i class="bi bi-save-fill pe-1"></i>Save</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block static %}
+<style>
+    #leaflet-list,#free-leaflet-list {
+        display: flex;
+        flex-wrap: wrap; /* Allows items to wrap to the next row */
+        padding: 15px;
+        background: aliceblue;
+        border: 1px solid aquamarine;
+        border-radius: 8px;
+        overflow: hidden; /* Hides any overflow, if necessary */
+        width: 100%; /* Ensures the list takes up the full width of the container */
+    }
+    .generated_leaf_li{
+        padding: 8px 12px;
+        background: lightyellow;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin: 5px;
+        min-width: 78px; /* Ensures each item has a minimum width */
+        max-width: fit-content;
+        box-sizing: border-box;
+        text-align: center;
+        display: inline-block;
+    }
+</style>
+<script>
+    document.getElementById('generate-btn').addEventListener('click', function () {
+        const startLeaf = document.getElementById('leaf_starting_no').value;
+        const endLeaf = document.getElementById('leaf_ending_no').value;
+        const freeStartLeaf = document.getElementById('free_leaf_starting_no').value;
+        const freeEndLeaf = document.getElementById('free_leaf_ending_no').value;
+    
+        const errorMessage = document.getElementById('error-message');
+        const leafletList = document.getElementById('leaflet-list');
+        const freeLeafletList = document.getElementById('free-leaflet-list');
+    
+        leafletList.innerHTML = '';
+        freeLeafletList.innerHTML = '';
+        errorMessage.textContent = '';
+    
+        if ($('#coupon_type_freeleaf_count').val() > 0) {
+            if (!startLeaf || !endLeaf || !freeStartLeaf || !freeEndLeaf) {
+                errorMessage.textContent = 'Please fill in all leaf numbers.';
+                return;
+            }
+            // Generate valuable leaflets
+            generateLeafletList(startLeaf, endLeaf, leafletList, 'valuable_leafs_numbers');
+            // Generate free leaflets
+            generateLeafletList(freeStartLeaf, freeEndLeaf, freeLeafletList, 'free_leafs_numbers');
+        } else {
+            if (!startLeaf || !endLeaf) {
+                errorMessage.textContent = 'Please fill in all leaf numbers.';
+                return;
+            }
+            // Generate valuable leaflets
+            generateLeafletList(startLeaf, endLeaf, leafletList, 'valuable_leafs_numbers');
+        }
+    
+        document.getElementById('back-button').style.display = 'block';
+    });
+    
+    function generateLeafletList(startLeaf, endLeaf, listElement, textareaId) {
+        const startMatch = startLeaf.match(/([a-zA-Z]*)(\d+)/);
+        const endMatch = endLeaf.match(/([a-zA-Z]*)(\d+)/);
+    
+        if (!startMatch || !endMatch) {
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.textContent = 'Invalid leaf number format.';
+            return;
+        }
+    
+        const startPrefix = startMatch[1];
+        const startNum = parseInt(startMatch[2], 10);
+        const startLength = startMatch[2].length; // Length of the numeric part
+        const endPrefix = endMatch[1];
+        const endNum = parseInt(endMatch[2], 10);
+    
+        if (startPrefix !== endPrefix) {
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.textContent = 'Prefixes of starting and ending leaf numbers must match.';
+            return;
+        }
+    
+        if (startNum > endNum) {
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.textContent = 'Starting leaf number cannot be greater than ending leaf number.';
+            return;
+        }
+    
+        const textareaElement = document.getElementById(textareaId);
+    
+        // Clear previous content
+        textareaElement.value = '';
+    
+        let leafletList = [];
+    
+        for (let i = startNum; i <= endNum; i++) {
+            const paddedNum = i.toString().padStart(startLength, '0'); // Ensure the number matches the original length
+            const fullLeafNumber = startPrefix + paddedNum;
+    
+            const listItem = document.createElement('li');
+            listItem.textContent = fullLeafNumber;
+            listItem.classList.add("generated_leaf_li");
+            listElement.appendChild(listItem);
+    
+            // Add to the list
+            leafletList.push(fullLeafNumber);
+        }
+    
+        // Convert the list to a string with commas separating the values
+        textareaElement.value = leafletList.join(', ');
+    }
+       
+</script>
+<script>
+    $('#id_coupon_type').change(function () {
+        var coupon_type = $(this).val();
+        var url = "{% url 'get_next_coupon_bookno' %}";
+
+        const leafletList = document.getElementById('leaflet-list').innerHTML = '';
+        const freeLeafletList = document.getElementById('free-leaflet-list').innerHTML = '';
+
+        $.ajax({
+            url: url,
+            data: {'coupon_type': coupon_type},
+            dataType: 'json',
+            success: function (data) {
+                $('#id_book_num').val(data.next_coupon_bookno);
+                $('#leaf_starting_no').val(data.next_leaf_no);
+                $('#leaf_ending_no').val(data.end_leaf_no);
+                $('#free_leaf_starting_no').val(data.next_free_leaf_no);
+                $('#free_leaf_ending_no').val(data.end_free_leaf_no);
+                $('#coupon_type_freeleaf_count').val(data.coupon_type_freeleaf_count);
+
+                var free_leaf_count = data.coupon_type_freeleaf_count;
+                if (free_leaf_count < 1){
+                    $("#free_leaf_starting_no").attr('disabled', true);
+                    $("#free_leaf_ending_no").attr('disabled', true);
+                    $("h4.free-leaflet-list").css("display","none")
+                    $("ul.free-leaflet-list").removeClass("d-flex");
+                    $("ul.free-leaflet-list").addClass("d-none");
+                }else{
+                    $("#free_leaf_starting_no").removeAttr('disabled');
+                    $("#free_leaf_ending_no").removeAttr('disabled');
+                    $("h4.free-leaflet-list").css("display","block");
+                    $("ul.free-leaflet-list").removeClass("d-none");
+                    $("ul.free-leaflet-list").addClass("d-flex");
+                }
+            }
+        });
+    });
+</script>
+{% endblock static %}
+

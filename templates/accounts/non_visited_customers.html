@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+{% block title %} Non-Visited Customers {% endblock %}
+{% block content %}
+{% load accounts_templatetags %}
+{% load static %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Non-Visited Customers</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Client Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Non-Visited Customers</li>
+    </ol>
+</div>
+<!-- Page Header Close -->
+
+<!-- Start::app-content -->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Non-Visited Customers
+                        </div>
+                        {% comment %} <div class="ms-auto">
+                            <a href="{% url 'customer_create' %}">
+                                <button type="button" class="btn btn-success btn-wave text-end d-flex me-4 my-auto">
+                                    <i class="bi bi-plus-circle me-1"></i>Create
+                                </button>
+                            </a>
+                        </div> {% endcomment %}
+                    </div>
+                    <div class="card-body">
+                        <div style="float:right;padding:10px 0px">
+                            <div class="input-group">
+                                {% comment %} <a href="{% url 'non_visited_customers_excel' %}?date={{filter_data.filter_date}}&route_name={{filter_data.route_name}}" class="btn btn-outline-success" style="width: 7em;">
+                                    <i class="fas fa-file-excel"></i> Excel
+                                </a> {% endcomment %}
+                            </div>
+                        </div>
+                        {% comment %} <div style="float:right;padding:10px">
+                            <div class="input-group">
+                                <a onclick="printDiv('printArea'); return false;" class="btn btn-outline-success" style="width: 7em;">
+                                    <i class="fas fa-print"></i> Print
+                                </a>
+                            </div>
+                        </div> {% endcomment %}
+                        <div style="float:right;padding:10px 0px">
+                            <form method="GET">
+                                <div class="input-group">
+                                    <select name="route_name" class="form-select">
+                                        <option value="">All Routes</option>
+                                        {% for route in routes_instances %}
+                                            <option value="{{ route.route_name }}" {% if route.route_name == filter_data.route_name %}selected{% endif %}>
+                                                {{ route.route_name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <input type="date" name="date" class="form-control" value="{{ filter_data.filter_date }}">
+                                    <input type="text" name="q" class="form-control" placeholder="Search ..." value="{{filter_data.q}}">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-search"></i> Search
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        <table class="table table-bordered text-nowrap" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center !important;width:5%;" scope="col">Sl.No</th>
+                                    <th style="text-align:center !important;" scope="col">Customer ID</th>
+                                    <th style="text-align:center !important;" scope="col">Customer Name</th>
+                                    <th style="text-align:center !important;" scope="col">Route</th>
+                                    <th style="text-align:center !important;" scope="col">Location</th>
+                                    <th style="text-align:center !important;" scope="col">Mobile No</th>
+                                    <th style="text-align:center !important;" scope="col">Building Name/<br>House No</th>
+                                    {% comment %} <th style="text-align:center !important;" scope="col">Next Visit <br>Date</th>
+                                    <th style="text-align:center !important;" scope="col">Sales Type</th>
+                                    <th style="text-align:center !important;" scope="col">Actions</th> {% endcomment %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% load el_pagination_tags %}
+                                {% paginate 50 non_visited %}
+                                {% for data in non_visited %}
+                                    <tr>
+                                        <td style="text-align:center;">{{ forloop.counter }}</td>
+                                        <td style="text-align:left;">{{ data.custom_id }}</td>
+                                        <td style="text-align:left;">{{ data.customer_name }}</td>
+                                        <td style="text-align:left;">{{ data.route }}</td>
+                                        <td style="text-align:left;">{{ data.location }}</td>
+                                        <td style="text-align:left;">{{ data.mobile }}</td>
+                                        <td style="text-align:left;">{{ data.building_name }}<br>{{ data.door_house_no }}</td>
+                                        {% comment %} <td style="text-align:left;">{{ data.next_visit_date }}</td> <!-- Add logic to calculate next visit date if needed -->
+                                        <td style="text-align:left;">{{ data.sales_type }}</td>
+                                        <td style="text-align:center;"> {% endcomment %}
+                                            {% comment %} <a href="{% url 'customer_details' data.pk %}" aria-label="anchor" class="btn btn-warning-light btn-sm" data-bs-toggle="tooltip" data-bs-original-title="View">
+                                                <span class="bi bi-eye fs-14"></span>
+                                            </a> {% endcomment %}
+                                            <!-- Additional action buttons here -->
+                                        {% comment %} </td> {% endcomment %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% get_pages %}
+                        <div class="clearfix"></div>
+                        <div class="row pagi my-3">
+                            <div class="col-sm-6 col-xs-6 tot my-pagination">
+                                <div class="m-t-10 text-start">
+                                    Showing {{ title }} <span class="current_page_index">{{ pages.current_start_index }}</span> - <span class="current_end_status">{{ pages.current_end_index }}</span> of <span class="total_count">{{ pages.total_count }}</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xs-6 text-end pagination-btn-div">{% show_pages %}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End:: row-2 -->
+    </div>
+</div>
+<!-- End::app-content -->
+
+<div id="printArea" style="display: none; padding: 10em;">
+    <div style="margin-top: 4em;">
+        <h3 style="text-align: center;">Sana Water</h3>
+    </div>
+    <h4>Non-Visited Customers Report</h4>
+    <div>
+        <table class="table table-bordered text-nowrap" style="width:100%">
+            <thead>
+                <tr>
+                    <th style="text-align:center !important;width:5%;" scope="col">Sl.No</th>
+                    <th style="text-align:center !important;" scope="col">Customer ID</th>
+                    <th style="text-align:center !important;" scope="col">Customer Name</th>
+                    <th style="text-align:center !important;" scope="col">Route</th>
+                    <th style="text-align:center !important;" scope="col">Location</th>
+                    <th style="text-align:center !important;" scope="col">Mobile No</th>
+                    <th style="text-align:center !important;" scope="col">Building Name/<br>House No</th>
+                    <th style="text-align:center !important;" scope="col">Next Visit <br>Date</th>
+                    <th style="text-align:center !important;" scope="col">Sales Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in non_visited %}
+                    <tr>
+                        <td style="text-align:center;">{{ forloop.counter }}</td>
+                        <td style="text-align:left;">{{ data.custom_id }}</td>
+                        <td style="text-align:left;">{{ data.customer_name }}</td>
+                        <td style="text-align:left;">{{ data.route }}</td>
+                        <td style="text-align:left;">{{ data.location }}</td>
+                        <td style="text-align:left;">{{ data.mobile }}</td>
+                        <td style="text-align:left;">{{ data.building_name }}<br>{{ data.door_house_no }}</td>
+                        <td style="text-align:left;">{{ data.next_visit_date }}</td>
+                        <td style="text-align:left;">{{ data.sales_type }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    function printDiv(divName) {
+        var printContents = document.getElementById(divName).innerHTML;
+        var originalContents = document.body.innerHTML;
+        document.body.innerHTML = printContents;
+        window.print();
+        document.body.innerHTML = originalContents;
+    }
+</script>
+{% endblock %}

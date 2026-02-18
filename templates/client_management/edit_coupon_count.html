@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Add Coupon Count{% endblock %}
+{% block content %}
+    <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+        <h4 class="fw-medium mb-0"> Coupon Count</h4>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+        </ol>
+    </div>
+    <div class="main-content app-content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card custom-card">
+                        <div class="card-header">
+                            <div class="card-title mx-auto">Add Coupon Count</div>
+                        </div>
+                        <div class="card-body">
+                            <form enctype="multipart/form-data" role="form" method="post" class="row g-3 needs-validation">
+                                {% csrf_token %}
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Coupon type</label>
+                                        {{ form.coupon_type_id }}
+                                        <span style="color: red;">{{ form.coupon_type_id.errors }}</span>
+                                    </div>
+                                </div>
+                                  <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Count</label>
+                                        {{ form.count }}
+                                        <span style="color: red;">{{ form.count.errors }}</span>
+                                    </div>
+                                </div>
+                                <!-- Add more fields as needed -->
+
+                                <div class="col-12 text-end mt-5">
+                                    <button type="submit" class="btn btn-primary me-2 mb-2">Save</button>
+                                    <button class="btn btn-success" type="button" onclick="window.location.href = '{% url 'customers' %}'">
+                                        <i class="bi bi-backspace-fill pe-1"></i> Back
+                                    </button>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

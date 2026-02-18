@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% block title %} Year & Month Sales Report {% endblock %}
+{% block content %}
+
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Year & Month Sales Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Sales Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Year & Month Sales Report</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Year & Month Sales Report
+                        </div>
+                    </div>
+                   
+                    <div class="mt">
+                        <form method="post">
+                        {% csrf_token %}
+                            {% comment %} <div class="card-body">
+                                <div class="row col-md-8">
+                                    <div class="col-md-4 col-form-label text-end">
+                                        <h6>Date</h6>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input name="date" type="date" class="form-select" style="width: min-content;" value="{{def_date}}"  min="{% now 'Y-m-d' %}">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="submit" class="btn btn-primary btn-sm" >
+                                    </div>
+                                
+                                </div>
+                            </div> {% endcomment %}
+                        </form>
+                    </div>
+                    <div class="card-body">
+                        <table id="datatable-basic" class="table table-bordered text-wrap " style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center !important;" scope="col" style="border-bottom: 1;">Sl No</th>
+                                    <th style="text-align:center !important;" scope="col" style="border-bottom: 1;">Route Name</th>
+                                    <th style="text-align:center !important;" scope="col" style="border-bottom: 1;">YTD</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for route in route_sales %}
+                                
+                                    <tr>
+                                        <td style="text-align:left;">{{ forloop.counter }}</td>
+                                        <td style="text-align:left;">{{ route.route.route_name}}</td>
+                                        <td style="text-align:left;"><a href="{% url 'yearmonthsalesreportview' route.route.route_id %}">{{ route.ytd_sales }}<br>{{ route.year  }}</a>
+
+                                        {% comment %} <td>{{ route.ytd_sales }} ({{ route.year }})</td> {% endcomment %}
+                                        {% comment %} <td>{{ route.ytd_sales  }}</td> {% endcomment %}
+                                        {% comment %} <td>{{ route.mtd_sales }}</td> {% endcomment %}
+                                        {% comment %} <td>
+                                                <div class="g-2">
+                                                    <a href="{% url 'yearmonthsalesreportview' route.route.route_id %}" aria-label="anchor" class="btn  btn-warning-light btn-sm" data-bs-toggle="tooltip" data-bs-original-title="View">
+                                                        <span class="bi bi-eye fs-14"></span>
+                                                    </a>
+                                        </td> {% endcomment %}
+                                        
+
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+
+<!-- Add a button to trigger the modal -->
+                   
+                    
+                    
+                    
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get all elements with class 'clients-column'
+        var clientsColumns = document.querySelectorAll('.clients-column');
+
+        clientsColumns.forEach(function (column) {
+            // Check if the column is empty
+            if (column.innerText.trim() === '') {
+                column.innerHTML = '<p style="font-style: italic;  ">No clients today in this route.</p>';
+            }
+        });
+    });
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+{% comment %} <script>
+    $(document).ready(function() {
+        // Handle click event on "View" button to show yearly sales modal
+        $('.view-yearly-sales').on('click', function() {
+            var routeId = $(this).data('route');
+            $.ajax({
+                type: 'GET',
+                url: '{% url 'yearly_sales_data' %}',
+                data: {
+                    'route_id': routeId
+                },
+                success: function(response) {
+                    // Populate modal with yearly sales data
+                    var yearlySalesData = response.yearly_sales;
+                    var modalBody = $('#yearlySalesData');
+                    modalBody.empty();
+                    $.each(yearlySalesData, function(index, data) {
+                        modalBody.append('<tr><td>' + data.month + '</td><td>' + data.sales_amount + '</td></tr>');
+                    });
+                    // Show the modal
+                    $('#yearlySalesModal').modal('show');
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                }
+            });
+        });
+    });
+</script> {% endcomment %}
+
+{% endblock %}

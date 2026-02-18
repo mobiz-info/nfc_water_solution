@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% block title %} Customer Custody Details {% endblock %}
+{% block content %}
+{% load static %}
+        <!-- End::app-sidebar -->
+        <!-- Page Header -->
+        <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+            <h4 class="fw-medium mb-0">Customer Custody Details</h4>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Client Management</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Customer Custody Details</li>
+            </ol>
+        </div>
+        <!-- Page Header Close -->
+
+
+
+        <!-- Start::app-content -->
+        <div class="main-content app-content">
+            <div class="container-fluid">
+
+<!-- Start:: row-2 -->
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card custom-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    Customer Custody Details
+                                </div>
+
+                                <div class="ms-auto">
+                                    <a href="{% url 'customer_create' %}">
+                                    <button type="button" class="btn btn-success btn-wave text-end d-flex me-4 my-auto"><i class="bi bi-plus-circle me-1"></i>Create</button>
+                                </a>
+                                </div>
+                            </div>
+                            <!-- Filter Form -->
+                    <div>
+                        <form method="GET" action="{% url 'customer_custody_list' %}">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
+                                    <div class="flex-grow-1">
+                                        <label for="from_date" class="form-label">From Date:</label>
+                                        <input type="date" class="form-control form-control-sm" id="from_date" name="from_date" value="{{ filter_data.start_date }}">
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <label for="end_date" class="form-label">To Date:</label>
+                                        <input type="date" class="form-control form-control-sm" id="end_date" name="end_date" value="{{ filter_data.end_date }}">
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <label for="route_name" class="form-label">Routes:</label>
+                                        <select name="route_name" class="form-select form-select-sm">
+                                            <option value="">All Routes</option>
+                                            {% for route in route_li %}
+                                                <option value="{{ route.route_name }}" {% if route.route_name == filter_data.route_name %}selected{% endif %}>
+                                                    {{ route.route_name }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <label for="q" class="form-label">Search:</label>
+                                        <div class="input-group">
+                                            <input type="text" name="q" class="form-control form-control-sm" placeholder="Search ..." value="{{ request.GET.q }}">
+                                            <button type="submit" class="btn btn-primary btn-sm">
+                                                <i class="bi bi-search"></i> Search
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="col d-flex align-items-end justify-content-end">
+                                    <input type="submit" class="btn btn-primary btn-sm mx-1" value="Apply Filter">
+                                    <button type="button" class="btn btn-secondary btn-sm mx-1" onclick="resetFilters()" style="width:max-content">Reset Filter</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                                <table class="table table-bordered text-nowrap" style="width:100%">
+                                    <tr>
+                                        <th scope="col" class="text-center">Sl.No</th>
+                                        <th scope="col" class="text-center">Created Date</th>
+                                        <th scope="col" class="text-center">Customer Id</th>
+                                        <th scope="col" class="text-center">Customer Name</th>
+                                        <th scope="col" class="text-center">Mobile No</th>
+                                        <th scope="col" class="text-center">Building Name</th>
+                                        <th scope="col" class="text-center">Route Name</th>
+                                        <th scope="col" class="text-center">Empty Bottles</th>
+                                        <th scope="col" class="text-center">Coolers</th>
+                                        <th scope="col" class="text-center">Dispenser</th>
+                                        <th scope="col" class="text-center"></th>
+                                        <th scope="col" class="text-center"></th>
+                                    </tr>
+                                    <tbody>
+                                        {% load el_pagination_tags %}
+                                        {% paginate 20 user_li %}
+                                        {% for data in user_li %}
+                                        <tr>
+                                            <td style="text-align:center;">{{ forloop.counter }}</td>
+                                            <td style="text-align:center;">{{ data.custody_custom__created_date|date:"Y-m-d" }}</td>
+                                            <td style="text-align:center;">{{ data.custody_custom__customer__custom_id }}</td>
+                                            <td style="text-align:center;">{{ data.custody_custom__customer__customer_name }}</td>
+                                            <td style="text-align:center;">{{ data.custody_custom__customer__mobile_no }}</td>
+                                            <td style="text-align:center;">{{ data.custody_custom__customer__building_name }}</td>
+                                            <td style="text-align:center;">{{ data.custody_custom__customer__routes__route_name }}</td>
+                                            <td style="text-align:center;">{{ data.five_gallon_count|default:0 }}</td>
+                                            <td style="text-align:center;">{{ data.dispenser_count|default:0 }}</td>
+                                            <td style="text-align:center;">{{ data.water_cooler_count|default:0 }}</td>
+                                            <td>
+                                                <a href="{% url 'add_custody_items' %}">Add</a>
+                                            </td>
+                                            <td>
+                                                <a href="#">Pullout</a>
+                                            </td>
+                                        </tr>
+
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                {% get_pages %}
+                                <div class="clearfix"></div>
+                                <div class="row pagi my-3">
+                                    <div class="col-sm-6 col-xs-6 tot my-pagination">
+                                        <div class="m-t-10 text-start">
+                                            Showing {{title}}
+                                            <span class="current_page_index">{{ pages.current_start_index }}</span> - <span
+                                            class="current_end_status">{{ pages.current_end_index }}</span> of <span
+                                            class="total_count">{{ pages.total_count }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-xs-6 text-end pagination-btn-div">{% show_pages %}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End:: row-2 -->
+            </div>
+        </div>
+        <!-- End::app-content -->
+        {% endblock %}

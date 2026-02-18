@@ -1,0 +1,411 @@
+{% extends 'base.html' %}
+{% block title %} Daily Summary Report {% endblock %}
+{% block content %}
+{% load van_template_tags %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Daily Summary Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Sales Management </a></li>
+        <li class="breadcrumb-item active" aria-current="page">Daily Summary Report</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Daily Summary Report
+                        </div>
+                    </div>
+                    <div class="mt">
+                        <form method="GET" action=".">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-4">
+                                        <label for="date">Date:</label>
+                                        <input type="date" class="form-control" id="date" name="date" value="{{ filter_data.filter_date }}">
+                                    </div>
+                                    <div class="col-4">
+                                        <label for="product">Routes :</label>
+                                        <select name="route_name" class="form-select">
+                                            <option value="">All Routes</option>
+                                            {% for route in routes_instances %}
+                                                <option value="{{ route.route_name }}"  {% if route.route_name == filter_data.route_name %}selected{% endif %}>{{ route.route_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col d-flex align-items-end justify-content-end">
+                                        <input type="submit" class="btn btn-primary btn-sm mx-1" value="Apply Filter">
+                                        {% if filter_data %}
+                                        <button type="button" class="btn btn-secondary btn-sm mx-1" onclick="resetFilters()" style="width:max-content">Reset Filter</button>
+                                        {% endif %}
+                                        {% comment %} <a href="{% url 'export_dsr_summary' %}?date={{ filter_data.filter_date }}&route_name={{ filter_data.route_name }}" class="btn btn-outline-success btn-sm mx-1"><i class="fas fa-file-excel"></i>Excel</a> {% endcomment %}
+                                        <a href="{% url 'print_dsr_summary' %}?date={{ filter_data.filter_date }}&route_name={{ filter_data.route_name }}" class="btn btn-outline-success btn-sm mx-1" target="__blank"><i class="fas fa-file-excel"></i>Print</a>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div >
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-4">
+                                        <p><strong>Salesman: {{van_route.van.salesman.get_fullname}}</strong></p>
+                                    </div>
+                                    <div class="col-4">
+                                        <p><strong>Driver: {{van_route.van.driver.get_fullname}}</strong></p>
+                                    </div>
+                                </div>
+                                {% comment %} <div class="row align-items-center">
+                                    <div class="col-4">
+                                        <p>Route: {{van_route.routes.route_name}}</p>
+                                    </div>
+                                    <div class="col-4">
+                                        <p>Date: {{ filter_data.filter_date }}</p>
+                                    </div>
+                                </div> {% endcomment %}
+                            </div>
+                    </div>
+
+                    <div id="table-container">
+                        <div class="card-body">
+                            <table  class="table table-bordered text-wrap" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center text-bold" colspan="4">Visit Statistics</th>
+                                    </tr>
+                                    <tr>
+                                        <th>New Customer Created</th>
+                                        <th>Planned Visit</th>
+                                        <th>Emergency Supply</th>
+                                        <th>Non Visited</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{{new_customers_count}}</td>
+                                        <td>{{planned_visit_count}}</td>
+                                        <td>{{emergency_supply_count}}</td>
+                                        <td>{{non_visited_count}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="table-container">
+                        <div class="card-body">
+                            <table  class="table table-bordered text-wrap" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center text-bold" colspan="10">Stock Report</th>
+                                    </tr>
+                                    <tr>
+                                        <th scope="col">Sl No</th>
+                                        <th scope="col">Item Name</th>
+                                        <th scope="col">Opening Stock</th>
+                                        <th scope="col">Stock Issued</th>
+                                        <th scope="col">Total Stock</th>
+                                        <th scope="col">Sold</th>
+                                        <th scope="col">Returned</th>
+                                        <th scope="col">Replaced</th>
+                                        <th scope="col">Offloaded</th>
+                                        <th scope="col">Closing</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for van_data in van_instances %}
+                                    {% for product_data in products %}
+                                    <tr>
+                                        <td style="text-align:center;">{{forloop.counter}}</td>
+                                        <td style="text-align:center;">{{product_data.product_name}}</td>
+                                        {% get_van_product_wise_stock van_data.pk product_data.pk as stock_details %}
+                                        <td style="text-align:center;">{{stock_details.opening_stock}}</td>
+                                        <td style="text-align:center;">{{stock_details.requested_count}}</td>
+                                        <td style="text-align:center;">{{stock_details.issued_count}}</td>
+                                        <td style="text-align:center;">{% if product_data.product_name == "5 Gallon" %}{{stock_details.empty_bottle_collected}}{% else %}0{% endif %}</td>
+                                        <td style="text-align:center;">{{ stock_details.sold_count }}</td>
+                                        <td style="text-align:center;">{{stock_details.return_count}}</td>
+                                        <td style="text-align:center;">{{stock_details.offload_count}}</td>
+                                        <td style="text-align:center;">{{stock_details.closing_count}}</td>
+                                    </tr>
+                                    {% endfor %} 
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="table-container">
+                        <div class="card-body">
+                            <table  class="table table-bordered text-wrap" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center text-bold" colspan="10">5 Gallon Related</th>
+                                    </tr>
+                                    <tr>
+                                        <th scope="col">Sl No</th>
+                                        <th scope="col">Customer Name</th>
+                                        <th scope="col">Building Name /Room No</th>
+                                        <th scope="col">Mode Of Supply</th>
+                                        <th scope="col">Qty Supplied</th>
+                                        <th scope="col">Empty Bottles Collected</th>
+                                        <th scope="col">Empty Bottles Pending</th>
+                                        <th scope="col">Coupons Collected</th>
+                                        {% comment %} <th scope="col">Pending Coupons</th> {% endcomment %}
+                                        <th scope="col">Amount Collected</th>
+                                        <th scope="col">Pending Amount</th>
+                                    </tr>
+                                </thead>
+                               <tbody>
+                                    {% for row in data %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ row.customer.customer_name }}</td>
+                                        <td>{{ row.customer.building_name }}</td>
+                                        <td>{{ row.mode_of_supply }}</td>                                      
+                                        <td>{{ row.total_supplied_quantity }}</td>
+                                        <td>{{ row.empty_bottles_collected }}</td>
+                                        <td>{{ row.empty_bottle_pending }}</td>
+                                        <td>{{ row.coupons_collected }}</td>
+                                        {% comment %} <td>{{ row.pending_coupons }}</td> {% endcomment %}
+                                        <td>{{ row.total_collected_amount }}</td>
+                                        <td>{{ row.total_pending_amount }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="table-container">
+                        <div class="card-body">
+                            <table  class="table table-bordered text-wrap" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center text-bold" colspan="10">Bottle Count 5 Gallon empty + fresh</th>
+                                    </tr>
+                                    <tr>
+                                        <th scope="col">Van Closing Stock</th>
+                                        <th scope="col">Today supplied</th>
+                                        <th scope="col">Custody</th>
+                                        <th scope="col">Pending</th>
+                                        <th scope="col">Damaged</th>
+                                        <th scope="col">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{{ closing_stock_count }}</td>
+                                        <td>{{ total_supplied_bottles }}</td>
+                                        <td>{{ total_empty_bottles }}</td>
+                                        <td>{{ pending_bottle_count }}</td>
+                                        <td>{{ damage_bottle_count }}</td>
+                                        <td>{{ total_count }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="table-container">
+                        <div class="card-body">
+                            <table  class="table table-bordered text-wrap" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center text-bold" colspan="8">Coupon Book Sales</th>
+                                    </tr>
+                                    <tr>
+                                        <th>Sl No</th>
+                                        <th>Ref No</th>
+                                        <th>Customer</th>
+                                        <th>Building Name/no</th>
+                                        <th>Book No</th>
+                                        <th>Coupon Book Type</th>
+                                        <th>Coupon Method</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for customer_coupon_item in customer_coupon_items %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ customer_coupon_item.customer_coupon.reference_number }}</td>
+                                        <td>{{ customer_coupon_item.customer_coupon.customer.customer_name }}</td>
+                                        <td>{{ customer_coupon_item.customer_coupon.customer.building_name }} /{{ customer_coupon_item.customer_coupon.customer.door_house_no }}/
+                                            {{ customer_coupon_item.customer_coupon.customer.floor_no }}
+                                        </td>
+                                        <td>{{ customer_coupon_item.coupon.book_num }}</td>
+                                        <td>{{ customer_coupon_item.coupon.coupon_type.coupon_type_name }}</td>
+                                        <td>{{ customer_coupon_item.coupon.coupon_method }}</td>
+                                        <td>{{ customer_coupon_item.rate }}</td>
+
+                                    </tr>
+                                {% endfor %} 
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="table-container">
+                        <div class="card-body">
+                            <table  class="table table-bordered text-wrap" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center text-bold" colspan="7">Cash Sales</th>
+                                    </tr>
+                                    <tr>
+                                        <th>Sl No</th>
+                                        <th scope="col">Reference No</th>
+                                        <th scope="col">Customer Name</th>
+                                        <th scope="col">Building Name</th>
+                                        <th scope="col">Net taxable</th>
+                                        <th scope="col">Vat</th>
+                                        <th scope="col">Grand Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for invoice in cash_invoices %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ invoice.reference_no }}</td>
+                                        <td>{{ invoice.customer.customer_name }}</td>
+                                        <td>{{ invoice.customer.building_name   }}</td>
+                                        <td>{{ invoice.net_taxable }}</td>
+                                        <td>{{ invoice.vat }}</td>
+                                        <td>{{ invoice.amout_total  }}</td>
+                                    </tr>
+                                {% endfor %} 
+                                </tbody>
+                                <!-- Table Footer -->
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="4" style="text-align: right;">Total:</td>
+                                        <td>{{ cash_total_net_taxable }}</td>
+                                        <td>{{ cash_total_vat }}</td>
+                                        <td>{{ cash_total_amout_total }}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="table-container">
+                        <div class="card-body">
+                            <table  class="table table-bordered text-wrap" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center text-bold" colspan="7">Credit Sales</th>
+                                    </tr>
+                                    <tr>
+                                        <th>Sl No</th>
+                                        <th scope="col">Reference No</th>
+                                        <th scope="col">Customer Name</th>
+                                        <th scope="col">Building Name</th>
+                                        <th scope="col">Net taxable</th>
+                                        <th scope="col">Vat</th>
+                                        <th scope="col">Grand Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for invoice in credit_invoices %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ invoice.reference_no }}</td>
+                                        <td>{{ invoice.customer.customer_name }}</td>
+                                        <td>{{ invoice.customer.building_name   }}</td>
+                                        <td>{{ invoice.net_taxable }}</td>
+                                        <td>{{ invoice.vat }}</td>
+                                        <td>{{ invoice.amout_total  }}</td>
+                                    </tr>
+                                {% endfor %} 
+                                </tbody>
+                                <!-- Table Footer -->
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="4" style="text-align: right;">Total:</td>
+                                        <td>{{ credit_total_net_taxable }}</td>
+                                        <td>{{ credit_total_vat }}</td>
+                                        <td>{{ credit_total_amout_total }}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="table-container">
+                        <div class="card-body">
+                            <table  class="table table-bordered text-wrap" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center text-bold" colspan="3">Expense</th>
+                                    </tr>
+                                    <tr>
+                                        <th>Sl No</th>
+                                        <th scope="col">Expense Head</th>
+                                        <th scope="col">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for expense in expenses_instanses %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ expense.expence_type.name }}</td>
+                                        <td>{{ expense.amount }}</td>
+                                    </tr>
+                                {% endfor %} 
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="table-container">
+                        <div class="card-body">
+                            <table  class="table table-bordered text-wrap" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center text-bold" colspan="3">Suspense</th>
+                                    </tr>
+                                    <tr>
+                                        <th>Opening</th>
+                                        <th>Paid</th>
+                                        <th>Closing</th> 
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{{ suspense_opening_amount }}</td>
+                                        <td>{{ suspense_paid_amount }}</td>
+                                        <td>{{ suspense_balance_amount }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+<script>
+    function resetFilters() {
+        // Redirect to the same page
+        location.href = "{% url 'product_route_salesreport' %}";
+    }
+</script>
+
+{% endblock %}

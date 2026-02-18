@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load coupon_templatetags %}
+{% block content %}
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Redeemed Coupon Details</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Coupon Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Coupon</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-1 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title mx-auto">
+                            Redeemed Coupon Details
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mt-2">
+                            <div class="col-12" style="overflow: auto;">
+                                <table class="table table-bordered text-wrap" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th rowspan="2">Supply Date</th>
+                                            <th rowspan="2">Invoice Number</th>
+                                            <th rowspan="2">Customer</th>
+                                            <th rowspan="2">Customer Id</th>
+                                            <th rowspan="2">Mobile No</th>
+                                            <th rowspan="2">Building No</th>
+                                            <th rowspan="2">Route</th>
+                                            <th colspan="2">No of coupons</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Digital</th>
+                                            <th>Manual</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>{{ supply_instance.created_date|date:'d-m-Y' }}</td>
+                                            <td>{{ supply_instance.invoice_no }}</td>
+                                            <td>{{ supply_instance.customer.customer_name }}</td>
+                                            <td>{{ supply_instance.customer.custom_id }}</td>
+                                            <td>{{ supply_instance.customer.mobile_no }}</td>
+                                            <td>{{ supply_instance.customer.building_name }}</td>
+                                            <td>{{ supply_instance.customer.routes.route_name }}</td>
+                                            <td>{{ supply_instance.total_coupon_recieved.digital_coupon }}</td>
+                                            <td>{{ supply_instance.total_coupon_recieved.manual_coupon }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div> 
+                        </div>
+                            
+                        <div class="row mt-3" id="leaflet-serial-numbers">
+                            <div class="col-xl-12">
+                                {% redeemed_coupons supply_instance.pk as coupon_data %}
+                                <div class="card custom-card p-4" style="border:1px solid aquamarine;">
+                                    <span class="d-flex justify-content-between align-items-start">
+                                        <h4>Coupon Name(s): 
+                                            {% for name in coupon_data.coupon_names %}
+                                                {{ name }}{% if not forloop.last %}, {% endif %}
+                                            {% endfor %}
+                                        </h4>
+                                        <p>Issued On: {{ supply_instance.created_date|date:'d-m-Y' }}</p>
+                                    </span>
+                        
+                                    <!-- Display Valuable Leaflets in one line -->
+                                    <h5>Valuable Leaflets:</h5>
+                                    <div id="leaflet-list" class="d-flex flex-wrap">
+                                        {% for leaflet in coupon_data.valueable_leafs %}
+                                        <span class="generated_leaf_li {% if leaflet.used %}used_leaf{% endif %}" style="margin-right: 10px;">
+                                            {{ leaflet.leaflet_name }}
+                                        </span>
+                                        {% endfor %}
+                                    </div>
+                        
+                                    <!-- Display Free Leaflets in one line -->
+                                    <h5>Free Leaflets:</h5>
+                                    <div id="free-leaflet-list" class="d-flex flex-wrap">
+                                        {% for leaflet in coupon_data.free_leafs %}
+                                        <span class="generated_leaf_li {% if leaflet.used %}used_leaf{% endif %}" style="margin-right: 10px;">
+                                            {{ leaflet.leaflet_name }}
+                                        </span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block static %}
+<style>
+    #leaflet-list,#free-leaflet-list {
+        display: flex;
+        flex-wrap: wrap; /* Allows items to wrap to the next row */
+        padding: 15px;
+        background: aliceblue;
+        border: 1px solid aquamarine;
+        border-radius: 8px;
+        overflow: hidden; /* Hides any overflow, if necessary */
+        width: 100%; /* Ensures the list takes up the full width of the container */
+    }
+    .generated_leaf_li{
+        padding: 8px 12px;
+        background: lightyellow;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin: 5px;
+        min-width: 78px; /* Ensures each item has a minimum width */
+        max-width: fit-content;
+        box-sizing: border-box;
+        text-align: center;
+        display: inline-block;
+    }
+    .generated_leaf_li.used_leaf{
+        background: #df3024;
+        color: white;
+    }
+</style>
+{% endblock static %}
+

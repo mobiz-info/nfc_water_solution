@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+{% block title %} Latest Customers List {% endblock %}
+{% block content %}
+{% load accounts_templatetags %}
+{% load static %}
+        <!-- End::app-sidebar -->
+        <!-- Page Header -->
+        <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+            <h4 class="fw-medium mb-0">Latest Customers</h4>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Client Management</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Latest Customer</li>
+            </ol>
+        </div>
+        <!-- Page Header Close -->
+        <!-- Start::app-content -->
+        <div class="main-content app-content">
+            <div class="container-fluid">
+                <!-- Start:: row-2 -->
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card custom-card">
+                            <div class="card-header">
+                                <div class="card-title">Latest Customers</div>
+                                <div class="ms-auto">
+                                    <a href="{% url 'customer_list_excel' %}?q={{q}}&route_name={{route_filter}}" class="btn btn-outline-success" style="width: 7em;"><i class="fas fa-file-excel"></i> Excel</a>
+                                    <a onclick="printDiv('printArea'); return false;" class="btn btn-outline-success me-2" style="width: 7em;"><i class="fas fa-print"></i> Print</a>
+                                    <a href="{% url 'customer_create' %}" class="btn btn-success btn-wave"><i class="bi bi-plus-circle me-1"></i> Create</a>
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <div style="float:right;padding:10px 0px">
+                                    <form method="GET">
+                                        <div class="input-group">
+                                            <div class="d-flex mx-3">
+                                                <span>
+                                                    <label for="start_date" style="display: inline-block;position: absolute;top: -20px;">From Date:</label>
+                                                    <input type="date" name="start_date" class="form-control" placeholder="start date" value="{{filter_data.start_date}}" style="height: -webkit-fill-available;">
+                                                </span>
+                                                <span>
+                                                    <label for="end_date" style="display: inline-block;position: absolute;top: -20px;">To Date:</label>
+                                                    <input type="date" name="end_date" class="form-control" placeholder="end date" value="{{filter_data.end_date}}" style="height: -webkit-fill-available;">
+                                                </span>
+                                            </div>
+                                            <select name="route_name" class="form-select">
+                                                <option value="">All Routes</option>
+                                                {% for route in route_li %}
+                                                    <option value="{{ route.route_name }}" {% if route.route_name == filter_data.route_filter %}selected{% endif %}>{{ route.route_name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <select name="customer_type" class="form-select">
+                                                <option value="">All Customer type</option>
+                                                <option value="CASH" {% if filter_data.customer_type == 'CASH' %}selected{% endif %}>Cash</option>
+                                                <option value="CREDIT" {% if filter_data.customer_type == 'CREDIT' %}selected{% endif %}>Credit</option>
+                                                <option value="CASH COUPON" {% if filter_data.customer_type == 'CASH COUPON' %}selected{% endif %}>Coupon</option>
+                                                <option value="FOC" {% if filter_data.customer_type == 'FOC' %}selected{% endif %}>FOC</option>
+                                            </select>
+                                            {% comment %} <input type="date" name="created_date" class="form-control" value="{{ created_date }}"> {% endcomment %}
+                                            <input type="text" name="q" class="form-control" placeholder="Search ..." value="{{ filter_data.q }}">
+                                            <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i>Search</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="w-100 overflow-auto">
+                                    <table class="table table-bordered text-nowrap">
+                                        <thead>
+                                            <tr>
+                                            <th style="text-align:center !important;width:5%;" scope="col">Sl.No</th>
+                                            <th style="text-align:center !important;" scope="col">Created Date</th>
+                                            <th style="text-align:center !important;" scope="col">Customer ID</th>
+                                            <th style="text-align:center !important;" scope="col">Customer Name</th>
+                                            <th style="text-align:center !important;" scope="col">Route</th>
+                                            <th style="text-align:center !important;" scope="col">Location</th>
+                                            <th style="text-align:center !important;" scope="col">Mobile No</th>
+                                            <th style="text-align:center !important;" scope="col">Building Name/<br>House No</th>
+                                            <th style="text-align:center !important;" scope="col">Next Visit <br>Date</th>
+                                            <th style="text-align:center !important;" scope="col">Bottle Stock</th>
+                                            <th style="text-align:center !important;" scope="col">Sales Type</th>
+                                            <th style="text-align:center !important;" scope="col">Rate</th>
+                                            <th style="text-align:center !important;" scope="col">Actions</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                            
+                                            {% load el_pagination_tags %}
+                                            {% paginate 50 user_li %}
+                                            {% for data in user_li %}
+                                            <tr>
+                                                <td style="text-align:center;">{{forloop.counter}}</td>
+                                                <td style="text-align:left;">{{data.created_date|date:'d-m-Y'}}</td>
+                                                <td style="text-align:left;">{{data.custom_id}}</td>
+                                                <td style="text-align:left;">
+                                                    <a href="{% url 'customer_complaint' data.customer_id %}" aria-label="anchor">{{data.customer_name}}</a>
+                                                </td>
+                                                <td style="text-align:left;">{{data.routes.route_name}}</td>
+                                                <td style="text-align:left;">{{data.location.location_name}}</td>
+                                                <td style="text-align:left;">{{data.mobile_no}}</td>
+                                                <td style="text-align:left;">{{data.building_name}},<br> {{data.door_house_no}}</td>
+                                                {% get_next_visit_day data.pk as next_visit_date %}
+                                                <td style="text-align:left;">{{next_visit_date}}</td>
+                                                {% bottle_stock data.pk as total_bottle_count %}
+                                                <td style="text-align:left;">{{total_bottle_count}}</td>
+                                                <td style="text-align:left;">{{data.sales_type}}</td>
+                                                <td style="text-align:right;">{{data.rate}}</td>
+                                            
+                                                <td style="text-align:center;">
+                                                    <div class="g-2">
+                                                        <a href="{% url 'customer_details' data.customer_id %}" aria-label="anchor" class="btn  btn-warning-light btn-sm" data-bs-toggle="tooltip" data-bs-original-title="View">
+                                                            <span class="bi bi-eye fs-14"></span>
+                                                        </a>
+                                                        <a href="{% url 'edit_customer' data.customer_id %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Edit">
+                                                            <span class="ri-pencil-line fs-14"></span>
+                                                        </a>
+                                                        <a href="{% url 'visit_days_assign' data.customer_id %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Assign Visit Days">
+                                                            <span class="ri-arrow-right-s-line fs-14"></span>
+                                                        </a>
+                                                        <a href="{% url 'customer_custody_items' data.customer_id %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Custody Item">
+                                                            <span class="bi bi-cart fs-14"></span>
+                                                        </a>
+                                                        <a href="{% url 'customer_outstanding_list' %}?customer_pk={{ data.customer_id }}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Outstanding">
+                                                            <span class="bi bi-cart fs-14"></span>
+                                                        </a>
+                                                        {% comment %} <a href="" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Coupons"> {% endcomment %}
+                                                        <a href="{% url 'coupon_count_list' data.customer_id %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Coupons">
+                                                            {% comment %} <a href="{% url 'coupon_count_list' data.customer_id %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Coupons"> {% endcomment %}
+                                                            <span class="bi bi-ticket-fill fs-14"></span>
+                                                        </a>
+                                                        <a aria-label="anchor" class="action-button remove btn btn-danger-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Delete"
+                                                            data-id="{{data.pk}}" data-text="{{confirm_delete_message}}" data-title="Are you sure?" href="{% url 'delete_customer' pk=data.pk %}">
+                                                            <span class="ri-delete-bin-7-line fs-14"></span>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {%endfor%}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {% get_pages %}
+                                <div class="clearfix"></div>
+                                <div class="row pagi my-3">
+                                    <div class="col-sm-6 col-xs-6 tot my-pagination">
+                                        <div class="m-t-10 text-start">
+                                            Showing {{title}}
+                                            <span class="current_page_index">{{ pages.current_start_index }}</span> - <span
+                                            class="current_end_status">{{ pages.current_end_index }}</span> of <span
+                                            class="total_count">{{ pages.total_count }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-xs-6 text-end pagination-btn-div">{% show_pages %}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End:: row-2 -->
+            </div>
+        </div>
+        <!-- End::app-content -->
+
+        {% comment %} <div id="printArea"  style="display: none; padding: 10em;">
+            <div style="margin-top: 4em; ">
+                <h3 style="text-align: center; ;">National Water</h3>
+            </div>
+        
+       
+            <table class="table table-bordered text-wrap " style="width: 100%; margin-top: 1em;">
+                <thead>
+                    <tr>
+                        <th scope="col" style="border-bottom: 1; max-width: 5em;">Sl No</th>
+                        <th scope="col" style="border-bottom: 1; ">Customer ID</th>
+                        <th scope="col" style="border-bottom: 1;">Customer Name</th>
+                        <th scope="col" style="border-bottom: 1;">Route</th>
+                        <th scope="col" style="border-bottom: 1;">Location</th>
+                        <th scope="col" style="border-bottom: 1; ">Mobile No</th>
+                        <th scope="col" style="border-bottom: 1; ">Building name/ <br> House No</th>
+                        <th scope="col" style="border-bottom: 1; ">Next visting Date</th>
+                        <th scope="col" style="border-bottom: 1; ">Sales Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for data in user_li %}
+                        <tr>
+                            <td style="text-align:center;">{{forloop.counter}}</td>
+                            <td style="text-align:left;">{{data.custom_id}}</td>
+                            <td style="text-align:left;">{{data.customer_name}}</td>
+                            <td style="text-align:left;">{{data.routes.route_name}}</td>
+                            <td style="text-align:left;">{{data.location.location_name}}</td>
+                            <td style="text-align:left;">{{data.mobile_no}}</td>
+                            <td style="text-align:left;">{{data.building_name}},<br> {{data.door_house_no}}</td>
+                            <td style="text-align:left;"></td>
+                            <td style="text-align:left;">{{data.sales_type}}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    
+
+        <script>
+            function printDiv(divName) {
+                var printContents = document.getElementById(divName).innerHTML;
+                var originalContents = document.body.innerHTML;
+                document.body.innerHTML = printContents;
+                window.print();
+                document.body.innerHTML = originalContents;
+            }
+        </script> {% endcomment %}
+        {% endblock %}

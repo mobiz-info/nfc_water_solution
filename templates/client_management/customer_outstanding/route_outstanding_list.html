@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% block title %}Customer Outstanding Report{% endblock %}
+{% block content %}
+{% load static %}
+{% load client_templatetags %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Salesman Outstanding Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="javascript:void(0);" class="text-white-30">Client Management</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Salesman Outstanding Report</li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="w-100 d-flex justify-content-end align-items-center mb-3">
+                            <div class="d-flex">
+                                {% comment %} <div class="me-2">
+                                    <a href="{% url 'create_customer_outstanding' %}{% if customer_pk %}?customer_pk={{ customer_pk }}{% endif %}">
+                                        <button type="button" class="btn btn-success btn-wave"><i class="bi bi-plus-circle me-1"></i>Create</button>
+                                    </a>
+                                </div>
+                                <div class="me-2">
+                                    <a href="{% url 'upload_outstanding' %}">
+                                        <button type="button" class="btn btn-primary btn-wave"><i class="bi bi-upload me-1"></i>Upload</button>
+                                    </a>
+                                </div>
+                                <div class="me-2">
+                                    <a href="{% url 'print_customer_outstanding' %}?product_type={{ filter_data.product_type }}&q={{ filter_data.q|default_if_none:'' }}&route_name={{ filter_data.route_name|default_if_none:'' }}&date={{ filter_data.filter_date }}{% if customer_pk %}&customer_pk={{ customer_pk }}{% endif %}" target="_blank">
+                                        <button type="button" class="btn btn-success btn-wave">
+                                            <i class="fas fa-file-excel"></i> Print
+                                        </button>
+                                    </a>
+                                </div>
+                                <div class="me-2">
+                                    <a href="{% url 'customer_outstanding_list' %}?product_type={{ filter_data.product_type }}&q={{ filter_data.q|default_if_none:'' }}&route_name={{ filter_data.route_name|default_if_none:'' }}&date={{ filter_data.filter_date }}{% if customer_pk %}&customer_pk={{ customer_pk }}{% endif %}&export=excel" target="_blank">
+                                        <button type="button" class="btn btn-warning btn-wave">
+                                            <i class="fas fa-file-excel"></i>Excel
+                                        </button>
+                                    </a>
+                                </div> {% endcomment %}
+                            </div>
+                        </div>
+                         <div class="w-100 d-flex justify-content-end align-items-center">
+                            <div class="d-flex">
+                                <form method="GET">
+                                    <div class="d-flex align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <div class="input-group">
+                                                {% comment %} <select name="product_type" class="form-select me-2">
+                                                    <option value="amount" {% if filter_data.product_type == 'amount' %}selected{% endif %}>Amount</option>
+                                                    <option value="emptycan" {% if filter_data.product_type == 'emptycan' %}selected{% endif %}>Empty Can</option>
+                                                    <option value="coupons" {% if filter_data.product_type == 'coupons' %}selected{% endif %}>Coupon</option>
+                                                </select>
+                                                <select name="route_name" class="form-select me-2">
+                                                    <option value="">All Routes</option>
+                                                    {% for route in route_li %}
+                                                        <option value="{{ route.route_name }}" {% if route.route_name == filter_data.route_name %}selected{% endif %}>{{ route.route_name }}</option>
+                                                    {% endfor %}
+                                                </select> {% endcomment %}
+                                                <input type="date" class="form-control" id="date" name="date" value="{{ filter_data.filter_date }}">
+                                                {% comment %} <input type="text" name="q" class="form-control" value="{{ filter_data.q }}" placeholder="Search" /> {% endcomment %}
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="bi bi-search"></i> Search
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div> 
+                    </div>
+
+                    <div id="table-container" class="card-body">
+                        
+                        <table id="" class="table table-bordered text-wrap" style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th>Sl No</th>
+                                    <th>Salesman</th>
+                                    <th>Outstanding Amount</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                        
+                            <tbody>
+                                {% for row in instances %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ row.salesman.get_fullname }}</td>
+                                    <td>{{ row.outstanding }}</td>
+                                    <td>
+                                        <a href="{% url 'salesman_invoice_list' %}?salesman={{ row.salesman.id }}&date={{ date|date:'Y-m-d' }}" aria-label="anchor" class="btn btn-warning-light btn-sm" data-bs-toggle="tooltip" data-bs-original-title="View">
+                                                        <span class="bi bi-eye-fill fs-14"></span> <!-- Icon updated for 'View' -->
+                                                    </a>
+                                       
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        
+                            <tfoot>
+                                <tr>
+                                    <th colspan="2" class="text-end">Total</th>
+                                    <th>{{ grand_total }}</th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

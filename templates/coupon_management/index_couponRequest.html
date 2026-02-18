@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %} coupon request {% endblock %}
+{% block content %}
+{% load static %}
+
+        <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+            <h4 class="fw-medium mb-0">Coupon Management</h4>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Coupon Management</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Coupon Request</li>
+            </ol>
+        </div>
+        <div class="main-content app-content">
+            <div class="container-fluid">
+                         <!-- Start:: row-2 -->
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card custom-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    Coupon Request
+                                </div>
+                                <div class="ms-auto">
+                                <a href="{% url 'create_couponRequest' %}"><button type="button" class="btn btn-success btn-wave text-end d-flex me-4 my-auto"><i class="bi bi-plus-circle me-1"></i>Create a Coupon Request</button>
+                                </a>
+                                </div>  
+                            </div>
+                            <div class="card-body">
+                                <table id="datatable-basic" class="table table-bordered text-nowrap" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Sl No</th>
+                                            <th scope="col">Coupon Type</th>
+                                            <th scope="col">Quantity</th>
+
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        
+                                            {% for couponrequest in all_couponrequest %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ couponrequest.coupon_type_id }}</td>
+                                                <td>{{ couponrequest.quantity }}</td>
+                                               
+                                                <td>
+                                                    <div class="g-2">
+                                                        <a href="{% url 'assign_to_staff' couponrequest.coupon_request_id %}" id="coupon_request_id"
+                                                            aria-label="anchor" class="btn btn-warning-light btn-sm" data-bs-toggle="tooltip"
+                                                            data-bs-original-title="Allot">
+                                                            Allot <i class="btn btn-primary-light btn-sm ms-2"></i>
+                                                        </a>
+                                                        {% if couponrequest.assign_staff_coupon %}
+                                                            <a href="{% url 'assign_to_customer' couponrequest.assign_staff_coupon.assign_id %}" id="assign_id" aria-label="anchor" class="btn btn-warning-light btn-sm" data-bs-toggle="tooltip" data-bs-original-title="Assign To Customer">
+                                                                Assign To Customer <i class="btn btn-primary-light btn-sm ms-2"></i>
+                                                            </a>
+                                                        {% else %}
+                                                            <span>Waiting for Staff Assign.</span>
+                                                        {% endif %}
+                                                        
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+{% endblock %}

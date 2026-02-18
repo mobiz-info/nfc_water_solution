@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+{% load static %}
+{% load bottle_customer_stock %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Dashboard</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+    </ol>
+</div>
+
+<!-- Main Content Area -->
+<div class="main-content app-content" style={{"background:white"}}>
+    <div class="container-fluid">
+        <!-- Tab Buttons -->
+        <div class="tab mt-5 mb-3" style="border-bottom: 2px solid #bfbfbf;max-height: 40px;">
+            <button class="tablinks btn rounded-0" onclick="openOverview()">Overview</button>
+            <button class="tablinks btn rounded-0" onclick="openSales()">Sales</button>
+            <button class="tablinks btn rounded-0" onclick="openBottle()">Bottle</button>
+            <button class="tablinks btn rounded-0" onclick="openCoupons()">Coupons</button>
+            <button class="tablinks btn rounded-0" onclick="openCustomerStatistics()">Customer Statistics</button>
+            <button class="tablinks btn rounded-0" onclick="openOthers()">Others</button>
+        </div>
+        
+        <div id="Others" class="tabcontent">
+            <div class="row mt-4">
+                <div class="col-md-8 mb-4">
+                    <div class="card h-100 border-0">
+                        <div class="card-header text-left border-0" >
+                            <h5 class="card-title">Others</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th style="color: white !important; background-color: #4776e6 !important;">Category</th>
+                                        <th style="color: white !important; background-color: #4776e6 !important;"></th>
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Expense</td>
+                                        <td>{{ total_expense }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Coupons purchase request<br> through app</td>
+                                        <td>{{ today_coupon_requests_count}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Orders through app</td>
+                                        <td>{{ today_orders_count }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>New Complaints</td>
+                                        <td>{{ pending_complaints_count }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Resolved</td>
+                                        <td>{{ resolved_complaints_count }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+{% block static %}
+{% load static %}
+<script>
+    function openOverview() {
+        window.location.href = '{% url 'overview' %}';
+    }
+    
+    function openSales() {
+        window.location.href = '{% url 'sales' %}';
+    }
+    
+    function openBottle() {
+        window.location.href = '{% url 'bottles' %}';
+    }
+    
+    function openCoupons() {
+        window.location.href = '{% url 'coupons' %}';
+    }
+    
+    function openCustomerStatistics() {
+        window.location.href = '{% url 'customer-statistics' %}';
+    }
+    
+    function openOthers() {
+        window.location.href = '{% url 'others' %}';
+    }
+    
+</script>
+
+{% endblock static %}
+ 

@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Create Customer</h4>
+      <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+      </ol>
+  </div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+             <!-- Start:: row-1 -->
+             <div class="row">
+                <div class="col-xl-12">
+                    <div class="card custom-card">
+                        <div class="card-header">
+                            <div class="card-title mx-auto">
+                            Create Customer</div>
+                        </div>
+                        <div class="card-body">
+        <form enctype="multipart/form-data" role="form" method="post"
+              class="row g-3 needs-validation">
+            {% csrf_token %}
+            <!--row 1-->
+                    <div class="col-md-6">
+                        <div class="form-group required">
+                            <label class='control-label'>Customer Name</label>
+                            {{ form.customer_name }}
+                            <span style="color: red;">{{ form.customer_name.errors }}</span>
+                            <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group required">
+                            <label class='control-label'>Building Name</label>
+                            {{ form.building_name }}
+                            <span style="color: red;">{{ form.building_name.errors }}</span>
+                            <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group required">
+                            <label class='control-label'>Door House Number</label>
+                            {{ form.door_house_no }}
+                            <span style="color: red;">{{ form.door_house_no.errors }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group required">
+                            <label class='control-label'>Floor Number</label>
+                            {{ form.floor_no }}
+                            <span style="color: red;">{{ form.floor_no.errors }}</span> 
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group required">
+                            <label class='control-label'>Sales Staff</label>
+                            {{ form.sales_staff }}
+                            <span style="color: red;">{{ form.sales_staff.errors }} </span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group required">
+                            <label class='control-label'>Route</label>
+                            {{ form.routes }}
+                            <span style="color: red;">{{ form.routes.errors }}</span>
+                            <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-6">
+                        <div class="form-group required">
+                            <label class='control-label'>Location</label>
+                            {{ form.location }}
+                            <span style="color: red;">{{ form.location.errors }}</span>
+                            <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group required">
+                            <label class='control-label'>Mobile Number</label>
+                            {{ form.mobile_no }}
+                            <span style="color: red;">{{ form.mobile_no.errors }}</span>
+                            <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group required">
+                            <label class='control-label'>Whatsapp Number</label>
+                            {{ form.whats_app }}
+                            <span style="color: red;">{{ form.whats_app.errors }}</span>
+                            <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group required">
+                            <label class='control-label'>Email</label>
+                            {{ form.email_id }}
+                            <span style="color: red;">{{ form.email_id.errors }}</span>
+                            <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group required">
+                            <label class='control-label'>Latitude</label>
+                            {{ form.gps_latitude }}
+                            <span style="color: red;">{{ form.gps_latitude.errors }}</span>
+                            <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group required">
+                            <label class='control-label'>Longitude</label>
+                            {{ form.gps_longitude }}
+                            <span style="color: red;">{{ form.gps_longitude.errors }}</span>
+                            <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group required">
+                            <label class='control-label'>Customer Type</label>
+                            {{ form.customer_type }}
+                            <span style="color: red;">{{ form.customer_type.errors }}</span>
+                            <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group required">
+                            <label class='control-label'>Sales Type</label>
+                            {{ form.sales_type }}
+                            <span style="color: red;">{{ form.sales_type.errors }}</span>
+                            <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group required">
+                            <label class='control-label'>No Of Bottles Required</label>
+                            {{ form.no_of_bottles_required }}
+                            <span style="color: red;">{{ form.no_of_bottles_required.errors }}</span>
+                            <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group required">
+                            <label class='control-label'>Maximum Credit Limit</label>
+                            {{ form.max_credit_limit}}
+                            <span style="color: red;">{{ form.max_credit_limit.errors }}</span>
+                            <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group required">
+                            <label class='control-label'>Credit Days</label>
+                            {{ form.credit_days }}
+                            <span style="color: red;">{{ form.credit_days.errors }}</span>
+                            <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group required">
+                            <label class='control-label'>No Of Permitted Invoices</label>
+                            {{ form.no_of_permitted_invoices }}
+                            <span style="color: red;">{{ form.no_of_permitted_invoices.errors }}</span>
+                            <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                        </div>
+                    </div>
+
+            <div class="col-12 text-end mt-5">
+                <input type="submit" class="btn btn-primary me-2 mb-2" value="Submit">
+                    <button class="btn btn-success   me-md-2  mb-2" type="button" onClick="javascript:history.go(-1);">
+                        <i class="bi bi-backspace-fill pe-1"></i>Back</button>
+                <a class="btn btn-success me-md-2  mb-2"
+                   href="{% url 'users' %}"><i class="bi bi-backspace-fill pe-1"></i> Back to Dashboard </a>
+            </div>
+        </form>
+        </div>
+    </div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

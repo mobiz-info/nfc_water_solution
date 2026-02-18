@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block title %} Audit {% endblock %}
+{% block content %}
+{% load static %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Audit </h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Audit Management</li>
+    </ol>
+</div>
+<!-- Page Header Close -->
+
+<!-- Start::app-content -->
+<div class="main-content app-content">
+    <div class="container-fluid">
+
+        <!-- Start:: Card for Selection -->
+        <div class="row justify-content-center">
+            <div class="col-xl-8 col-lg-10">
+                <div class="card custom-card">
+                    <div class="card-header ">
+                        <div class="card-title">
+                            Select Marketing Executive & Route
+                        </div>
+
+                        {% comment %} <h5 class="mb-0">Select Executive & Route</h5> {% endcomment %}
+                    </div>
+                    <div class="card-body">
+                        <!-- Select Executive -->
+                        {% if is_marketing_executive %}
+                            <!-- Show Executive ID for Logged-in Marketing Executives -->
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Marketing Executive:</label>
+                                <p class="form-control-plaintext">{{ request.user.username }} </p>
+                                <input type="hidden" name="executive" value="{{ request.user.id }}">
+                            </div>
+                        {% else %}
+                            <!-- Show Dropdown for Admin/Other Users -->
+                            <form method="get">
+                                <div class="mb-3">
+                                    <label for="executive" class="form-label fw-semibold">Marketing Executive:</label>
+                                    <select name="executive" id="executive" onchange="this.form.submit()" class="form-select">
+                                        <option value="">-- Select Marketing Executive --</option>
+                                        {% for executive in executives %}
+                                            <option value="{{ executive.id }}" {% if selected_executive == executive.id|stringformat:"s" %}selected{% endif %}>
+                                                {{ executive.username }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </form>
+                        {% endif %}
+
+                        <!-- Select Route (Only show if an executive is selected) -->
+                        {% if routes %}
+                            <form method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="executive" value="{{ selected_executive }}">
+                                <div class="mb-3">
+                                    <label for="route" class="form-label fw-semibold">Choose Route:</label>
+                                    <select name="route" id="route" class="form-select">
+                                        <option value="">-- Select Route --</option>
+                                        {% for route in routes %}
+                                            <option value="{{ route.route_id }}">{{ route.route_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-success px-4">
+                                        <i class="fas fa-arrow-right"></i> Proceed to Customers
+                                    </button>
+                                </div>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End:: Card for Selection -->
+
+    </div>
+</div>
+<!-- End::app-content -->
+
+{% endblock %}

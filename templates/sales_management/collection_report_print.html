@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Collection Report</title>
+    <style>
+        /* Add your print-specific styles here */
+        @media print {
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Collection Report</h1>
+    <p><strong>From Date:</strong> {{ start_date }}</p>
+    <p><strong>To Date:</strong> {{ end_date }}</p>
+    <p><strong>Route:</strong> {{ selected_route }}</p>
+    <table border="1" cellspacing="0" cellpadding="5">
+        <thead>
+            <tr>
+                <th>Sl.No</th>
+                <th>Date</th>
+                <th>Customer</th>
+                <th>Customer ID</th>
+                <th>Route</th>
+                <th>Building Name/No</th>
+                <th>Amount</th>
+                <th>Amount Received</th>
+                <th>Balance</th>
+                <th>Mode of Payment</th>
+                <th>Sales Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in collection_payments %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ data.collection_payment__created_date__date|date:"d/m/Y" }}</td>
+                <td>{{ data.collection_payment__customer__customer_name }}</td>
+                <td>{{ data.collection_payment__customer__custom_id }}</td>
+                <td>{{ data.collection_payment__customer__routes__route_name }}</td>
+                <td>{{ data.collection_payment__customer__building_name }}<br>{{ data.collection_payment__customer__door_house_no }}</td>
+                <td>{{ data.count_amount }}</td>
+                <td>{{ data.count_amount_received }}</td>
+                <td>{{ data.count_balance }}</td>
+                <td>{{ data.collection_payment__payment_method }}</td>
+                <td>{{ data.collection_payment__customer__sales_type }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <script>
+        window.onload = function() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

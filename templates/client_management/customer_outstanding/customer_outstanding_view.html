@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block title %}Custody Report{% endblock %}
+{% load static %}
+
+{% block content %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Outstanding Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="javascript:void(0);" class="text-white-30">Client Management</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Outstanding Report</li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+
+        <!-- Start:: row -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+
+                    <!-- Card Header -->
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="card-title">Outstanding Items</div>
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="card-body">
+
+                        {% if filter_data %}
+                        <!-- Customer Details -->
+                        <div class="mb-4">
+                            <div class="row align-items-center d-flex flex-wrap">
+                                <div class="col-auto">
+                                    <p class="mb-0"><strong>Customer Name:</strong> {{ customer_name }}</p>
+                                </div>
+                                <div class="col-auto">
+                                    <p class="mb-0"><strong>Customer ID:</strong> {{ customer_id }}</p>
+                                </div>
+                                <div class="col-auto">
+                                    <p class="mb-0"><strong>Mobile number:</strong> {{ mobile_no }}</p>
+                                </div>
+                                <div class="col-auto">
+                                    <p class="mb-0"><strong>Route Name:</strong> {{ route_name }}</p>
+                                </div>
+                                <div class="col-auto ms-auto">
+                                    <a href="{% url 'customer_outstanding_print' customer_pk %}?product_type={{ filter_data.product_type }}&q={{ filter_data.q|default_if_none:'' }}&route_name={{ filter_data.route_name|default_if_none:'' }}&date={{ filter_data.filter_date }}" target="_blank">
+                                        <button type="button" class="btn btn-success btn-wave">
+                                            <i class="fas fa-file-excel"></i> Print
+                                        </button>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Outstanding Table -->
+                        <table id="datatable-basic" class="table table-bordered text-wrap w-100">
+                            <thead>
+                                <tr>
+                                    <th>Sl No</th>
+                                    <th>Invoice No</th>
+                                    <th>Amount</th>
+                                    <th>Paid</th>
+                                    <th>Balance to Pay</th>
+                                    <th>No. of Days Passed</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for invoice in invoices %}
+                                <tr>
+                                    <td>{{ invoice.sl_no }}</td>
+                                    <td>{{ invoice.invoice_number }}</td>
+                                    <td>{{ invoice.amount }}</td>
+                                    <td>{{ invoice.paid }}</td>
+                                    <td>{{ invoice.balance }}</td>
+                                    <td>{{ invoice.days_passed }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="2" class="text-end">Total</th>
+                                    <th>{{ total_amount }}</th>
+                                    <th>{{ total_paid }}</th>
+                                    <th>{{ total_balance }}</th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        {% endif %}
+
+                    </div> <!-- End card-body -->
+
+                </div> <!-- End card -->
+            </div> <!-- End col -->
+        </div> <!-- End row -->
+
+    </div> <!-- End container-fluid -->
+</div> <!-- End main-content -->
+
+{% endblock %}

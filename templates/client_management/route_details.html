@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %} Bottle Count Report {% endblock %}
+{% load client_templatetags %}
+{% block content %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Bottle Count Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Bottle Management </a></li>
+        <li class="breadcrumb-item active" aria-current="page">Bottle Count Report</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+        <div class="container-fluid">
+            <div>
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card custom-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                               {{ route.route_name }}- Route Details
+                            </div>
+                        </div>
+                        <div class="card-body" style="margin-top: 3em;">
+                            <table class="table table-bordered text-wrap " style="width: 100%;"  data-page-length="50">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center" scope="col">Sl No</th>
+                                        <th class="text-center" scope="col">customer Id</th>
+                                        <th class="text-center" scope="col">customer Name</th>
+                                        <th class="text-center" scope="col">Building name </th>
+                                        <th class="text-center" scope="col">Custody<br><small>(Issued - Return)</small></th>
+                                        <th class="text-center" scope="col">Supply<br><small>(Supply - paid - custody + FOC - Collected)</small></th>
+                                        <th class="text-center" scope="col">Total<br><small>(In Hand Bottle)</small></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% load el_pagination_tags %}
+                                    {% paginate 20 instances %}
+                                    {% for instance in instances %}
+                                    {% route_wise_customer_bottle_count instance.pk as count %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ instance.custom_id }}</td> 
+                                        <td>{{ instance.customer_name }}</td> 
+                                        <td>{{ instance.building_name }}</td> 
+                                        <td style="text-align: right;">{{ count.custody_qty }}</td> 
+                                        <td style="text-align: right;">{{ count.supply_qty }}</td> 
+                                        <td style="text-align: right;">{{ count.total_bottle_count }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                {% comment %} <tfoot>
+                                    <tr>
+                                        <td style="border-top: solid rgb(0, 0, 0) 1px;"></td>
+                                        <td style="border-top: solid rgb(0, 0, 0) 1px;"></td>
+                                        <td style="font-weight: bold; border-top: solid rgb(0, 0, 0) 1px;">Total</td>
+                                        <td style="font-weight: bold; border-top: solid rgb(0, 0, 0) 1px;">{{ total_cash }}</td>
+                                        <td style="font-weight: bold; border-top: solid rgb(0, 0, 0) 1px;">{{ total_credit }}</td>
+                                        <td style="font-weight: bold; border-top: solid rgb(0, 0, 0) 1px;">{{ total_coupon }}</td>
+                                        <td style="font-weight: bold; border-top: solid rgb(0, 0, 0) 1px;">{{ total_customers }}</td>
+                                    </tr>
+                                </tfoot> {% endcomment %}
+                            </table>
+                            {% get_pages %}
+                            <div class="clearfix"></div>
+                            <div class="row pagi my-3">
+                                <div class="col-sm-6 col-xs-6 tot my-pagination">
+                                    <div class="m-t-10 text-start">
+                                        Showing {{title}}
+                                        <span class="current_page_index">{{ pages.current_start_index }}</span> - <span
+                                        class="current_end_status">{{ pages.current_end_index }}</span> of <span
+                                        class="total_count">{{ pages.total_count }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-xs-6 text-end pagination-btn-div">{% show_pages %}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

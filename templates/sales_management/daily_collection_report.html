@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% block title %} Custody Report {% endblock %}
+{% block content %}
+{% load static %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Daily Collection Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Sales Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Daily Collection Rport</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Daily Collection
+                        </div>
+                    </div>
+                    <div class="mt">
+                        <form method="GET" action='{% url "dailycollectionreport" %}'>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <label for="start_date">Route</label>
+                                        <select name="route_name" class="form-select">
+                                            <option value="">All Routes</option>
+                                            {% for route in route_li %}
+                                                <option value="{{ route.route_name }}">{{ route.route_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="start_date"> Date:</label>
+                                        <input type="date" class="form-control" id="start_date" name="start_date">
+                                    </div>
+                                    
+                                    <div class="col-md-2 text-end ">
+                                        <input type="submit" id = "submit" class="btn btn-primary me-2 mb-2 mt-3" value="Submit">
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div id="table-container" style="display: none;">
+                        <div style="float:right;padding:10px 25px">
+                                    
+                            <div class="input-group">
+                                <!-- <button type="submit" class="btn btn-outline-success" style="width: 7em;">
+                                    <i class="fas fa-file-excel"></i> Excel
+                                </button> -->
+                                <a href="{% url 'daily_collection_report_excel' %}?start_date={{start_date_str}}&route_name={{route_filter}}" class="btn btn-outline-success" style="width: 7em;"><i class="fas fa-file-excel"></i> Excel</a>
+                            </div>
+                           
+                        </div>
+                        <div style="float:right;padding:10px ">
+                            
+                            <div class="input-group">
+                                <a  onclick="printDiv('printArea'); return false;" class="btn btn-outline-success " style="width: 7em;"><i class="fas fa-print"></i> Print</a>
+                            </div>
+                            
+                        </div>
+                        <div class="card-body">
+                            <table  class="table table-bordered text-wrap" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th rowspan="2">Sl No</th>
+                                        
+                                        <th rowspan="2">Customer/<br>Mobile No</th>
+                                        <th rowspan="2">Route</th>
+                                        <th rowspan="2">Building Name<br>No</th>
+                                        <th rowspan="2">Receipt No/<br>Reference No</th>
+                                        <th rowspan="2">Amount</th>
+                                        <th rowspan="2">Mode of Payment</th>
+                                        <th rowspan="2">Invoice/In<br>Reference No</th>
+
+                                       
+                                    </tr>
+                                    
+                                </thead>
+                                <tbody>
+        
+
+                                    {% for data in instances %}
+                                    
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ data.customer.customer_name }}<br>{{ data.customer.mobile_no }}</td>
+                                            <td>{{ data.customer.routes.route_name }}</td>
+                                            <td>{{ data.customer.building_name }}<br>{{ data.customer.door_house_no }}</td>
+                                            <td>{{ data.customer_supply.reference_number }}</td>
+                                            <td>{{ data.amount }}</td>
+                                            <td>{{ data.payment_method }}</td>
+                                            <td>{{ data.invoice.invoice_no }}/{{ data.invoice.reference_no }}</td>
+                                            
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="printArea"  style="display: none; padding: 10em;">
+    <div style="margin-top: 4em; ">
+        <h3 style="text-align: center; ;">Sana Water</h3>
+    </div>
+
+
+    <table class="table table-bordered text-wrap " style="width: 100%; margin-top: 1em;">
+        <thead>
+            <tr>
+                <th scope="col" style="border-bottom: 1; max-width: 5em;">Sl No</th>
+                <th scope="col" style="border-bottom: 1;">Customer/<br>Mobile No</th>
+                <th scope="col" style="border-bottom: 1;">Route</th>
+                <th scope="col" style="border-bottom: 1;">Building Name<br>No</th>
+                <th scope="col" style="border-bottom: 1; ">Receipt No/<br>Reference No</th>
+                <th scope="col" style="border-bottom: 1; ">Amount</th>
+                <th scope="col" style="border-bottom: 1; ">Mode of Payment</th>
+                <th scope="col" style="border-bottom: 1; ">Invoice/In<br>Reference No</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in instances %}
+                <tr>
+                    <td style="text-align:center;">{{forloop.counter}}</td>
+                    <td style="text-align:left;">{{ data.customer.customer_name }},<br>{{ data.customer.mobile_no }}</td>
+                    <td style="text-align:left;">{{data.customer.routes.route_name }}</td>
+                    <td style="text-align:left;">{{data.customer.building_name }},<br>{{ data.customer.door_house_no}}</td>
+                    <td style="text-align:left;">{{data.customer_supply.reference_number }}</td>
+                    <td style="text-align:left;">{{data.amount}}</td>
+                    <td style="text-align:left;">{{ data.payment_method }}</td>
+                    <td style="text-align:left;">{{ data.invoice.invoice_no }}/{{ data.invoice.reference_no }}</td>
+
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+<script>
+    function printDiv(divName) {
+        var printContents = document.getElementById(divName).innerHTML;
+        var originalContents = document.body.innerHTML;
+        document.body.innerHTML = printContents;
+        window.print();
+        document.body.innerHTML = originalContents;
+    }
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<script>
+ $('#submit').click(function(e){ 
+    e.preventDefault();       
+            // Show the table when dates are selected
+            $('#table-container').show();
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Competitor Analysis Entry</h4>
+      <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">Competitor Analysis Entry</li>
+      </ol>
+  </div>
+<div class="main-content app-content">
+    <h2>Competitor Analysis Form</h2>
+    <div class="container-fluid">
+             <!-- Start:: row-1 -->
+             <div class="row">
+                <div class="col-xl-12">
+                    <div class="card custom-card">
+                        <div class="card-header">
+                            <div class="card-title mx-auto">
+                            Competitor Analysis Entry</div>
+                        </div>
+                        <div class="card-body">
+                            <form enctype="multipart/form-data" role="form" method="post" class="row g-3 needs-validation">
+                            {% csrf_token %}
+                        <!--row 1-->
+                        <div class="col-md-6  form-group-required">
+                            <span style="color: red;" class="required-star">*</span>
+                            <label class='control-label' aria-required="true">Competitor Name</label>
+                            {{ form.competitor }}
+                            <span style="color: red;">{{ form.competitor.errors }}</span>
+                        </div>  
+                         <div class="col-md-6">
+                            <div class="form-group required">
+                                <span style="color: red;" class="required-star">*</span>
+                                <label class='control-label'>Customer</label>
+                                {{ form.customer }}
+                                <span style="color: red;">{{ form.customer.errors }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group required">
+                                <span style="color: red;" class="required-star">*</span>
+                                <label class='control-label'>Quantity</label>
+                                {{ form.quantity }}
+                                <span style="color: red;">{{ form.quantity.errors }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group required">
+                                <span style="color: red;" class="required-star">*</span>
+                                <label class='control-label'>Price</label>
+                                {{ form.price }}
+                                <span style="color: red;">{{ form.price.errors }}</span>
+                            </div>
+                        </div>
+                       
+                        <div class="col-12 text-end mt-5">
+                            <input type="submit" class="btn btn-primary me-2 mb-2" value="Submit">
+                                <button class="btn btn-success   me-md-2  mb-2" type="button" onClick="javascript:history.go(-1);">
+                                    <i class="bi bi-backspace-fill pe-1"></i>Back</button>
+                        </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

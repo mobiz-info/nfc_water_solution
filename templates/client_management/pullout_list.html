@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% block title %} User View {% endblock %}
+{% block content %}
+{% load static %}
+
+<style>
+  .form-group input[type="checkbox"] {
+    display: inline-block;
+    margin-right: 10px; /* Adjust spacing between checkboxes as needed */
+}
+</style>
+
+  <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <!-- <h6 class="fw-medium mb-0">User Details</h6> -->
+      <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+      </ol>
+  </div>
+  
+
+  <div class="main-content app-content">
+      <div class="container-fluid">
+       
+                <!-- Start:: row-1 -->
+      
+                  
+               
+                  
+                </div>
+                  
+
+            <!-- Start:: row-2 -->
+            <div class="row">
+              <div class="col-xl-12">
+                  <div class="card custom-card">
+                      <div class="card-header">
+                          <div class="card-title">
+                              Pullout
+                          </div>
+                      
+                  <!-- End:: row-1 -->
+                </div>
+              </div>
+            <!-- Add JavaScript to handle dynamic product filtering -->
+            <div class="card-body">
+                <div class="tbl table-responsive">
+                    <table id="datatable-basic" class="table table-bordered text-nowrap dataTable no-footer" style="width: 100%">
+                    <thead>
+                        <tr>
+                            <th scope="col">Sl No</th>
+                            <th scope="col">Customer Custody Name</th>
+                            <th scope="col">Serial Number</th>
+                            <th scope="col">Rate</th>
+                            <th scope="col">Deposite Type</th>
+                            <th scope="col">Deposite Form Number</th>
+                            
+                            <th></th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    {% for i in custody_items %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ i.product.product_name }}</td>
+                            <td>{{ i.serialnumber }}</td>
+                            <td>{{ i.rate }}</td>
+                            <td>{{ i.deposit_type }}</td>
+                            <td>{{ i.deposit_form_number }}</td>
+                            <td><a href="">Edit</td>
+                            <td><a href="">Delete</td>
+    
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                 </div>
+            </div>
+
+
+            <!-- Start:: row-2 -->
+            <!-- Start:: row-2 -->
+              <div class="row">
+        
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+          // JavaScript code to allow only one checkbox to be selected   
+          $('input[type="checkbox"]').click(function () {
+            // If the clicked checkbox is checked, uncheck all other checkboxes
+            if ($(this).prop('checked')) {
+                $('input[type="checkbox"]').not(this).prop('checked', false);
+            }
+        });
+        $('#id_category').change(function () {
+            var category_id = $(this).val();
+            $.ajax({
+                url: '{% url "get_category_list" %}',
+                data: {'category_id': category_id},
+                dataType: 'json',
+                success: function (data) {
+                    var products_select = $('#id_product_name');
+
+
+                    var options_html = '';  // Initialize an empty string to store the HTML options
+                    $.each(data.products, function (index, product) {
+                        options_html += '<option value="' + product.product_id + '">' + product.product_name  + '</option>';
+                    });
+                    products_select.html(options_html);  // Set the HTML of the select element
+
+                }
+            });
+        });
+
+        
+
+        
+
+    });
+
+</script>
+
+
+
+
+
+{% endblock %}
+                        

@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% block title %} Guest Customers {% endblock %}
+{% block content %}
+{% load accounts_templatetags %}
+{% load static %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Guest Customers</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Client Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Guest Customers</li>
+    </ol>
+</div>
+<!-- Page Header Close -->
+
+<!-- Start::app-content -->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">Guest Customers</div>
+                        
+                    </div>
+                    <div class="card-body">
+
+                        <!-- Filters -->
+                        <div style="float:right;padding:10px 0px;">
+                            <form method="GET">
+                                <div class="input-group">
+                                    
+                                    <select name="location" class="form-select">
+                                        <option value="">All Locations</option>
+                                        {% for location in locations %}
+                                            <option value="{{ location.location_id }}" {% if filter_data.location == location.location_id|stringformat:"s" %}selected{% endif %}>
+                                                {{ location.location_name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    
+                                    <input type="date" name="created_date" class="form-control" value="{{ filter_data.created_date }}">
+                                    <input type="text" name="q" class="form-control" placeholder="Search ..." value="{{ filter_data.q }}">
+                                    <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i>Search</button>
+                                    <a href="{% url 'guest_customers' %}" class="btn btn-secondary ms-2">Clear Filters</a>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Table -->
+                        <div class="w-100 overflow-auto">
+                            
+                                {% csrf_token %}
+                                <table class="table table-bordered text-nowrap">
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align:center;width:5%;"> Sl.No</th>
+                                            <th style="text-align:center;">Created Date</th>
+                                            <th style="text-align:center;">Customer ID</th>
+                                            <th style="text-align:center;">Customer Name</th>
+                                            <th style="text-align:center;">Route</th>
+                                            <th style="text-align:center;">Location</th>
+                                            <th style="text-align:center;">Mobile No</th>
+                                            <th style="text-align:center;">Building Name/<br>House No</th>
+                                            <th style="text-align:center;">Sales Type</th>
+                                            <th style="text-align:center;">Rate</th>
+                                            <th style="text-align:center;">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% load el_pagination_tags %}
+                                        {% paginate 50 user_li %}
+                                        {% for data in user_li %}
+                                        <tr>
+                                            <td style="text-align:center;">{{ forloop.counter }}</td>
+                                            <td style="text-align:left;">{{ data.created_date|date:'d-m-Y' }}</td>
+                                            <td style="text-align:left;">{{ data.custom_id }}</td>
+                                            <td style="text-align:left;">{{ data.customer_name }}</td>
+                                            <td style="text-align:left;">{{ data.routes.route_name }}</td>
+                                            <td style="text-align:left;">{{ data.location.location_name }}</td>
+                                            <td style="text-align:left;">{{ data.mobile_no }}</td>
+                                            <td style="text-align:left;">{{ data.building_name }}, {{ data.door_house_no }}</td>
+                                            <td style="text-align:left;">{{ data.sales_type }}</td>
+                                            <td style="text-align:right;">{{ data.rate }}</td>
+                                            <td style="text-align:center;">
+                                                <a href="{% url 'assign_to_customer' data.customer_id %}" 
+                                                    class="btn btn-success btn-sm">
+                                                    <i class="bi bi-person-check"></i> Assign
+                                                </a>
+                                                <a href="{% url 'guest_customer_orders' data.customer_id %}" 
+                                                    class="btn btn-primary btn-sm">
+                                                    <i class="bi bi-box-seam"></i> View Orders
+                                                </a>
+                                            </td>
+                                            
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="11" class="text-center">No guest customers found.</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            
+                        </div>
+
+                        <!-- Pagination -->
+                        {% get_pages %}
+                        <div class="clearfix"></div>
+                        <div class="row pagi my-3">
+                            <div class="col-sm-6 text-start">
+                                Showing <span class="current_page_index">{{ pages.current_start_index }}</span> - <span class="current_end_status">{{ pages.current_end_index }}</span> of <span class="total_count">{{ pages.total_count }}</span>
+                            </div>
+                            <div class="col-sm-6 text-end pagination-btn-div">{% show_pages %}</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End:: row -->
+    </div>
+</div>
+<!-- End::app-content -->
+
+{% endblock %}
+
+{% block static %}
+
+{% endblock static %}

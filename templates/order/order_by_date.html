@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block title %} Branch List {% endblock %}
+{% block content %}
+{% load static %}
+        <!-- End::app-sidebar -->
+        <!-- Page Header -->
+        <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+            <h4 class="fw-medium mb-0">Orders</h4>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Orders</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Orders by Date</li>
+            </ol>
+        </div>
+        <!-- Page Header Close -->
+
+
+
+        <!-- Start::app-content -->
+        <div class="main-content app-content">
+            <div class="container-fluid">
+
+                
+                         <!-- Start:: row-2 -->
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card custom-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    Orders By Date
+                                </div>
+                                
+                                <div class="ms-auto">
+                                    <a href="{% url 'order-create' %}">
+                                    <button type="button" class="btn btn-success btn-wave text-end d-flex me-4 my-auto"><i class="bi bi-plus-circle me-1"></i>Create</button>
+                                </a>
+                                </div>
+                            </div>
+                            <div class="mt">
+                                <form method="post">
+                                {% csrf_token %}
+                                    <div class="card-body">
+                                        <div class="row col-md-8">
+                                            <div class="col-md-4 col-form-label text-end">
+                                                <h6>Date</h6>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <input name="date" type="date" class="form-select" style="width: min-content;" value="{{selected_date}}" >
+                                            </div>
+                                            <div class="col-md-4">
+                                                <input type="submit" class="btn btn-primary btn-sm" >
+                                            </div>
+                                        
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="card-body">
+                                <table id="responsiveDataTable" class="table table-bordered text-nowrap" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                        <th scope="col">Sl.No</th>
+                                        <th scope="col">Route</th>
+                                        <th scope="col">Salesman</th>
+                                        
+                                        <th scope="col">Actions</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                      
+                                        {% for data in route_saleman %}
+                                        <tr>
+                                            <td style="text-align:center;">{{forloop.counter}}</td>
+                                            <td style="text-align:center;">{{data.route}}</td>
+                                            <td style="text-align:center;">{{data.salesman}}</td>
+                                           
+                                            <td>
+                                                <div class="g-2">
+                                                    <a href="{% url 'order_by_route' data.route_id selected_date data.salesman.id  %}" aria-label="anchor" class="btn  btn-warning-light btn-sm" data-bs-toggle="tooltip" data-bs-original-title="View">
+                                                        <span class="bi bi-eye fs-14"></span>
+                                                    </a>
+                                                    
+                                            </div>
+                                            </td>
+                                        </tr>
+                                    {%endfor%}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End:: row-2 -->
+
+                      
+
+            </div>
+        </div>
+        <!-- End::app-content -->
+        {% endblock %}

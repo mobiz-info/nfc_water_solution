@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% block title %} User View {% endblock %}
+{% block content %}
+{% load static %}
+  <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">User Details</h4>
+      <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+      </ol>
+  </div>
+
+  <div class="main-content app-content">
+      <div class="container-fluid">
+
+                <!-- Start:: row-1 -->
+                <div class="card card-product-details shadow">
+      
+                  <div class="card-header text-center">
+                    <h4>User Details</h4>
+                  </div>
+                  
+                  <div class="card-body ">
+                    <p class="card-text">
+                      <div class="table-responsive">
+                          <table class="table">
+                            <!--
+                            <thead>
+                              <tr>
+                                
+                                <th scope="col">Heading</th>
+                                <th scope="col">Heading</th>
+                                <th scope="col">Heading</th>
+                                <th scope="col">Heading</th>
+                                
+                              </tr>
+                            </thead>
+                            -->
+                         
+                            <tbody>
+                              <tr >
+                                <td class="text-secondary">Name</td>
+                                <td>{{user_det.first_name}}</td>
+                                <td class="text-secondary">Username</td>
+                                <td>{{user_det.username}}</td>
+                              </tr>
+                              <tr>
+                                <td class="text-secondary">Permanent Address</td>
+                                <td>{{user_det.permanent_address}}</td>
+                                <td class="text-secondary">Present Address</td>
+                                <td>{{user_det.present_address}}</td>
+                              </tr>
+                              <tr>
+                                <td class="text-secondary">Joining Date</td>
+                                <td>{{user_det.joining_date|date:"d-m-Y"}}</td>
+                                <td class="text-secondary">Sanaity</td>
+                                <td>{{user_det.nationality}}</td>
+                              </tr>
+                              <tr>
+                                <td class="text-secondary">Labour Card Number</td>
+                                <td>{{user_det.labour_card_no}}</td>
+                                <td class="text-secondary">Labour Card Expiry</td>
+                                <td>{{user_det.labour_card_expiry}}</td>
+                              </tr>
+                              <tr>
+                                <td class="text-secondary">Driving Licence Number</td>
+                                <td>{{user_det.driving_licence_no}}</td>
+                                <td class="text-secondary">Driving Licence Expiry</td>
+                                <td>{{user_det.driving_licence_expiry}}</td>
+                              </tr>
+                              <tr>
+                                <td class="text-secondary">Blood Group</td>
+                                <td>{{user_det.blood_group}}</td>
+                                <td class="text-secondary">Phone</td>
+                                <td>{{user_det.phone}}</td>
+                              </tr>
+                              <tr>
+                                <td class="text-secondary">Email</td>
+                                <td>{{user_det.email}}</td>
+                                <td class="text-secondary">Designation</td>
+                                <td>{{user_det.designation_id}}</td>
+                              </tr>
+                              <tr>
+                                <td class="text-secondary">EMP ID</td>
+                                <td>{{user_det.staff_id}}</td>
+                                <td class="text-secondary">Licence Issued By</td>
+                                <td>{{user_det.licence_issued_by}}</td>
+                               
+                              </tr>
+                              <tr>
+                                <td class="text-secondary">Emirites ID</td>
+                                <td>{{user_det.emirates_id_no}}</td>
+                                <td class="text-secondary">Emirate Expiry</td>
+                                <td>{{user_det.emirates_expiry|date:"d-m-Y"}}</td>
+                              </tr>
+                              <tr>
+                                <td class="text-secondary">Health Card No.</td>
+                                <td>{{user_det.health_card_no}}</td>
+                                <td class="text-secondary">Health Card Expiry</td>
+                                <td>{{user_det.health_card_expiry|date:"d-m-Y"}}</td>
+                              </tr>
+                              <tr>
+                                <td class="text-secondary">Visa Issued By</td>
+                                <td>{{user_det.visa_issued_by}}</td>
+                                <td class="text-secondary">Visa No</td>
+                                <td>{{user_det.visa_no}}</td>
+                              </tr>
+                              <tr>
+                                <td class="text-secondary">Visa Expiry</td>
+                                <td>{{user_det.visa_expiry|date:"d-m-Y"}}</td>
+                                <td class="text-secondary">WPS %</td>
+                                <td>{{user_det.wps_percentage}}</td>
+                              </tr>
+                              <tr>
+                                <td class="text-secondary">WPS Ref. No.</td>
+                                <td>{{user_det.wps_ref_no}}</td>
+                                <td class="text-secondary">Insurance No.</td>
+                                <td>{{user_det.insurance_no}}</td>
+                              </tr>
+                              <tr>
+                                <td class="text-secondary">Insurance Expiry</td>
+                                <td>{{user_det.insurance_expiry|date:"d-m-Y"}}</td>
+                                <td class="text-secondary">Insurance Company</td>
+                                <td>{{user_det.insurance_company}}</td>
+                              </tr>
+                              <tr>
+                                <td class="text-secondary">Passport Number</td>
+                                <td>{{user_det.passport_number}}</td>
+                                <td class="text-secondary">Passport Expiry</td>
+                                <td>{{user_det.passport_expiry|date:"d-m-Y"}}</td>
+                              </tr>
+                              <tr>
+                                <td class="text-secondary">Visa Type</td>
+                                <td>{{user_det.visa_type}}</td>
+                                
+                              </tr>
+                            </tbody>
+                      
+                          </table>
+                          
+                        </div>
+      
+                    </p>
+                    
+                  </div>
+                  
+                </div>
+                <div class="row my-3 me-1">
+                  <div class="col-12 text-end">
+                    <a href="{% url 'users' %}">
+                        <button class="btn btn-success me-md-2 " type="button"><i class="bi bi-backspace-fill pe-1"></i>Back</button>
+                   </a>
+                   <a href="{% url 'dashboard' %}">
+                    <button class="btn btn-success me-md-2 " type="button"><i class="bi bi-backspace-fill pe-1"></i>Back to Dashboard</button>
+                  </a>
+                  </div>
+                </div>
+              <!-- End:: row-1 -->
+                
+
+      </div>
+  </div>
+  {% endblock %}

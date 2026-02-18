@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}Today's Credit Sales{% endblock %}
+{% block content %}
+{% load static %}
+{% load el_pagination_tags %}
+
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Today's Credit Sales</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Today's Credit Sales</li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        {% if supply_credit_sales_instances %}
+                        <table class="table table-bordered text-wrap" style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center;">Sl No</th>
+                                    <th style="text-align:center;">Created Date</th>
+                                    <th style="text-align:center;">Customer</th>
+                                    <th style="text-align:center;">Customer Code</th>
+                                    <th style="text-align:center;">Salesman</th>
+                                    <th style="text-align:center;">Invoice No</th>
+                                    <th style="text-align:center;">Total QTY</th>
+                                    <th style="text-align:center;">Grand Total</th>
+                                    <th style="text-align:center;">Net Payable</th>
+                                    <th style="text-align:center;">Cash Received</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for sale in supply_credit_sales_instances %}
+                                <tr>
+                                    <td style="text-align:center;">{{ forloop.counter }}</td>
+                                    <td style="text-align:center;">{{ sale.created_date|date:'d-m-Y' }}</td>
+                                    <td style="text-align:center;">{{ sale.customer }}</td>
+                                    <td style="text-align:center;">{{ sale.customer.custom_id }}</td>
+                                    <td style="text-align:center;">{{ sale.salesman }}</td>
+                                    <td style="text-align:center;">{{ sale.invoice_no }}</td>
+                                    <td style="text-align:center;">{{ sale.get_total_supply_qty }}</td>
+                                    <td style="text-align:center;">{{ sale.grand_total }}</td>
+                                    <td style="text-align:center;">{{ sale.net_payable }}</td>
+                                    <td style="text-align:center;">{{ sale.amount_recieved }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="6" style="text-align:right;"><strong>Totals:</strong></td>
+                                    <td style="text-align:center;">{{ total_supply_qty }}</td>
+                                    <td style="text-align:center;">{{ total_grand_total }}</td>
+                                    <td style="text-align:center;">{{ total_net_payable }}</td>
+                                    <td style="text-align:center;">{{ total_amount_received }}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        {% else %}
+                        <p>No credit sales for today.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

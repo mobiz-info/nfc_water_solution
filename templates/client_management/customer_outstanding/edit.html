@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Create Outstanding</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Client Management</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Create Outstanding</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-1 -->
+        <div class="row justify-content-center">
+            <div class="col-8">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title mx-auto">
+                            Create Outstanding
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form action="{{ url }}" role="form" method="post" enctype="multipart/form-data" class="row g-3 ajax redirect" autocomplete="off" novalidate>
+                            {% csrf_token %}
+                            <!--row 1-->
+                            <div class="row">
+                                {% if customer_outstanding_form.customer %}
+                                <div class="col">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Customer</label>
+                                        {{ customer_outstanding_form.customer }}
+                                        <span style="color: red;">{{ customer_outstanding_form.customer.errors }}</span>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                
+                                <div class="col">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Product Type</label>
+                                        {{ customer_outstanding_form.product_type }}
+                                        <span style="color: red;">{{ customer_outstanding_form.product_type.errors }}</span>
+                                    </div>
+                                </div> 
+                            </div>
+                            {% if  customer_outstanding_amount_form.amount %}
+                            <div class="row" id="amountForm" >
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="form-group required">
+                                            <label class='control-label'>Amount</label>
+                                            {{ customer_outstanding_amount_form.amount }}
+                                            <span style="color: red;">{{ customer_outstanding_amount_form.amount.errors }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            <div class="row" id="emptyBottleForm" style="display: none;">
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="form-group required">
+                                            <label class='control-label'>Count</label>
+                                            {{ customer_outstanding_bottles_form.empty_bottle }}
+                                            <span style="color: red;">{{ customer_outstanding_bottles_form.empty_bottle.errors }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" id="emptyCouponForm" style="display: none;">
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="form-group required">
+                                            <label class='control-label'>Coupon Type</label>
+                                            {{ customer_outstanding_coupon_form.coupon_type }}
+                                            <span style="color: red;">{{ customer_outstanding_coupon_form.coupon_type.errors }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group required">
+                                            <label class='control-label'>Count</label>
+                                            {{ customer_outstanding_coupon_form.count }}
+                                            <span style="color: red;">{{ customer_outstanding_coupon_form.count.errors }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                                
+                            </div>
+                            <div class="row">
+                                <div class="col-12 text-end mt-5">
+                                    <input type="submit" class="btn btn-primary me-2 mb-2" value="Submit">
+                                    <button class="btn btn-success   me-md-2  mb-2" type="button" onClick="javascript:history.go(-1);"> <i class="bi bi-backspace-fill pe-1"></i>Back</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        
+    </div>
+</div>
+{% endblock %}
+{% block static %}
+{% load static %}
+<script>
+    $(document).ready(function(){
+        $("#id_product_type").change(function(){
+            var productType = $(this).val();
+            if (productType == "amount"){
+             $("#amountForm").show();   
+            }else{
+                $("#amountForm").hide();   
+            }
+
+            if (productType == "emptycan"){
+                $("#emptyBottleForm").show();   
+            }else{
+                   $("#emptyBottleForm").hide();   
+            }
+
+            if (productType == "coupons"){
+                $("#emptyCouponForm").show();   
+            }else{
+                   $("#emptyCouponForm").hide();   
+            }
+        });
+    });
+</script>
+{% endblock static %}

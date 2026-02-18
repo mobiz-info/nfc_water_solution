@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% block title %} Branch List {% endblock %}
+{% block content %}
+{% load static %}
+        <!-- End::app-sidebar -->
+        <!-- Page Header -->
+        <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+            <h4 class="fw-medium mb-0">Amount changes</h4>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+            </ol>
+        </div>
+        <!-- Page Header Close -->
+
+
+
+        <!-- Start::app-content -->
+        <div class="main-content app-content">
+            <div class="container-fluid">
+
+                
+                         <!-- Start:: row-2 -->
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card custom-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    List
+                                </div>
+
+                                <div class="ms-auto">
+                                    {% comment %} <a href="{% url 'branch_create' %}">
+                                    <button type="button" class="btn btn-success btn-wave text-end d-flex me-4 my-auto"><i class="bi bi-plus-circle me-1"></i>Create</button>
+                                </a> {% endcomment %}
+                                </div>
+                            </div>
+                            
+                            <div class="card-body">
+                                <div style="float:right;padding:10px 0px;">
+                                    <form method="get" class="row g-3">
+                                        <div class="col-md-3">
+                                            <label>Route</label>
+                                            <select name="route_name" class="form-select">
+                                                <option value="">All Routes</option>
+                                                {% for route in route_li %}
+                                                    <option value="{{ route.route_name }}" {% if filter_data.route_filter == route.route_name %}selected{% endif %}>
+                                                        {{ route.route_name }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label>From Date</label>
+                                            <input type="date" name="start_date" value="{{ filter_data.start_date }}" class="form-control">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label>To Date</label>
+                                            <input type="date" name="end_date" value="{{ filter_data.end_date }}" class="form-control">
+                                        </div>
+                                        <div class="col-md-3 d-flex align-items-end">
+                                            <button type="submit" class="btn btn-primary">Filter</button>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="w-100 overflow-auto">
+                                    {% if instances %}
+                                    <table class="table table-striped table-bordered align-middle">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Customer</th>
+                                                <th>Route</th>
+                                                <th class="text-end">Outstanding Total</th>
+                                                <th class="text-end">Collection</th>
+                                                <th class="text-end text-danger">Outstanding Diff</th>
+                                                <th class="text-end">Invoice Total</th>
+                                                <th class="text-end">Invoice Received</th>
+                                                <th class="text-end text-danger">Invoice Diff</th>
+                                                <th class="text-end">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for item in instances %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ item.customer.customer_name }}</td>
+                                                <td>{{ item.route }}</td>
+                                                <td class="text-end">{{ item.outstanding_total|floatformat:2 }}</td>
+                                                <td class="text-end">{{ item.collected_total|floatformat:2 }}</td>
+                                                <td class="text-end text-danger">{{ item.outstanding_diff|floatformat:2 }}</td>
+                                                <td class="text-end">{{ item.invoice_total|floatformat:2 }}</td>
+                                                <td class="text-end">{{ item.invoice_received|floatformat:2 }}</td>
+                                                <td class="text-end text-danger">{{ item.invoice_diff|floatformat:2 }}</td>
+                                                <td class="text-right">
+                                                    <div class="g-2">
+                                                        <a href="{% url 'amount_change_list' %}?customer_pk={{item.customer.customer_id}}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Edit">
+                                                            <span class="ri-pencil-line fs-14"></span>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+
+                                            {% if instances %}
+                                            <tr class="fw-bold table-dark">
+                                                <td colspan="5" class="text-end">Total Difference</td>
+                                                <td class="text-end">{{ total_outstanding_diff|floatformat:2 }}</td>
+                                                <td colspan="2" class="text-end">Invoice Difference Total</td>
+                                                <td class="text-end">{{ total_invoice_diff|floatformat:2 }}</td>
+                                                <td class="text-end"></td>
+                                            </tr>
+                                            {% endif %}
+                                        </tbody>
+                                    </table>
+                                    {% else %}
+                                        <div class="alert alert-success mt-3">✅ No mismatched customers found.</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End:: row-2 -->
+
+                      
+
+            </div>
+        </div>
+        <!-- End::app-content -->
+        {% endblock %}

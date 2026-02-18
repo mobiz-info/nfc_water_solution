@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!-- End::app-sidebar -->
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Credit Notes List</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Credit Note List</li>
+    </ol>
+</div>
+<!-- Page Header Close -->
+<!-- Start::app-content -->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Credit Note
+                        </div>
+
+                        <div class="ms-auto">
+                            <a href="{% url 'credit_note:credit_note_customers' %}">
+                            <button type="button" class="btn btn-success btn-wave text-end d-flex me-4 my-auto"><i class="bi bi-plus-circle me-1"></i>Create</button>
+                        </a>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body" style="overflow: auto;">
+                        <table class="table table-bordered text-nowrap" style="width:100%">
+                            <thead>
+                                <tr>
+                                <th scope="col" class="text-center">Sl.No</th>
+                                <th scope="col" class="text-center">Created Date</th>
+                                <th scope="col" class="text-center">Credit Note No</th>
+                                <th scope="col" class="text-left">Customer Name</th>
+                                <th scope="col" class="text-center">Net Taxeble</th>
+                                <th scope="col" class="text-center">VAT</th>
+                                <th scope="col" class="text-center">Total Amount</th>
+                                <th scope="col" class="text-center">Amount Recieved</th>
+                                <th scope="col" class="text-right">Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                {% load el_pagination_tags %}
+                                {% paginate 20 instances %}
+                                {% for instance in instances %}
+                                <tr>
+                                    <td class="text-center">{{forloop.counter}}</td>
+                                    <td class="text-left">{{instance.created_date}}</td>
+                                    <td class="text-left">{{instance.credit_note_no}}</td>
+                                    <td class="text-center">{{instance.customer.customer_name}}</td>
+                                    <td class="text-center">{{instance.net_taxable}}</td>
+                                    <td class="text-center">{{instance.vat}}%</td>
+                                    <td class="text-center">{{instance.amout_total}}</td>
+                                    <td class="text-center">{{instance.amout_recieved}}</td>
+                                    <td class="text-right">
+                                        <div class="g-2">
+                                            <a href="{% url 'credit_note:edit_credit_note' pk=instance.pk %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Edit">
+                                                <span class="ri-pencil-line fs-14"></span>
+                                            </a>
+                                            <a aria-label="anchor" class="action-button remove btn btn-danger-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Delete"
+                                                data-id="{{instance.pk}}" data-text="{{confirm_delete_message}}" data-title="Are you sure?" href="{% url 'credit_note:delete_credit_note' pk=instance.pk %}"><span class="ri-delete-bin-7-line fs-14"></span>
+                                            </a>
+                                            <a href="{% url 'credit_note:credit_note_info' pk=instance.pk %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Invoice Info">
+                                                <span class="ri-printer-fill fs-14"></span>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {%endfor%}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% get_pages %}
+                    <div class="clearfix"></div>
+                    <div class="row pagi my-3">
+                        <div class="col-sm-6 col-xs-6 tot my-pagination">
+                            <div class="m-t-10 text-start">
+                                Showing {{title}}
+                                <span class="current_page_index">{{ pages.current_start_index }}</span> - <span
+                                class="current_end_status">{{ pages.current_end_index }}</span> of <span
+                                class="total_count">{{ pages.total_count }}</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xs-6 text-end pagination-btn-div">{% show_pages %}</div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End:: row-2 -->
+    </div>
+</div>
+<!-- End::app-content -->
+{% endblock %}

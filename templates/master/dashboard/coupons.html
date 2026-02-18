@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+{% load static %}
+{% load bottle_customer_stock %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Dashboard</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+    </ol>
+</div>
+
+<!-- Main Content Area -->
+<div class="main-content app-content" style={{"background:white"}}>
+    <div class="container-fluid">
+        <!-- Tab Buttons -->
+        <div class="tab mt-5 mb-3" style="border-bottom: 2px solid #bfbfbf;max-height: 40px;">
+            <button class="tablinks btn rounded-0" onclick="openOverview()">Overview</button>
+            <button class="tablinks btn rounded-0" onclick="openSales()">Sales</button>
+            <button class="tablinks btn rounded-0" onclick="openBottle()">Bottle</button>
+            <button class="tablinks btn rounded-0" onclick="openCoupons()">Coupons</button>
+            <button class="tablinks btn rounded-0" onclick="openCustomerStatistics()">Customer Statistics</button>
+            <button class="tablinks btn rounded-0" onclick="openOthers()">Others</button>
+        </div>
+        
+        <!-- Placeholder for Coupons tab content sections -->
+        <div id="Coupons" class="tabcontent">
+            <div class="row mt-4">
+                <div class="col-md-8 mb-4">
+                    <div class="card h-100 border-0">
+                        <div class="card-header text-left border-0" >
+                            <h5 class="card-title">Coupons</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th style="color: white !important; background-color: #4776e6 !important;">Category</th>
+                                        <th style="color: white !important; background-color: #4776e6 !important;">Manual</th>
+                                        <th style="color: white !important; background-color: #4776e6 !important;">Digital</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="cursor: pointer; ">
+                                        <td>Books Sold</td>
+                                        <td>{{ manual_coupon_sold_count }}</td>
+                                        <td>{{ digital_coupon_sold_count }}</td>
+                                    </tr>
+                                    <tr style="cursor: pointer; ">
+                                        <td>Coupons Collected</td>
+                                        <td>{{ collected_manual_coupons_count}}</td>
+                                        <td>{{ collected_digital_coupons_count}}</td>
+                                    </tr>
+                                    <tr style="cursor: pointer; ">
+                                        <td>Pending coupons today</td>
+                                        <td>{{ today_pending_manual_coupons_count }}</td>
+                                        <td>{{ today_pending_digital_coupons_count }}</td>
+                                    </tr>
+                                    <tr style="cursor: pointer; ">
+                                        <td>Pending coupons collected</td>
+                                        <td>{{ today_pending_manual_coupons_collected_count }}</td>
+                                        <td>{{ today_pending_digital_coupons_collected_count }}</td>
+                                    </tr>
+                                    <tr style="cursor: pointer; ">
+                                        <td>Outstanding</td>
+                                        <td>{{ today_manual_coupon_outstanding_count }}</td>
+                                        <td>{{ today_digital_coupon_outstanding_count }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-6 mb-4" <a href="{% url 'coupon_sales_report' %}" title="{% url 'coupon_sales_report' %}"  style="cursor: pointer; "></a>
+                    <div class="card h-100">
+                        <div class="card-header text-left text-white" style="background-color: #4776e6 !important;">
+                            <h5 class="card-title">Coupon Report</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="salesmanBasedCouponSaleChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4" <a href="{% url 'customerSales_report' %}" title="{% url 'customerSales_report' %}"  style="cursor: pointer; "></a>
+                    <div class="card h-100">
+                        <div class="card-header text-left text-white" style="background-color: #4776e6 !important;">
+                            <h5 class="card-title">Sales Report</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="salesmanBasedBottleChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+     
+
+    </div>
+</div>
+{% endblock %}
+{% block static %}
+{% load static %}
+<script>
+    function openOverview() {
+        window.location.href = '{% url 'overview' %}';
+    }
+    
+    function openSales() {
+        window.location.href = '{% url 'sales' %}';
+    }
+    
+    function openBottle() {
+        window.location.href = '{% url 'bottles' %}';
+    }
+    
+    function openCoupons() {
+        window.location.href = '{% url 'coupons' %}';
+    }
+    
+    function openCustomerStatistics() {
+        window.location.href = '{% url 'customer-statistics' %}';
+    }
+    
+    function openOthers() {
+        window.location.href = '{% url 'others' %}';
+    }
+    
+</script>
+<script>
+    var salesmanData = {{ salesman_sales_serializer|safe }};
+    
+    var labels = salesmanData.map(item => item.salesman_name);
+    var supplyCounts = salesmanData.map(item => item.supply_count);
+    var emptyBottleCounts = salesmanData.map(item => item.empty_bottle_count);
+  
+    var ctx = document.getElementById("salesmanBasedBottleChart").getContext('2d');
+    var myChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Supply Count',
+          data: supplyCounts,
+          backgroundColor: "#0d6efd"
+        }, {
+          label: 'Empty Bottle Count',
+          data: emptyBottleCounts,
+          backgroundColor: "#198754"
+        }]
+      }
+    });
+</script>
+<script>
+    var salesmanData = {{ salesman_recharge_serializer|safe }};
+    
+    var labels = salesmanData.map(item => item.salesman_name);
+    var supplyCounts = salesmanData.map(item => item.supply_count);
+    var emptyBottleCounts = salesmanData.map(item => item.empty_bottle_count);
+  
+    var ctx = document.getElementById("salesmanBasedCouponSaleChart").getContext('2d');
+    var myChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Coupon Sales',
+          data: supplyCounts,
+          backgroundColor: "#0d6efd"
+        }]
+      }
+    });
+</script>
+
+
+{% endblock static %}
+ 

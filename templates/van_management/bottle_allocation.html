@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% block title %} Bottle Allocation {% endblock %}
+{% block content %}
+{% load static %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0"> Bottle Allocation </h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Van Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Bottle Allocation</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Bottle Allocation
+                        </div>
+                    </div>
+                    <div class="mt">
+                        <form method="get">
+                            <div class="row mt-3">
+                                <div class="row col-md-6" >
+                                    <div id="datePeriodDiv" class="row col-12" style="flex-direction: row;
+                                    justify-content: space-around;
+                                    align-items: flex-end;">
+                                        
+                                        
+                                        
+                                    </div>
+                                </div>
+                                <div class="row col-md-6 mt-4">
+                                     
+                                    
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div id="table-container" >
+                        <div class="card-body">
+                            <table  class="table table-bordered text-wrap" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align:center !important;width:5%;" rowspan="2">Sl No</th>
+                                        <th style="text-align:center !important;" rowspan="2">Route</th>
+                                        <th style="text-align:center !important;" rowspan="2">5 Gallon Stock</th>
+                                        <th style="text-align:center !important;" rowspan="2">Updated Date</th>
+                                        <th style="text-align:center !important;" rowspan="2"></th>
+
+                                    </tr>
+                                 
+                                </thead>
+                               {% comment %} <tbody>
+                                    {% for route_detail in route_details %}
+                                        {% for customer_detail in route_detail.customers %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ route_detail.route_name }}</td>
+                                                <td>{{ route_detail.five_gallon_stock }}</td>
+                                                <td>{{ customer_detail.updated_date }}</td>
+                                                <td style="text-align:center;">
+                                                    <a href="{% url 'bottle_allocation_edit' route_detail.route_id %}" class="btn btn-primary me-2 mb-2" target="_blank">
+                                                        <i class="fa fa-file-pdf-o"></i> Edit
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% endfor %}
+                                </tbody> {% endcomment %}
+
+                                <tbody>
+                                    {% for route in route_details %}
+                                    <tr>
+                                        <td style="text-align:center;">{{ forloop.counter }}</td>
+                                        <td style="text-align:left;">{{ route.route_name }}</td>
+                                        <td style="text-align:center;">{{ route.five_gallon_stock }}</td>
+                                        <td style="text-align:center;">{{ route.latest_update|date:'d/m/Y' }}</td>
+                                        <td style="text-align:center;">
+                                            <a href="{% url 'edit_bottle_allocation' route_id=route.route_id %}" class="btn btn-primary me-2 mb-2" target="_blank">
+                                                <i class="fa fa-file-pdf-o"></i> Edit
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<script>
+ $('#submit').click(function(e){ 
+    e.preventDefault();       
+            // Show the table when dates are selected
+            $('#table-container').show();
+    });
+</script>
+<script>
+    function resetFilters() {
+        // Redirect to the same page
+        location.href = "{% url 'custody_issue' %}";
+    }
+</script>
+{% endblock %}

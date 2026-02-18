@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+{% load static %}
+{% load bottle_customer_stock %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Dashboard</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+    </ol>
+</div>
+
+<!-- Main Content Area -->
+<div class="main-content app-content" style={{"background:white"}}>
+    <div class="container-fluid">
+        <!-- Tab Buttons -->
+        <div class="tab mt-5 mb-3" style="border-bottom: 2px solid #bfbfbf;max-height: 40px;">
+            <button class="tablinks btn rounded-0" onclick="openOverview()">Overview</button>
+            <button class="tablinks btn rounded-0" onclick="openSales()">Sales</button>
+            <button class="tablinks btn rounded-0" onclick="openBottle()">Bottle</button>
+            <button class="tablinks btn rounded-0" onclick="openCoupons()">Coupons</button>
+            <button class="tablinks btn rounded-0" onclick="openCustomerStatistics()">Customer Statistics</button>
+            <button class="tablinks btn rounded-0" onclick="openOthers()">Others</button>
+        </div>
+        
+        <!-- Placeholder for Bottles tab content sections -->
+        <div id="Bottle" class="tabcontent">
+            <div class="row mt-4">
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header text-left text-white" style="background-color: #4776e6 !important;">
+                            <h5 class="card-title">Category</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr style="cursor: pointer; ">
+                                        <td> <a href="{% url 'customer_supply_list' %}" title="{% url 'customer_supply_list' %}">Today Supply</a></td>
+                                        <td> <a href="{% url 'customer_supply_list' %}" title="{% url 'customer_supply_list' %}">{{ today_supply_bottle_count }}</a></td>
+                                    </tr>
+                                    <tr style="cursor: pointer; ">
+                                        <td> <a href=" " title=" ">Custody Issued</a></td>
+                                        <td> <a href=" " title=" ">{{ today_custody_issued_count}}</a></td>
+                                    </tr>
+                                    <tr style="cursor: pointer; ">
+                                        <td> <a href=" " title=" ">Pending bottle given today</a></td>
+                                        <td> <a href=" " title=" ">{{ today_pending_bottle_given_count }}</a></td>
+                                    </tr>
+                                    <tr style="cursor: pointer; ">
+                                        <td> <a href=" " title=" ">Pending bottle collected</a></td>
+                                        <td> <a href=" " title=" ">{{ today_pending_bottle_collected_count }}</a></td>
+                                    </tr>
+                                    <tr style="cursor: pointer; ">
+                                        <td> <a href=" " title=" ">Total Outstanding Bottles</a></td>
+                                        <td> <a href=" " title=" ">{{ today_outstanding_bottle_count }}</a></td>
+                                    </tr>
+                                    <tr style="cursor: pointer; ">
+                                        <td> <a href=" " title=" ">Scrap bottles</a></td>
+                                        <td> <a href=" " title=" ">{{ today_scrap_bottle_count }}</a></td>
+                                    </tr>
+                                    <tr style="cursor: pointer; ">
+                                        <td> <a href=" " title=" ">Bottles in service</a></td>
+                                        <td> <a href=" " title=" ">{{ today_service_bottle_count }}</a></td>
+                                    </tr>
+                                    <tr style="cursor: pointer; ">
+                                        <td> <a href=" " title=" ">Company Stock fresh</a></td>
+                                        <td> <a href=" " title=" ">{{ today_fresh_bottle_stock }}</a></td>
+                                    </tr>
+                                    <tr style="cursor: pointer; ">
+                                        <td> <a href=" " title=" ">Company Stock used</a></td>
+                                        <td> <a href=" " title=" ">{{ total_used_bottle_count }}</a></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4" <a href="{% url 'customerSales_report' %}" title="{% url 'customerSales_report' %}"  style="cursor: pointer; "></a>
+                    <div class="card h-100">
+                        <div class="card-header text-left text-white" style="background-color: #4776e6 !important;">
+                            <h5 class="card-title">Sales Report</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="salesmanBasedBottleChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
+    </div>
+</div>
+{% endblock %}
+{% block static %}
+{% load static %}
+<script>
+    function openOverview() {
+        window.location.href = '{% url 'overview' %}';
+    }
+    
+    function openSales() {
+        window.location.href = '{% url 'sales' %}';
+    }
+    
+    function openBottle() {
+        window.location.href = '{% url 'bottles' %}';
+    }
+    
+    function openCoupons() {
+        window.location.href = '{% url 'coupons' %}';
+    }
+    
+    function openCustomerStatistics() {
+        window.location.href = '{% url 'customer-statistics' %}';
+    }
+    
+    function openOthers() {
+        window.location.href = '{% url 'others' %}';
+    }
+    
+</script>
+<script>
+    var salesmanData = {{ salesman_sales_serializer|safe }};
+    
+    var labels = salesmanData.map(item => item.salesman_name);
+    var supplyCounts = salesmanData.map(item => item.supply_count);
+    var emptyBottleCounts = salesmanData.map(item => item.empty_bottle_count);
+  
+    var ctx = document.getElementById("salesmanBasedBottleChart").getContext('2d');
+    var myChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Supply Count',
+          data: supplyCounts,
+          backgroundColor: "#0d6efd"
+        }, {
+          label: 'Empty Bottle Count',
+          data: emptyBottleCounts,
+          backgroundColor: "#198754"
+        }]
+      }
+    });
+</script>
+
+{% endblock static %}
+ 

@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %} vanstock List {% endblock %}
+{% block content %}
+{% load static %}
+<!-- End::app-sidebar -->
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Van Management</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+    </ol>
+</div>
+<!-- Page Header Close -->
+<!-- Start::app-content -->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Vanstock
+                        </div>
+                        
+                    </div>
+                    <div class="card-body">
+                        <table id="datatable-basic" class="table table-bordered text-nowrap" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Sl.No</th>
+                                    <th scope="col">Coupon Type</th>
+                                    <th scope="col">Opening Stock</th>
+                                    {% comment %} <th scope="col">Qty Received</th> {% endcomment %}
+                                    <th scope="col">Total Stock</th>
+                                    {% comment %} <th scope="col">Unit</th> {% endcomment %}
+                                    {% comment %} <th scope="col">Actions</th> {% endcomment %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for data in instances %}
+                                <tr>
+                                    <td style="text-align:center;">{{forloop.counter}}</td>
+                                    <td style="text-align:center;">{{data.coupon.coupon_type.coupon_type_name}}</td>
+                                    <td style="text-align:center;">{{data.count}}</td>
+                                    {% comment %} <td style="text-align:center;">{{ data.product.quantity}}</td> {% endcomment %}
+                                    
+                                    <td style="text-align:center;">{{ data.total_stock }}</td>
+                                    {% comment %} <td>
+                                        <div class="g-2">
+                                            <a aria-label="anchor" class="btn btn-danger-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Delete">
+                                                <span class="ri-delete-bin-7-line fs-14"></span>
+                                            </a>
+                                        </div> {% endcomment %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End:: row-2 -->
+    </div>
+</div>
+<!-- End::app-content -->
+
+
+{% endblock %}
+
+
+

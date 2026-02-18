@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% block title %} Users List {% endblock %}
+{% block content %}
+{% load static %}
+        <!-- End::app-sidebar -->
+        <!-- Page Header -->
+        <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+            <h4 class="fw-medium mb-0">Expense Head</h4>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+            </ol>
+        </div>
+        <div class="main-content app-content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card custom-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                     Expense Head List 
+                                </div>
+                                <div class="ms-auto">
+                                    <a href="{% url 'expense_add' %}">
+                                    <button type="button" class="btn btn-success btn-wave text-end d-flex me-4 my-auto"><i class="bi bi-plus-circle me-1"></i>Create</button>
+                                </a>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="text-end mb-3 me-4">
+                                    <button id="filter_button" class="btn btn-secondary btn-sm"  onclick="toggleFilter()">Filter More</button>
+                                </div>
+                                <div class="row" id="filter" style="display: none;">
+                                    <div class="mt">
+                                        <form method="GET">
+                                            {% csrf_token %}
+                                            <div class="card-body">
+                                                <div class="row  align-items-center">
+                                                    <div class="col">
+                                                        <label for="start_date">From Date:</label>
+                                                        <input type="date" id="from_date" name="from_date" class="form-control" style="height: 2em;">
+                                                    </div>
+                                                    <div class="col">
+                                                        <label for="end_date">To Date:</label>
+                                                        <input type="date" id="to_date" name="to_date" class="form-control" style="height: 2em;">
+                                                    </div>
+                                                    
+                                                    <div class="row col-md-6" style="">
+                                                        <div class="col">
+                                                            <label for="product">Expense Type :</label>
+                                                            <select name="expense_type" id="expense_type" class="form-control" >
+                                                                <option value="">Choose Expense Type:</option>
+                                                                {% for expense_type in expense_types %}
+                                                                    <option value="{{ expense_type.expensehead_id }}">{{ expense_type }}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                        <div class="col d-flex align-items-end justify-content-end">
+                                                            <input type="submit" class="btn btn-primary btn-sm mx-1" value="Apply Filter">
+                                                        
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                     
+                                    </div>
+                                    {% comment %} <div class="row">
+                                        <div class="col-md-6" >
+                                            <form method="GET">
+                                                <div class="row mb-3">
+                                                    <div class="col-md-4">
+                                                        <label for="from_date" class="form-label">From Date:</label>
+                                                        <input type="date" id="from_date" name="from_date" class="form-control" style="height: 2em;">
+                                                    </div>
+                                                </div>
+                                                <div class="row mb-3">
+                                                    <div class="col-md-4">
+                                                        <label for="to_date" class="form-label">To Date:</label>
+                                                        <input type="date" id="to_date" name="to_date" class="form-control" style="height: 2em;">
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-4"></div>
+                                                    <div class="col-md-4 mb-5">
+                                                        <!-- <button type="submit" class="btn btn-primary btn-sm">Filter</button> -->
+                                                    </div>
+                                                </div>
+                                            <!-- </form> -->
+                                        </div>
+                                        <div class="col-md-6">
+                                            <!-- <form method="GET"> -->
+                                                <div class="row mb-3">
+                                                    <div class="col-md-4">
+                                                        <label for="expense_type" class="form-label"></label>
+                                                    </div>
+                                                    <div class="col-md-8">
+                                                        <select name="expense_type" id="expense_type" class="form-control" >
+                                                            <option value="">Choose Expense Type:</option>
+                                                            {% for expense_type in expense_types %}
+                                                                <option value="{{ expense_type.expensehead_id }}">{{ expense_type }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-12 text-end"> <!-- Align to the right -->
+                                                        <button type="submit" class="btn btn-primary btn-sm">Submit</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div> {% endcomment %}
+                                </div>
+                            
+                                <table id="responsiveDataTable" class="table table-bordered text-nowrap" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" style="text-align:center !important;">Sl.No</th>
+                                            <th scope="col"  style="text-align:center !important;">Date</th>
+                                            <th scope="col"  style="text-align:center !important;">Expense Type</th>
+                                            <th scope="col"  style="text-align:center !important;">Route</th>
+                                            <th scope="col"  style="text-align:center !important;">Staff name</th>
+                                            <th scope="col"  style="text-align:center !important;">Amount</th>
+                                            <th scope="col">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for expense in expenses %}
+                                        <tr>
+                                            <td style="text-align:center">{{forloop.counter}}</td>
+                                            <td style="text-align:center">{{expense.expense_date|date:'d/m/Y'}}</td>
+                                            <td style="text-align:left">{{expense.expence_type}}</td>
+                                            <td style="text-align:left">{{expense.route}}</td>
+                                            
+                                            <td  style="text-align:left">
+                                                {% if expense.van.salesman %}
+                                                    {{expense.van.salesman}}
+                                                
+                                                {% elif expense.van.driver %}
+                                                    {{expense.van.driver}}
+                                                {% endif %}
+                                                </td>
+                                            <td  style="text-align:right">{{expense.amount}}</td>
+                                            
+                                            <td>
+                                                <div class="g-2">
+                                                    
+                                                    <a href="{% url 'expense_edit' expense.expense_id %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Edit">
+                                                        <span class="ri-pencil-line fs-14"></span>
+                                                    </a>
+                                                    <a href="{% url 'expense_delete' expense.expense_id %}" aria-label="anchor" class="btn btn-danger-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Delete">
+                                                        <span class="ri-delete-bin-7-line fs-14"></span>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {%endfor%}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End::app-content -->
+        <script>
+            function toggleFilter() {
+                var filterDiv = document.getElementById('filter');
+                if (filterDiv.style.display === 'none') {
+                    filterDiv.style.display = 'block';
+                } else {
+                    filterDiv.style.display = 'none';
+                }
+            }
+        </script>
+        {% endblock %}

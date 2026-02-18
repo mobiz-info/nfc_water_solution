@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Eligible Customers</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="javascript:void(0);" class="text-white-50">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Eligible Customers</li>
+    </ol>
+</div>
+
+<!-- Start::app-content -->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">Eligible Customers</div>
+                    </div>
+                    
+                    <div class="mt">
+                        <form method="GET">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col"> 
+                                        <label for="month_filter">Select Month:</label>
+                                        <select name="month_filter" id="month_filter" class="form-select">
+                                            <option value="">Select Month</option>
+                                            <option value="01" {% if month_filter == '01' %}selected{% endif %}>January</option>
+                                            <option value="02" {% if month_filter == '02' %}selected{% endif %}>February</option>
+                                            <option value="03" {% if month_filter == '03' %}selected{% endif %}>March</option>
+                                            <option value="04" {% if month_filter == '04' %}selected{% endif %}>April</option>
+                                            <option value="05" {% if month_filter == '05' %}selected{% endif %}>May</option>
+                                            <option value="06" {% if month_filter == '06' %}selected{% endif %}>June</option>
+                                            <option value="07" {% if month_filter == '07' %}selected{% endif %}>July</option>
+                                            <option value="08" {% if month_filter == '08' %}selected{% endif %}>August</option>
+                                            <option value="09" {% if month_filter == '09' %}selected{% endif %}>September</option>
+                                            <option value="10" {% if month_filter == '10' %}selected{% endif %}>October</option>
+                                            <option value="11" {% if month_filter == '11' %}selected{% endif %}>November</option>
+                                            <option value="12" {% if month_filter == '12' %}selected{% endif %}>December</option>
+                                            <option value="custom" {% if month_filter == 'custom' %}selected{% endif %}>Custom Date</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="col" id="from_date" {% if month_filter != 'custom' %}style="display:none;"{% endif %}>
+                                        <label for="from_date">From Date:</label>
+                                        <input type="date" name="from_date" class="form-control" value="{{ from_date }}">
+                                    </div>
+                                    
+                                    <div class="col" id="to_date" {% if month_filter != 'custom' %}style="display:none;"{% endif %}>
+                                        <label for="to_date">To Date:</label>
+                                        <input type="date" name="to_date" class="form-control" value="{{ to_date }}">
+                                    </div>
+                                    
+                                    
+                                    <div class="col">
+                                        <label for="route_name">Routes:</label>
+                                        <select name="route_name" class="form-select">
+                                            <option value="">All Routes</option>
+                                            {% for route in routes %}
+                                                <option value="{{ route.route_name }}" {% if route.route_name == filter_data.route_name %}selected{% endif %}>
+                                                    {{ route.route_name }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Custody Dropdown -->
+                                    <div class="col">
+                                        <label for="custody">Custody Item:</label>
+                                        <select name="custody" class="form-select">
+                                            <option value="">Select Custody Item</option>
+                                            {% for i in item %}
+                                                <option value="{{ i.product_name }}">{{ i.product_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                    <!-- Status Dropdown -->
+                                    <div class="col">
+                                        <label for="status">Status:</label>
+                                        <select name="status" class="form-select">
+                                            <option value="">All Status</option>
+                                            <option value="Eligible" {% if status_filter == "Eligible" %}selected{% endif %}>
+                                                Eligible
+                                            </option>
+                                            <option value="Not Eligible" {% if status_filter == "Not Eligible" %}selected{% endif %}>
+                                                Not Eligible
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col">
+                                        <label for="search">Search:</label>
+                                        <input type="text" name="q" class="form-control" placeholder="Search ..." value="{{ filter_data.q }}">
+                                    </div>
+                                    
+                                    <!-- Filter Actions -->
+                                    <div class="col d-flex align-items-end justify-content-end">
+                                        <input type="submit" class="btn btn-primary btn-sm mx-1" value="Apply Filter">
+                                        <a href="{% url 'eligible_customers' %}"><button type="button" class="btn btn-secondary btn-sm mx-1" onclick="resetFilters()" style="width:max-content">Reset Filter</button></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="card-body" style="overflow: auto;">
+                        <table class="table table-bordered text-nowrap" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Sl.No</th>
+                                    <th>Customer<br> Code</th>
+                                    <th>Customer Name</th>
+                                    <th>Route</th>
+                                    <th>Mobile No</th>
+                                    <th>Custody Item</th>
+                                    <th>Total Supply</th>
+                                    <th>Condition Count</th>
+                                    <th>Short/ Plus by</th>
+                                    <th>Eligibility Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% load el_pagination_tags %}
+                                {% paginate 20 instances %}
+                                {% for custody_item in instances %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ custody_item.customer_code }}</td>
+                                    <td>{{ custody_item.customer_name }}</td>
+                                    <td>{{ custody_item.customer_route }}</td>
+                                    <td>{{ custody_item.customer_mob_no }}</td>
+                                    <td>{{ custody_item.customer_product_name }}</td>
+                                    <td>{{ custody_item.supply_count }}</td>
+                                    <td>{{ custody_item.condition_count }}</td>
+                                    <td>
+                                    {% if custody_item.eligible_count > 0 %}
+                                    <span class="text-success">+{{ custody_item.eligible_count }}</span>
+                                    {% else %}   
+                                    <span class="text-danger">{{ custody_item.eligible_count }}</span>
+                                    {% endif %}
+                                    </td>
+                                    <td>{{ custody_item.eligibility_status }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination Section -->
+                    {% get_pages %}
+                    <div class="clearfix"></div>
+                    <div class="row pagi my-3">
+                        <div class="col-sm-6 col-xs-6 tot my-pagination">
+                            <div class="m-t-10 text-start">
+                                Showing {{ title }} 
+                                <span class="current_page_index">{{ pages.current_start_index }}</span> - 
+                                <span class="current_end_status">{{ pages.current_end_index }}</span> of 
+                                <span class="total_count">{{ pages.total_count }}</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xs-6 text-end pagination-btn-div">
+                            {% show_pages %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    function resetFilters() {
+        location.href = "{% url 'eligible_customers' %}";
+    }
+
+
+
+    document.getElementById('month_filter').addEventListener('change', function() {
+        const selectedValue = this.value;
+        const fromDateField = document.getElementById('from_date');
+        const toDateField = document.getElementById('to_date');
+    
+        if (selectedValue === 'custom') {
+            fromDateField.style.display = 'block';
+            toDateField.style.display = 'block';
+        } else {
+            fromDateField.style.display = 'none';
+            toDateField.style.display = 'none';
+        }
+    });
+    
+</script>
+{% endblock %}

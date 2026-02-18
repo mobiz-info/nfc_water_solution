@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% block title %} coupon {% endblock %}
+{% block content %}
+{% load coupon_templatetags %}
+{% load static %}
+
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Coupon Management</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Coupon Management</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Coupon</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Coupon
+                        </div>
+                        <div class="ms-auto">
+                            <a href="{% url 'create_Newcoupon' %}"><button type="button"
+                                    class="btn btn-success btn-wave text-end d-flex me-4 my-auto"><i
+                                        class="bi bi-plus-circle me-1"></i>Create</button>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="mt">
+                        <form method="GET">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <label for="status_type">Status :</label>
+                                        <select name="status_type" class="form-select">
+                                            <option value="">Select Status</option>
+                                            <option value="company" {% if filter_data.status_type == 'company' %}selected{% endif %}>Company</option>
+                                            <option value="customer" {% if filter_data.status_type == 'customer' %}selected{% endif %}>Customer</option>
+                                            <option value="van" {% if filter_data.status_type == 'van' %}selected{% endif %}>Van</option>
+                                            {% comment %} <option value="used" {% if filter_data.status_type == 'used' %}selected{% endif %}>Used</option> {% endcomment %}
+                                        </select>                                        
+                                    </div>
+                                    <div class="col">
+                                        <label for="route_name">Search:</label>
+                                        <input type="text" name="q" class="form-control" placeholder="Search ..." value="{{ filter_data.q }}">
+                                    </div>
+                                    <div class="col d-flex align-items-end justify-content-end">
+                                        <input type="submit" class="btn btn-primary btn-sm mx-1" value="Apply Filter">
+                                        <button type="button" class="btn btn-secondary btn-sm mx-1" onclick="resetFilters()" style="width:max-content">Reset Filter</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form> 
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered text-nowrap" style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center !important;width:5%;">Sl No</th>
+                                    <th style="text-align:center !important;">Book No</th>
+                                    <th style="text-align:center !important;">Coupon Type</th>
+                                    <th style="text-align:center !important;">No of Leaflets</th>
+                                    <th style="text-align:center !important;">Valuable Leaflets</th>
+                                    <th style="text-align:center !important;">Free Leaflets</th>
+                                    <th style="text-align:center !important;">Status</th>
+                                    <th style="text-align:center !important;">Designation</th>
+                                    <th style="text-align:center !important;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% load el_pagination_tags %}
+                                {% paginate 20 instances %}
+                                {% for coupon in instances %}
+                                <tr>
+                                    <td style="text-align:center;">{{ forloop.counter }}</td>
+                                    <td style="text-align:left;">{{ coupon.book_num }}</td>
+                                    <td style="text-align:left;">{{ coupon.coupon_type }}</td>
+                                    <td style="text-align:right;">{{ coupon.no_of_leaflets }}</td>
+                                    <td style="text-align:right;">{{ coupon.valuable_leaflets }}</td>
+                                    <td style="text-align:right;">{{ coupon.free_leaflets }}</td>
+                                    <td style="text-align:left;">{{ coupon.coupon_status }}</td>
+                                    {% get_coupon_designation coupon.pk as coupon_designation %}
+                                    <td style="text-align:left;">{{ coupon_designation.name }}</td>
+                                    <td>
+                                        <div class="g-2">
+                                            <a href="{% url 'view_Newcoupon' coupon.coupon_id %}" aria-label="anchor"
+                                                class="btn  btn-warning-light btn-sm" data-bs-toggle="tooltip"
+                                                data-bs-original-title="View">
+                                                <span class="bi bi-eye fs-14"></span>
+                                            </a>
+                                            <a href="{% url 'edit_NewCoupon' coupon.coupon_id %}" aria-label="anchor"
+                                                class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip"
+                                                data-bs-original-title="Edit">
+                                                <span class="ri-pencil-line fs-14"></span>
+                                            </a>
+                                            <a href="{% url 'delete_Newcoupon' coupon.coupon_id %}"
+                                                aria-label="anchor" class="btn btn-danger-light btn-sm ms-2"
+                                                data-bs-toggle="tooltip" data-bs-original-title="Delete">
+                                                <span class="ri-delete-bin-7-line fs-14"></span>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% get_pages %}
+                        <div class="clearfix"></div>
+                        <div class="row pagi my-3">
+                            <div class="col-sm-6 col-xs-6 tot my-pagination">
+                                <div class="m-t-10 text-start">
+                                    Showing {{title}}
+                                    <span class="current_page_index">{{ pages.current_start_index }}</span> - <span
+                                    class="current_end_status">{{ pages.current_end_index }}</span> of <span
+                                    class="total_count">{{ pages.total_count }}</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xs-6 text-end pagination-btn-div">{% show_pages %}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

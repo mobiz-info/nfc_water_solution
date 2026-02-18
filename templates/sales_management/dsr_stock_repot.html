@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% block title %} Stock Report {% endblock %}
+{% block content %}
+{% load static %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Stock Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Sales Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Stock Report</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Stock Report
+                        </div>
+                    </div>
+                    <div class="mt">
+                        <form method="GET" action="{% url 'stock_report' %}">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <label for="start_date">From Date:</label>
+                                        <input type="date" class="form-control" id="start_date" name="start_date" value="{{ filter_data.start_date }}">
+                                    </div>
+
+                                    <div class="col">
+                                        <button type="submit" class="btn btn-primary me-2 mb-2 mt-3">Submit</button>
+                                    </div>
+                                    <div class="col d-flex align-items-center justify-content-end">
+                                        <a href="{% url 'stock_report_excel' %}?start_date={{ filter_data.start_date }}" class="btn btn-outline-success"><i class="fas fa-file-excel"></i>Excel</a>
+                                        <a href="{% url 'stock_report_print' %}?start_date={{ filter_data.start_date }}" class="btn btn-outline-success"><i class="fas fa-file-excel"></i>Print</a>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </form>
+                    </div>
+                    <div id="table-container" style="overflow:scroll;">
+                        <div class="card-body">
+                            <table  class="table table-bordered text-wrap" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Sl No</th>
+                                        <th scope="col">Item Name</th>
+                                        <th scope="col">Opening Stock</th>
+                                        <th scope="col">Stock Issued</th>
+                                        <th scope="col">Total Stock</th>
+                                        <th scope="col">Sold</th>
+                                        <th scope="col">Returned</th>
+                                        <th scope="col">Replaced</th>
+                                        <th scope="col">Offloaded</th>
+                                        <th scope="col">Closing</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% load el_pagination_tags %}
+                                    {% paginate 20 invoices %}
+                                    {% for invoice in invoices %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        {% comment %} <td>{{ invoice.customer.routes }}</td>
+                                        <td>{{ invoice.customer.sales_staff.username }}</td> {% endcomment %}
+                                        <td>{{ invoice.reference_no }}</td>
+                                        <td>{{ invoice.customer.customer_name }}</td>
+                                        <td>{{ invoice.customer.building_name   }}</td>
+                                        <td>{{ invoice.net_taxable }}</td>
+                                        <td>{{ invoice.vat }}</td>
+                                        <td>{{ invoice.amout_total  }}</td>
+
+                                    </tr>
+                                {% endfor %} 
+                                </tbody>
+                                <!-- Table Footer -->
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="4" style="text-align: right;">Total:</td>
+                                        <td>{{ total_net_taxable }}</td>
+                                        <td>{{ total_vat }}</td>
+                                        <td>{{ total_amout_total }}</td>
+
+                                        
+
+                                    </tr>
+                                </tfoot>
+
+
+
+                            </table>
+                        </div>
+                    </div>
+                    {% get_pages %}
+                    <div class="clearfix"></div>
+                    <div class="row pagi my-3">
+                        <div class="col-sm-6 col-xs-6 tot my-pagination">
+                            <div class="m-t-10 text-start">
+                                Showing {{title}}
+                                <span class="current_page_index">{{ pages.current_start_index }}</span> - <span
+                                class="current_end_status">{{ pages.current_end_index }}</span> of <span
+                                class="total_count">{{ pages.total_count }}</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xs-6 pagination-btn-div">{% show_pages %}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<script>
+ $('#submit').click(function(e){ 
+    e.preventDefault();       
+            // Show the table when dates are selected
+            $('#table-container').show();
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load van_template_tags %}
+    {% load sales_templatetags %}
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dialy Summary Report - Print</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles for printing */
+        @media print {
+            /* Hide unnecessary elements */
+            .no-print {
+                display: none !important;
+            }
+            /* Set page margins and other print-specific styles */
+            body {
+                margin: 0;
+                padding: 10px;
+            }
+            .card {
+                border: none !important;
+                box-shadow: none;
+                margin-bottom: 20px;
+            }
+            .table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            .table-bordered th,
+            .table-bordered td {
+                border: 1px solid #dee2e6;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Daily Summary Report
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <div>
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-4">
+                                        <p><strong>Salesman: {{van_route.van.salesman.get_fullname}}</strong></p>
+                                    </div>
+                                    <div class="col-4">
+                                        <p><strong>Driver: {{van_route.van.driver.get_fullname}}</strong></p>
+                                    </div>
+                                </div>
+                                <div class="row align-items-center">
+                                    <div class="col-4">
+                                        <p>Route: {{van_route.routes.route_name}}</p>
+                                    </div>
+                                    <div class="col-4">
+                                        <p>Date: {{ filter_date_formatted }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <div id="table-container">
+                            <div class="card-body">
+                                <table  class="table table-bordered text-wrap" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center text-bold" colspan="5">Visit Statistics</th>
+                                        </tr>
+                                        <tr>
+                                            <th style="text-align:center;">New Customer Created</th>
+                                            <th style="text-align:center;">Planned Visit</th>
+                                            <th style="text-align:center;">Visited</th>
+                                            <th style="text-align:center;">Non Visited</th>
+                                            <th style="text-align:center;">Emergency Supply</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td style="text-align:center;">{{new_customers_count}}</td>
+                                            <td style="text-align:center;">{{planned_visit_count}}</td>
+                                            <td style="text-align:center;">{{visited_customers_count}}</td>
+                                            <td style="text-align:center;">{{non_visited_count}}</td>
+                                            <td style="text-align:center;">{{emergency_supply_count}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+    
+                        <div id="table-container">
+                            <div class="card-body">
+                                <table  class="table table-bordered text-wrap" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center text-bold" colspan="10">Stock Report</th>
+                                        </tr>
+                                        <tr>
+                                            <th scope="col" style="text-align:center;">Product Name</th>
+                                            <th scope="col" style="text-align:center;">Opening Stock</th>
+                                            <th scope="col" style="text-align:center;">Issued</th>
+                                            <th scope="col" style="text-align:center;">Net Load</th>
+                                            <th scope="col" style="text-align:center;">Sold</th>
+                                            <th scope="col" style="text-align:center;">FOC</th>
+                                            <th scope="col" style="text-align:center;">Returned</th>
+                                            <th scope="col" style="text-align:center;">Damage Bottle</th>
+                                            <th scope="col" style="text-align:center;">Empty Bottle</th>
+                                            <th scope="col" style="text-align:center;">Closing Stock</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for van_data in van_product_stock %}
+                                        {% get_van_product_wise_stock filter_data.filter_date van_data.van.pk van_data.product.pk as stock_details %}
+                                        <tr>
+                                            <td style="text-align:center;">{{van_data.product.product_name}}</td>
+                                            <td style="text-align:center;">{{van_data.opening_count}}</td>
+                                            <td style="text-align:center;">{{stock_details.issued_count}}</td>
+                                            <td style="text-align:center;">{{van_data.opening_count|add:stock_details.issued_count }}</td>
+                                            <td style="text-align:center;">{{van_data.sold_count }}</td>
+                                            <td style="text-align:center;">{{van_data.foc }}</td>
+                                            <td style="text-align:center;">{{van_data.return_count}}</td>
+                                            <td style="text-align:center;">{{van_data.damage_count}}</td>
+                                            <td style="text-align:center;">{{van_data.empty_can_count}}</td>
+                                            <td style="text-align:center;">{{van_data.closing_count}}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+    
+                       
+                        <div id="table-container">
+                            <div class="card-body">
+                                <table  class="table table-bordered text-wrap" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center text-bold" colspan="8">Total Sale Quantity</th>
+                                        </tr>
+                                        <tr>
+                                            <th style="text-align:center;" scope="col">Sale</th>
+                                            <th style="text-align:center;" scope="col">Cash Sale </th>
+                                            <th style="text-align:center;" scope="col">Credit Sale </th>
+                                            <th style="text-align:center;" scope="col">Manual coupon received</th>
+                                            <th style="text-align:center;" scope="col">Digital coupon received</th>
+                                            <th style="text-align:center;" scope="col">Coupon book sale </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td style="text-align:center;">{{total_sale_qty}}</td>
+                                            <td style="text-align:center;" >{{cash_total_qty}}</td>
+                                            <td style="text-align:center;">{{credit_total_qty}}</td>
+                                            <td style="text-align:center;">{{manual_coupon_total}}</td>
+                                            <td style="text-align:center;">{{digital_coupon_total}}</td>
+                                            <td style="text-align:center;">{{coupon_total_qty}}</td>
+                                        </tr>
+                                        
+                                    </tbody>
+                                    
+                                </table>
+                            </div>
+                        </div>
+    
+                        <div id="table-container">
+                            <div class="card-body">
+                                <table  class="table table-bordered text-wrap" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center text-bold" colspan="8">Total Sale Amount</th>
+                                        </tr>
+                                        <tr>
+                                            <th style="text-align:center;" scope="col">Sales</th>
+                                            <th style="text-align:center;" scope="col">Cash Sale </th>
+                                            <th style="text-align:center;" scope="col">Credit Sale </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td style="text-align:center;">{{total_sale_amount}}</td>
+                                            <td style="text-align:center;" >{{total_cash_sale_amount}}</td>
+                                            <td style="text-align:center;">{{credit_total_amount_recieved}}</td>
+                                        </tr>
+                                        
+                                    </tbody>
+                                    
+                                </table>
+                            </div>
+                        </div>
+    
+                        <div id="table-container">
+                            <div class="card-body">
+                                <table  class="table table-bordered text-wrap" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center text-bold" colspan="7">Credit Outstanding</th>
+                                        </tr>
+                                        <tr>
+                                            <th style="text-align:center;" scope="col">Credit Outstanding</th>
+                                            <th style="text-align:center;" scope="col">Credit Outstanding Collection</th>
+                                            <th style="text-align:center;" scope="col">Net Outstanding</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td style="text-align:center;">{{outstanding_credit_notes_total_amount}}</td>
+                                            <td style="text-align:center;">{{outstanding_credit_notes_received_amount}}</td>
+                                            <td style="text-align:center;">{{outstanding_credit_notes_balance}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+    
+                       
+                       
+                        <div id="table-container">
+                            <div class="card-body">
+                                <table  class="table table-bordered text-wrap" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center text-bold" colspan="3">Expense</th>
+                                        </tr>
+                                        <tr>
+                                            <th style="text-align:center;">Sl No</th>
+                                            <th style="text-align:center;" scope="col">Expense Head</th>
+                                            <th style="text-align:center;" scope="col">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for expense in expenses_instanses %}
+                                        <tr>
+                                            <td style="text-align:center;">{{ forloop.counter }}</td>
+                                            <td>{{ expense.expence_type.name }}</td>
+                                            <td style="text-align:center;">{{ expense.amount }}</td>
+                                        </tr>
+                                        {% endfor %} 
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+    
+                        
+    
+                        <div id="table-container">
+                            <div class="card-body text-center">
+                                <p><strong>Net Payable:</strong>  {{net_payble}}/- </p>
+                            </div>
+                        </div>
+
+                        <div id="table-container">
+                            <div class="card-body">
+                                <table  class="table table-bordered text-wrap" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center text-bold" colspan="5">Suspense</th>
+                                        </tr>
+                                        <tr>
+                                            <th style="text-align:center;">Amount Payable </th>
+                                            <th style="text-align:center;">Amount Received</th> 
+                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td style="text-align:center;">{{ net_payble }}</td>
+                                            <td style="text-align:center;">{{suspense_paid_amount}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+    
+                        
+                    </div>
+
+
+                    <div class="card-footer">
+                        <div>
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col d-flex justify-content-between align-items-center">
+                                        <p><strong>Staff Name:</strong></p>
+                                        <p class="px-5"><strong>Acountant: </strong></p>
+                                    </div>
+                                </div>
+                                <div class="row align-items-center">
+                                    <div class="col d-flex justify-content-between align-items-center">
+                                        <p><strong>Date :</strong></p>
+                                        <p class="px-5"><strong>Receipt No: </strong></p>
+                                    </div>
+                                </div>
+                                <div class="row align-items-center">
+                                    <div class="col d-flex justify-content-between align-items-center">
+                                        <p><strong>Signature :</strong></p>
+                                        <p><strong>Office Seal :</strong></p>
+                                        <p class="px-5"><strong>Signature: </strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap JS (optional) -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        window.onload = function() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

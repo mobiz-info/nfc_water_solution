@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% block title %} Trip Schedule {% endblock %}
+{% block content %}
+
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Trip Schedule</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Van Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Trip Schedule</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Trip Schedule
+                        </div>
+                    </div>
+
+                    <div class="mt">
+                        <form method="post">
+                        {% csrf_token %}
+                            <div class="card-body">
+                                <div class="row col-md-8">
+                                    <div class="col-md-4 col-form-label text-end">
+                                        <h6>Date</h6>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input name="date" type="date" class="form-select" style="width: min-content;" value="{{def_date}}"  min="{% now 'Y-m-d' %}">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="submit" class="btn btn-primary btn-sm" >
+                                    </div>
+                                
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="card-body">
+                        <table id="datatable-basic" class="table table-bordered text-wrap " style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th scope="col" style="border-bottom: 1; max-width: 5em;">Sl No</th>
+                                    <th scope="col" style="border-bottom: 1; max-width: 15em;">Route Name</th>
+                                    <th scope="col" style="border-bottom: 1;">Todays Clients</th>
+                                    <th scope="col" style="border-bottom: 1;">No of Bottles</th>
+                                    <th scope="col" style="border-bottom: 1;">No of Trips</th>
+                                    <th scope="col" style="border-bottom: 1;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for detail in details %}
+                                
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{detail.route_name}}</td>
+                                        <td>{{detail.no_of_customers}}</td>
+                                        <td>{{detail.no_of_bottles}}</td>
+                                        <td>{{detail.no_of_trips}}</td>
+                                        <!-- <td style="max-width: 3em;" class="clients-column"></td> -->
+                                        <td>
+                                            {% for trip in detail.trips %}
+                                            {% if forloop.counter0|divisibleby:3 %}
+                                                <br>
+                                            {% endif %}
+                                                <a href="{% url 'schedule_by_route' def_date detail.route_id trip %}" aria-label="anchor" class="btn  btn-primary-light btn-sm" data-bs-toggle="tooltip" data-bs-original-title="View">
+                                                    {{ trip }}
+                                                </a>
+                                            {% endfor %}
+                                        </td>
+                                            
+                                            
+                                        
+                                        <!-- <td>
+                                            <div class="g-2">
+                                                    <span class="bi bi-eye fs-14"></span>
+                                                </a>
+                                            </div>
+                                        </td> -->
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get all elements with class 'clients-column'
+        var clientsColumns = document.querySelectorAll('.clients-column');
+
+        clientsColumns.forEach(function (column) {
+            // Check if the column is empty
+            if (column.innerText.trim() === '') {
+                column.innerHTML = '<p style="font-style: italic;  ">No clients today in this route.</p>';
+            }
+        });
+    });
+</script>
+
+{% endblock %}

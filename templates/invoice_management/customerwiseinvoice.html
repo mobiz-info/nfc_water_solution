@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block title %} Customer wise Invoice {% endblock %}
+{% block content %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Customer wise Invoice</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Invoice Management </a></li>
+        <li class="breadcrumb-item active" aria-current="page">Customer wise Invoice</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Customer wise Invoice
+                        </div>
+                    </div>
+
+                    
+                    
+                    <div class="card-body">
+                       
+                            <table class="table table-bordered text-nowrap" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="text-center">SI No</th>
+                                        <th scope="col" class="text-center">Invoice No</th>
+                                        <th scope="col" class="text-center">Reference No</th>
+                                       
+                                        <th scope="col" class="text-center">Amount Total</th>
+                                        <th scope="col" class="text-center">Amount Received</th>
+                                        <th scope="col" class="text-center">Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for invoice in invoices %}
+                                        <tr>
+                                            <td class="text-center">{{ forloop.counter }}</td>
+                                            <td class="text-center">{{ invoice.invoice_no }}</td>
+                                            <td class="text-center">{{ invoice.reference_no }}</td>
+                                           
+                                            
+                                            <td class="text-center">{{ invoice.amout_total }}</td>
+                                            <td class="text-center">{{ invoice.amout_recieved }}</td>
+                                            <td class="text-center">{{ invoice.balance_amount }} </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="3" class="text-center">Total</th>
+                                        <th class="text-center">{{ total_amount_total }}</th>
+                                        <th class="text-center">{{ total_amount_received }}</th>
+                                        <th class="text-center">{{ total_balance_amount }}</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                            <!-- Payment Form -->
+                        <form method="post" action="{% url 'invoice:make_payment' %}">
+                            {% csrf_token %}
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    
+                                </div>
+                               
+                                <div class="col-md-2">
+                                    <input type="hidden" name="customer_id" value="{{ selected_customer_id }}">
+                                    <label class='control-label'>Balance Amount</label>
+                                    <input type="number" name="total_balance_amount" value="{{total_balance_amount}}" class="form-control" readonly>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class='control-label'>Recieved Amount</label>
+                                    <input type="number" name="payment_amount" class="form-control" placeholder="Enter Payment Amount" required>
+                                </div>
+                                <div class="col-md-2 mt-3">
+                                    <input type="submit" class="btn btn-primary" value="Make Payment">
+                                </div>
+                            </div>
+                        </form>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function resetFilters() {
+        location.href = "{% url 'invoice:customerwise_invoice' %}";
+    }
+</script>
+
+{% endblock %}

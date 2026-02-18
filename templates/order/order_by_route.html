@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% block title %} Orders {{route.route_name}} {% endblock %}
+{% block content %}
+
+
+
+<link href="https://cdn.jsdelivr.net/npm/jsvectormap@1.5.3/dist/css/jsvectormap.min.css" rel="stylesheet">
+<!-- Page Header -->
+
+    <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+        <h4 class="fw-medium mb-0">Orders</h4>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Orders</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Orders</li>
+        </ol>
+    </div>
+    <div class="main-content app-content">
+        <div class="container-fluid">
+
+            <!-- Start:: row-2 -->
+            
+            <div>
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card custom-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                Orders to {{route.route_name}} 
+                            </div>
+                        </div>
+
+                        <div class="">
+                            
+                            
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="row col-md-6">
+                                            <div class="col-md-4"></div>
+                                            <div class="col-md-4 col-form-label text-end">
+                                          
+                                                <h6>Date : {{ date|date:"d-m-Y" }}</h6>
+                                            </div>
+                                            
+                                            <div class="col-md-4 " >
+                                                
+                                            </div>
+                                        
+                                        </div>
+                                        <div class="row col-md-6 ">
+                                            <div class="col-6 col-form-label"><b>Salesman: {{salesman}}</b></div>
+                                            <div class="col-2"></div>
+                                            <div class="col-2">
+                                                
+                                                <input type="button" onclick="printDiv('printArea')" value="PRINT" class="btn btn-outline-success btn-sm" style="width: 6em;">
+                                            </div>
+                                            <!-- <div class="col-2"> -->
+                                                <!-- <input type="button" onclick="download_div('printArea', 'downloaded_file')" value="PDF" class="btn btn-outline-success btn-sm" style="width: 6em;"> -->
+                                                <!-- <input type="button"  value="PDF" class="btn btn-outline-success btn-sm download_div" style="width: 6em;"> -->
+                                                <!-- <button onclick="saveDiv('printDiv','Title')">save div as pdf</button> -->
+                                                <!-- <a  href="javascript:void(0)" class="download_div">Download PDF  </a> -->
+                                            <!-- </div> -->
+                                            <div class="col-2">
+                                                <a href="{% url 'order_excel' route.route_id date  %}" class="btn btn-outline-success btn-sm" style="width: 6em;">
+                                                    <i class="fas fa-file-excel"></i>   EXCEL
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+                        <div class="card-body">
+                            <table id="datatable-basic" class="table table-bordered text-wrap " style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" style="border-bottom: 1; max-width: 5em;">Sl No</th>
+                                        <th scope="col" style="border-bottom: 1; max-width: 11em;">Product</th>
+                                        <th scope="col" style="border-bottom: 1;">Quantity Needed</th>
+                                        <th scope="col" style="border-bottom: 1;">Current Stock</th>
+                                        <th scope="col" style="border-bottom: 1;">Unit</th>
+                                        
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order_detail in order_details %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ order_detail.product }}</td>
+                                            <td>{{ order_detail.quantity }}</td>
+                                            <td>{{ order_detail.stock }}</td>
+                                            <td>{{ order_detail.unit   }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    
+</div> 
+<div id="printArea"  style="display: none; padding: 10em;">
+    <div style="margin-top: 4em;">
+        <h3>Sana Water</h3>
+    </div>
+    <div class="container" style="padding-top: 1em;"></div>
+    <h5>Orders to {{route.route_name}} </h5>
+    <h6>Date : {{date}}</h6>
+    <b>Salesman: {{salesman}}</b>
+    <!-- <h6>Total Bottle: {{totale_bottle}}</h6> -->
+    <table class="table table-bordered text-wrap " style="width: 100%; margin-top: 3em; border: 1px solid rgba(0, 0, 0, 0.301);">
+        <thead>
+            <tr>
+                <th scope="col" style="border-bottom: 1; max-width: 5em;">Sl No</th>
+                <th scope="col" style="border-bottom: 1; max-width: 15em;">Product</th>
+                <th scope="col" style="border-bottom: 1;">Quantity needed</th>
+                <th scope="col" style="border-bottom: 1;">Unit</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order_detail in order_details %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ order_detail.product }}</td>
+                    <td>{{ order_detail.quantity }}</td>
+                    <td>{{ order_detail.unit   }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        
+    </table>
+        
+    </div>
+
+
+   <script>
+        
+        function printDiv(divName) {
+            var printContents = document.getElementById(divName).innerHTML;
+            var originalContents = document.body.innerHTML;
+            document.body.innerHTML = printContents;
+            window.print();
+            document.body.innerHTML = originalContents;
+        }
+    </script>
+    <script>
+        var doc = new jsPDF();
+
+        function saveDiv(divId, title) {
+            doc.fromHTML(`<html><head><title>${title}</title></head><body>` + document.getElementById(divId).innerHTML + `</body></html>`);
+            doc.save('div.pdf');
+            }
+    </script>
+    
+    
+    {% endblock %}

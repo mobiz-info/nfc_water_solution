@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% block title %} Bottle Count Report {% endblock %}
+{% load client_templatetags %}
+{% block content %}
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Bottle Count Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Client Management </a></li>
+        <li class="breadcrumb-item active" aria-current="page">Bottle Count Report</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Bottle Count Report
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <table id="datatable-basic" class="table table-bordered text-wrap " style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2">Sl No</th>
+                                    <th rowspan="2">Route Name</th>
+                                    <th rowspan="2">Bottle Count</th>
+                                    <th rowspan="2">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% load el_pagination_tags %}
+                                {% paginate 50 instances %}
+                                {% for instance in instances %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ instance.route_name }}</td>
+                                        {% route_wise_bottle_count instance.pk as total_count %}
+                                        <td>{{ total_count }}</td>
+                                        <td>
+                                            <div class="g-2">
+                                                <a href="{% url 'bottle_count_route_wise' instance.pk  %}" aria-label="anchor" class="btn btn-warning-light btn-sm" data-bs-toggle="tooltip" data-bs-original-title="View">
+                                                    <span class="bi bi-eye fs-14"></span>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% get_pages %}
+                        <div class="clearfix"></div>
+                        <div class="row pagi my-3">
+                            <div class="col-sm-6 col-xs-6 tot my-pagination">
+                                <div class="m-t-10 text-start">
+                                    Showing {{title}}
+                                    <span class="current_page_index">{{ pages.current_start_index }}</span> - <span
+                                    class="current_end_status">{{ pages.current_end_index }}</span> of <span
+                                    class="total_count">{{ pages.total_count }}</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xs-6 text-end pagination-btn-div">{% show_pages %}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+{% comment %} <div id="printArea"  style="display: none; padding: 10em;">
+    <div style="margin-top: 4em; ">
+        <h3 style="text-align: center; ;">Sana Water</h3>
+    </div>
+
+
+    <table class="table table-bordered text-wrap " style="width: 100%; margin-top: 1em;">
+        <thead>
+            <tr>
+                <th scope="col" style="border-bottom: 1; max-width: 5em;">Sl No</th>
+                <th scope="col" style="border-bottom: 1; ">Route Name</th>
+                <th scope="col" style="border-bottom: 1;">Customer Name</th>
+                <th scope="col" style="border-bottom: 1;">Mode of Supply</th>
+                <th scope="col" style="border-bottom: 1;">Quantity</th>
+                <th scope="col" style="border-bottom: 1; ">Empty Bottle Collected</th>
+                <th scope="col" style="border-bottom: 1; ">Coupon Collected</th>
+                <th scope="col" style="border-bottom: 1; ">Amount Collected</th>
+                <th scope="col" style="border-bottom: 1; ">Ref/Invoice No</th>
+                <th scope="col" style="border-bottom: 1; ">Time of Supply</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for customersupplyitem in customersupplyitems %}
+            
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ customersupplyitem.customer_supply.customer.routes.route_name }}</td>
+                    <td>{{ customersupplyitem.customer_supply.customer.customer_name }}</td>
+                    <td>{{ customersupplyitem.customer_supply.customer.sales_type }}</td>
+                    <td>{{ customersupplyitem.quantity }}</td>
+                    <td>{{ customersupplyitem.customer_supply.collected_empty_bottle }}</td>
+                    <td>{{ customersupplyitem.collected_empty_bottle }}</td>
+                    <td>{{ customersupplyitem.amount }}</td>
+                    <td>{{ customersupplyitem.customer_supply.reference_number}}</td>
+                    <td>{{ customersupplyitem.customer_supply.created_date|date}}</td>
+
+
+                    
+                </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+</div>
+
+
+<script>
+    function printDiv(divName) {
+        var printContents = document.getElementById(divName).innerHTML;
+        var originalContents = document.body.innerHTML;
+        document.body.innerHTML = printContents;
+        window.print();
+        document.body.innerHTML = originalContents;
+    }
+</script> {% endcomment %}
+
+
+
+<script>
+    function resetFilters() {
+        // Redirect to the same page
+        location.href = "{% url 'product_route_salesreport' %}";
+    }
+</script>
+
+{% endblock %}

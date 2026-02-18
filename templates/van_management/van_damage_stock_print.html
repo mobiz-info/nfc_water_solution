@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Van Damage Stock Report</title>
+    <style>
+        /* Add your print-specific styles here */
+        @media print {
+            .no-print {
+                display: none;
+            }
+            table {
+                border-collapse: collapse;
+                width: 100%;
+            }
+            th, td {
+                border: 1px solid black;
+                padding: 8px;
+                text-align: left;
+            }
+        }
+
+        /* General styling for screen view */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Van Damage Stock Report</h1>
+    <p><strong>From Date:</strong> {{ filter_data.start_date }}</p>
+    <p><strong>To Date:</strong> {{ filter_data.end_date }}</p>
+    <p><strong>Route:</strong> {{ filter_data.route_filter|default:"All Routes" }}</p>
+    <br>
+    <table>
+        <thead>
+            <tr>
+                <th>Sl.No</th>
+                <th>Date</th>
+                <th>Van</th>
+                <th>Route</th>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Reason</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in van_damage_stock %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ data.created_date|date:"d/m/Y" }}</td>
+                <td>{{ data.van.salesman.get_fullname }}</td>
+                <td>{{ data.van.route.route_name }}</td>
+                <td>{{ data.product.product_name }}</td>
+                <td>{{ data.quantity }}</td>
+                <td>{{ data.reason.reason }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" style="text-align: center;">No records found.</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="5">Total</td>
+                <td>{{total_damage_count}}</td>
+                <td></td>
+              </tr>
+        </tbody>
+    </table>
+    
+    <div class="no-print">
+        <button onclick="window.print()">Print Report</button>
+    </div>
+</body>
+</html>

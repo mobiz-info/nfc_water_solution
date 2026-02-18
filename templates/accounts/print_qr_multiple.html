@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Print QR Codes</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #fff;
+      margin: 0;
+      padding: 0;
+    }
+
+    .print-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 10px 20px;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .qr-card {
+      display: flex;
+      border: 1px solid #000;
+      border-radius: 12px;
+      padding: 10px 15px;
+      align-items: center;
+      width: 100%;
+      box-sizing: border-box;
+      height: 140px;
+      page-break-inside: avoid;
+    }
+
+    .qr-card img {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+    }
+
+    .qr-info {
+      margin-left: 15px;
+      font-size: 14px;
+    }
+
+    .qr-info p {
+      margin: 4px 0;
+      line-height: 1.2;
+    }
+
+    .label {
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    button {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    @media print {
+      button {
+        display: none;
+      }
+
+      body {
+        margin: 0;
+      }
+
+      .print-container {
+        gap: 5px 10px;
+        padding: 10px;
+      }
+
+      .qr-card {
+        border: 1px solid #000;
+        height: auto;
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button onclick="window.print()">🖨️ Print</button>
+
+  <div class="print-container">
+    {% for item in qr_data_list %}
+      <div class="qr-card">
+        <img src="{{ item.qr_image }}" alt="QR for {{ item.name }}">
+        <div class="qr-info">
+          <p><span class="label">Customer ID:</span> {{ item.id }}</p>
+          <p><span class="label">Customer Name:</span> {{ item.name }}</p>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</body>
+</html>

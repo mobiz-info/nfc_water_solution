@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% block title %} Trip Schedule {{route.route_name}} {% endblock %}
+{% block content %}
+
+
+
+
+<!-- Page Header -->
+
+    <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+        <h4 class="fw-medium mb-0">Trip Schedule</h4>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Van Management</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Trip Schedule</li>
+        </ol>
+    </div>
+    <div class="main-content app-content">
+        <div class="container-fluid">
+
+            <!-- Start:: row-2 -->
+            
+            <div>
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card custom-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                trip Schedule to {{route.route_name}} ({{trip}})
+                            </div>
+                        </div>
+
+                        <div class="">
+                            
+                            
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="row col-md-6">
+                                            <div class="col-md-4 col-form-label text-end">
+                                                <h6>Date : {{def_date}}</h6>
+                                            </div>
+                                            <div class="col-md-4 " >
+                                                
+                                            </div>
+                                        
+                                        </div>
+                                        <div class="row col-md-6 ">
+                                            <div class="col-6 col-form-label"><b>Total Bottles : {{totale_bottle}}</b></div>
+                                            <div class="col-2"></div>
+                                            <div class="col-2">
+                                                
+                                                <input type="button" onclick="printDiv('printArea')" value="PRINT" class="btn btn-outline-success btn-sm" style="width: 6em;">
+                                            </div>
+                                            
+                                            <div class="col-2">
+                                                <a href="{% url 'excel_download' route.route_id def_date trip %}" class="btn btn-outline-success btn-sm" style="width: 6em;">
+                                                    <i class="fas fa-file-excel"></i>   EXCEL
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+                        <div class="card-body">
+                            <table id="datatable-basic" class="table table-bordered text-wrap " style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" style="border-bottom: 1; max-width: 5em;">Sl No</th>
+                                        <th scope="col" style="border-bottom: 1; max-width: 11em;">Client Name</th>
+                                        <th scope="col" style="border-bottom: 1;">Locations</th>
+                                        <th scope="col" style="border-bottom: 1;">Building</th>
+                                        <th scope="col" style="border-bottom: 1; min-width: 4em; max-width: 5em;">Flat</th>
+                                        <th scope="col" style="border-bottom: 1; width: 1em;">No of Bottles</th>
+                                        <th scope="col" style="border-bottom: 1; width: 1em;">Out- Bottles</th>
+                                        <th scope="col" style="border-bottom: 1; width: 1em;">Out- Coupons</th>
+                                        <th scope="col" style="border-bottom: 1; width: 1em;">Out- Cash</th>
+
+                                        <th scope="col" style="border-bottom: 1; width: 1em;">Rate</th>
+                                        <!-- <th scope="col" style="border-bottom: 1;">longitude</th>
+                                        <th scope="col" style="border-bottom: 1;">latitude</th> -->
+                                        <th scope="col" style="border-bottom: 1;">Type</th>
+                                        
+                                        <th scope="col" style="border-bottom: 1;" >Delivery Type</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for todays_customer in todays_customers %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td style="text-transform: capitalize;">
+                                                <b>{{ todays_customer.customer_name }}</b><br>
+                                                <a href="tel:{{ todays_customer.mobile }}">{{ todays_customer.mobile }}</a>
+                                            </td>
+                                            <td>{{ todays_customer.location }}</td>
+                                            <td>{{ todays_customer.building   }}</td>
+                                            <td> floor: {{ todays_customer.floor_no }} <br> Door: {{ todays_customer.door_house_no }}</td>
+                                            <td>{{ todays_customer.no_of_bottles   }}</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>{{ todays_customer.rate|floatformat:2 }}</td>
+                                            <!-- <td>{{ todays_customer.gps_longitude   }}</td>
+                                            <td>{{ todays_customer.gps_latitude   }}</td> -->
+                                            <td>{{ todays_customer.customer_type   }}</td>
+                                            <td>{{todays_customer.type}}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    
+</div> 
+<div id="printArea"  style="display: none; padding: 10em;">
+    <div style="margin-top: 4em; ">
+        <h3 style="text-align: center; ;">Sana Water</h3>
+    </div>
+    <hr>
+    <div class="row"  style="padding-top: 1em; border: solid 0; width: 100%; ">
+        <div class="col-6"><h5>Trip Schedule to {{route.route_name}} ({{trip}})</h5></div>
+        <div class="col-3" ><h6>Date : {{def_date}}</h6></div>
+        <div class="col-3"><h6>Total Bottle: {{totale_bottle}}</h6></div>    
+            
+            
+    </div>
+    <hr>
+    <table class="table table-bordered text-wrap " style="width: 100%; margin-top: 1em;">
+        <thead>
+            <tr>
+                <th scope="col" style="border-bottom: 1; max-width: 5em;">Sl No</th>
+                <th scope="col" style="border-bottom: 1; max-width: 15em;">Client Name</th>
+                <th scope="col" style="border-bottom: 1;">Locations</th>
+                <th scope="col" style="border-bottom: 1;">Building</th>
+                <th scope="col" style="border-bottom: 1;">Flat</th>
+                <th scope="col" style="border-bottom: 1; max-width: 18em;">No of Bottles</th>
+                <th scope="col" style="border-bottom: 1; width: 1em;">Out- Bottles</th>
+                <th scope="col" style="border-bottom: 1; width: 1em;">Out- Coupons</th>
+                <th scope="col" style="border-bottom: 1; width: 1em;">Out- Cash</th>
+                <th scope="col" style="border-bottom: 1; width: 1em;">Rate</th>
+                <th scope="col" style="border-bottom: 1;" >Type</th>
+                <th scope="col" style="border-bottom: 1;" >Delivery Type</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            {% for todays_customer in todays_customers %}
+                <tr style="font-weight: bold;">
+                    <td {% if todays_customer.type == 'Emergency' %} style="font-weight: bold; border-left: solid 1px; border-bottom: solid 1px; " {% endif %}>{{ forloop.counter }}</td>
+                    <td  {% if todays_customer.type == 'Emergency' %} style="font-weight: bold;border-bottom: solid 1px;" {% endif %} style="max-width: 15em; min-width: 12em; text-transform: capitalize;">
+                        <b>{{ todays_customer.customer_name }}</b><br>{{ todays_customer.mobile }}
+                    </td>
+                    <td {% if todays_customer.type == 'Emergency' %} style="font-weight: bold;border-bottom: solid 1px rgba(0, 0, 0, 0.719);" {% endif %} >{{ todays_customer.location }}</td>
+                    <td {% if todays_customer.type == 'Emergency' %} style="font-weight: bold;border-bottom: solid 1px;" {% endif %} >{{ todays_customer.building }}</td>
+                    <td {% if todays_customer.type == 'Emergency' %} style="font-weight: bold;border-bottom: solid 1px;" {% endif %}  style="max-width: 9em; min-width: 8em;">floor: {{ todays_customer.floor_no }} <br> Door: {{ todays_customer.door_house_no }}</td>
+                    
+                    <td {% if todays_customer.type == 'Emergency' %} style="font-weight: bold;border-bottom: solid 1px;" {% endif %} >{{ todays_customer.no_of_bottles   }}</td>
+                    <td {% if todays_customer.type == 'Emergency' %} style="font-weight: bold;border-bottom: solid 1px;" {% endif %} ></td>
+                    <td {% if todays_customer.type == 'Emergency' %} style="font-weight: bold;border-bottom: solid 1px;" {% endif %} ></td>
+                    <td {% if todays_customer.type == 'Emergency' %} style="font-weight: bold;border-bottom: solid 1px;" {% endif %} ></td>
+                    <td {% if todays_customer.type == 'Emergency' %} style="font-weight: bold;border-bottom: solid 1px;" {% endif %} >{{ todays_customer.rate|floatformat:2 }}</td>
+                    <td {% if todays_customer.type == 'Emergency' %} style="font-weight: bold;border-bottom: solid 1px;" {% endif %} >{{ todays_customer.customer_type   }}</td>
+                    <td {% if todays_customer.type == 'Emergency' %} style="font-weight: bold;border-bottom: solid 1px; border-right: solid 1px;" {% endif %} >{{todays_customer.type}}</td>
+
+                    
+                </tr>
+            {% endfor %}
+        </tbody>
+        
+    </table>
+        
+    </div>
+
+
+
+<script>
+    function printDiv(divName) {
+        var printContents = document.getElementById(divName).innerHTML;
+        var originalContents = document.body.innerHTML;
+        document.body.innerHTML = printContents;
+        window.print();
+        document.body.innerHTML = originalContents;
+    }
+</script>
+
+{% endblock %}

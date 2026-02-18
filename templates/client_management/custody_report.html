@@ -1,0 +1,116 @@
+
+{% extends 'base.html' %}
+{% block title %} Custody Report {% endblock %}
+{% block content %}
+{% load static %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Custody Item Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Client Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Custody Report</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Custody Report
+                        </div>
+                    </div>
+                    <div class="mt">
+                        <form method="get">
+                            <div class="row mt-3">
+                                <div class="row col-md-6" >
+                                    <div id="datePeriodDiv" class="row col-12" style="flex-direction: row;
+                                    justify-content: space-around;
+                                    align-items: flex-end;">
+                                        
+                                        <div class="col-md-5">
+                                            <label for="start_date">From Date:</label>
+                                            <input name="start_date" type="date" class="form-select"  value="{% if start_date %}{{ start_date }}{% endif %}">
+                                        </div>
+                                        <div class="col-md-5">
+                                            <label for="end_date">To Date:</label>
+                                            <input name="end_date" type="date" class="form-select"  value="{% if end_date %}{{ end_date }}{% endif %}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row col-md-6 mt-4">
+                                     
+                                    <div class="col-md-5 text-end">
+                                        <input type="submit" class="btn btn-primary btn-sm" value="Apply Filter">
+                                        <button type="button" class="btn btn-secondary btn-sm" onclick="resetFilters()">Reset Filter</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div id="table-container" >
+                        <div class="card-body">
+                            <table  class="table table-bordered text-wrap" style="width: 100%">
+                               <thead>
+                                    <tr>
+                                        <th rowspan="2">Sl No</th>
+                                        <th rowspan="2">Customer</th>
+                                        <th rowspan="2">Building No</th>
+                                        <th rowspan="2">Room No/Floor No</th>
+                                        <th rowspan="2">Item Name</th>
+                                        <th rowspan="2">Agreement Form No</th>
+                                        <th rowspan="2">Product Issued</th>
+                                        <th rowspan="2">Deposit/Non Deposit</th>
+
+                                       
+                                    </tr>
+                                    
+                                </thead>
+                                 <tbody>
+        
+
+                                    {% for custody_item_data in custody_items_with_products %}
+                                    {% for item in custody_item_data.custody_custom_items %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ item.custody_custom.customer.customer_name }}</td>
+                                            <td>{{ item.custody_custom.customer.building_name }}</td>
+                                            <td>{{ item.custody_custom.customer.door_house_no }}</td>
+                                            <td>{{ item.product.product_name }}</td>
+                                            <td>{{ custody_item_data.custody_custom.agreement_no }}</td>
+                                            <td>{{ custody_item_data.custody_custom.created_date.date }}</td>
+                                            <td>{{ custody_item_data.custody_custom.deposit_type }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                  
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<script>
+ $('#submit').click(function(e){ 
+    e.preventDefault();       
+            // Show the table when dates are selected
+            $('#table-container').show();
+    });
+</script>
+<script>
+    function resetFilters() {
+        // Redirect to the same page
+        location.href = "{% url 'custody_issue' %}";
+    }
+</script>
+{% endblock %}
+

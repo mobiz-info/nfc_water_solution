@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% block title %} Coupon Recharge {% endblock %}
+{% block content %}
+{% load static %}
+{% load el_pagination_tags %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Coupon Recharge</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Coupon Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Coupon Recharge</li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">Coupon Recharge</div>
+                    </div>
+                    <div class="mt">
+                        <form method="get">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <label for="start_date">From Date:</label>
+                                        <input type="date" class="form-control" id="start_date" name="start_date" value="{{ filter_data.start_date }}">
+                                    </div>
+                                    <div class="col">
+                                        <label for="end_date">To Date:</label>
+                                        <input type="date" class="form-control" id="end_date" name="end_date" value="{{ filter_data.end_date }}">
+                                    </div>
+                                    <div class="col">
+                                        <label for="payment_type">Payment Type:</label>
+                                        <select name="payment_type" class="form-control" id="payment_type">
+                                            <option value="">All</option>
+                                            <option value="cash" {% if filter_data.payment_type == 'cash' %}selected{% endif %}>Cash</option>
+                                            <option value="cheque" {% if filter_data.payment_type == 'cheque' %}selected{% endif %}>Cheque</option>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <label for="coupon_method">Coupon Method:</label>
+                                        <select name="coupon_method" class="form-control" id="coupon_method">
+                                            <option value="">All</option>
+                                            <option value="digital" {% if filter_data.coupon_method == 'digital' %}selected{% endif %}>Digital</option>
+                                            <option value="manual" {% if filter_data.coupon_method == 'manual' %}selected{% endif %}>Manual</option>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <label for="q">Search:</label>
+                                        <input type="text" name="q" class="form-control" placeholder="Search ..." value="{{ filter_data.q }}">
+                                    </div>
+                                    <div class="col d-flex align-items-end justify-content-end">
+                                        <input type="submit" class="btn btn-primary btn-sm mx-1" value="Apply Filter">
+                                        <button type="button" class="btn btn-secondary btn-sm mx-1" onclick="resetFilters()" style="width:max-content">Reset Filter</button>
+                                        <a href="" class="btn btn-outline-success btn-sm mx-1" target="_blank">
+                                            <i class="fas fa-file-excel"></i> Print
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                <div class="w-100 overflow-auto">
+                    <!-- Table Section -->
+                    <div id="table-container">
+                        <div class="card-body">
+                            <table class="table table-bordered text-wrap" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th rowspan="2">Sl No</th>
+                                        <th rowspan="2">Date</th>
+                                        <th rowspan="2">Customer ID</th>
+                                        <th rowspan="2">Customer</th>
+                                        <th rowspan="2">Book Numbers</th>
+                                        <th rowspan="2">Salesman</th>
+                                        <th rowspan="2">Payment Type</th>
+                                        <th rowspan="2">Amount Received</th>
+                                        <th rowspan="2">Grand Total</th>
+                                        <th rowspan="2">Discount</th>
+                                        <th rowspan="2">Net Amount</th>
+                                        <th rowspan="2">Total Payable</th>
+                                        <th rowspan="2">Balance</th>
+                                        <th rowspan="2">Invoice No</th>
+                                        <th rowspan="2">Coupon Method</th>
+                                        <th rowspan="2">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% paginate 50 coupon_customer %}
+                                    {% for instance in coupon_customer %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ instance.created_date|date:'d-m-Y' }}</td>
+                                            <td>{{ instance.customer.custom_id }}</td>
+                                            <td>{{ instance.customer.customer_name }}</td>
+                                            <td>{{ instance.display_coupon_books }}</td>
+                                            <td>{{ instance.salesman.get_fullname }}</td>
+                                            <td>{{ instance.payment_type }}</td>
+                                            <td>{{ instance.amount_recieved }}</td>
+                                            <td>{{ instance.grand_total }}</td>
+                                            <td>{{ instance.discount }}</td>
+                                            <td>{{ instance.net_amount }}</td>
+                                            <td>{{ instance.total_payeble }}</td>
+                                            <td>{{ instance.balance }}</td>
+                                            <td>{{ instance.invoice_no }}</td>
+                                            <td>{{ instance.coupon_method }}</td>
+                                            <td>
+                                                <div class="g-2">
+                                                    <a href="{% url 'edit_coupon_recharge' instance.id %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Edit">
+                                                        <span class="ri-pencil-line fs-14"></span>
+                                                    </a>
+                                                    <a href="{% url 'delete_coupon_recharge' instance.id %}" aria-label="anchor" class="btn btn-danger-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Delete">
+                                                        <span class="ri-delete-bin-7-line fs-14"></span>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination Controls -->
+                        {% get_pages %}
+                        <div class="clearfix"></div>
+                        <div class="row pagi my-3">
+                            <div class="col-sm-6 col-xs-6 tot my-pagination">
+                                <div class="m-t-10 text-start">
+                                    Showing {{ title }}
+                                    <span class="current_page_index">{{ pages.current_start_index }}</span> - <span class="current_end_status">{{ pages.current_end_index }}</span> of <span class="total_count">{{ pages.total_count }}</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xs-6 text-end pagination-btn-div">{% show_pages %}</div>
+                        </div>
+                    </div> <!-- End of Table Container -->
+                </div> <!-- End of Card Custom Card -->
+            </div> <!-- End of Column -->
+        </div> <!-- End of Row -->
+    </div> <!-- End of Container Fluid -->
+</div> <!-- End of Main Content App Content -->
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+    $('#submit').click(function(e) {
+        e.preventDefault();
+        // Show the table when dates are selected
+        $('#table-container').show();
+    });
+
+    function resetFilters() {
+        // Redirect to the same page
+        location.href = "{% url 'coupon_recharge' %}";
+    }
+</script>
+{% endblock %}

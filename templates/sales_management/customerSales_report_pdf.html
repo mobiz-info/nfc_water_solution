@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Sales Report</title>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles for printing */
+        @media print {
+            /* Hide unnecessary elements */
+            .no-print {
+                display: none !important;
+            }
+            /* Set page margins and other print-specific styles */
+            body {
+                margin: 0;
+                padding: 10px;
+            }
+            .card {
+                border: none !important;
+                box-shadow: none;
+                margin-bottom: 20px;
+            }
+            .table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            .table-bordered th,
+            .table-bordered td {
+                border: 1px solid #dee2e6;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Customer Sales Report</h1>
+        <p><strong>Start Date:</strong> {{ filter_data.start_date }}</p>
+        <p><strong>End Date:</strong> {{ filter_data.end_date }}</p>
+        <p><strong>Sales Type:</strong> {{ filter_data.sales_type }}</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Sl No</th>
+                    <th>Date</th>
+                    <th>Reference No</th>
+                    <th>Invoice No</th>
+                    <th>Customer Name</th>
+                    <th>Customer Id</th>
+                    <th>Building Name/Room No/Floor No</th>
+                    <th>Customer Sales Type</th>
+                    <th>Route</th>
+                    <th>Salesman</th>
+                    <th>Amount</th>
+                    <th>Discount</th>
+                    <th>Net Taxable</th>
+                    <th>VAT Amount</th>
+                    <th>Grand Total</th>
+                    <th>Amount Collected</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in customersales %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ data.date|date:"d/m/Y" }}</td>
+                    <td>{{ data.ref_invoice_no }}</td>
+                    <td>{{ data.invoice_number }}</td>
+                    <td>{{ data.customer_name }}</td>
+                    <td>{{ data.custom_id }}</td>
+                    <td>
+                        {{ data.building_name }} 
+                        {% if data.door_house_no %}/ {{ data.door_house_no }} {% endif %}
+                        {% if data.floor_no %}/ {{ data.floor_no }} {% endif %}
+                    </td>
+                    <td>{{ data.sales_type }}</td>
+                    <td>{{ data.route_name }}</td>
+                    <td>{{ data.salesman }}</td>
+                    <td style="text-align: right;">{{ data.amount }}</td>
+                    <td style="text-align: right;">{{ data.discount }}</td>
+                    <td style="text-align: right;">{{ data.net_taxable }}</td>
+                    <td style="text-align: right;">{{ data.vat_amount }}</td>
+                    <td style="text-align: right;">{{ data.grand_total }}</td>
+                    <td style="text-align: right;">{{ data.amount_collected }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="10" class="total">Total:</td>
+                    <td class="total" style="text-align: right;">{{ total_amount }}</td>
+                    <td class="total" style="text-align: right;">{{ total_discount }}</td>
+                    <td class="total" style="text-align: right;">{{ total_net_payable }}</td>
+                    <td class="total" style="text-align: right;">{{ total_vat }}</td>
+                    <td class="total" style="text-align: right;">{{ total_grand_total }}</td>
+                    <td class="total" style="text-align: right;">{{ total_amount_recieved }}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</body>
+</html>

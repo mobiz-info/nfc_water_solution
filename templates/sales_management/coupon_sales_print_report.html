@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load coupon_sales_templatetags %}
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coupon Report - Print</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles for printing */
+        @media print {
+            /* Hide unnecessary elements */
+            .no-print {
+                display: none !important;
+            }
+
+            /* Set page margins and other print-specific styles */
+            body {
+                margin: 0;
+                padding: 10px;
+            }
+
+            .card {
+                border: none !important;
+                box-shadow: none;
+                margin-bottom: 20px;
+            }
+
+            .table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            .table-bordered th,
+            .table-bordered td {
+                border: 1px solid #dee2e6;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Coupon Sales Report
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Coupon Method</th>
+                                    <th>Book Number</th>
+                                    <th>Customer Name</th>
+                                    <th>Customer ID</th>
+                                    <th>Sales Type</th>
+                                    <th>Route Name</th>
+                                    <th>No of Leaflets</th>
+                                    <th>Used Leaflets</th>
+                                    <th>Balance Coupons</th>
+                                    <th>Rate</th>
+                                    <th>Per Leaf Rate</th>
+                                    <th>Amount Collected</th>
+                                    <th>Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for sale in coupon_sales %}
+                                <tr>
+                                    <td>{{ sale.customer_coupon.coupon_method }}</td>
+                                    <td>{{ sale.coupon.book_num }}</td>
+                                    <td>{{ sale.customer_coupon.customer.customer_name }}</td>
+                                    <td>{{ sale.customer_coupon.customer.custom_id }}</td>
+                                    <td>{{ sale.customer_coupon.customer.sales_type }}</td>
+                                    <td>{{ sale.customer_coupon.customer.routes.route_name }}</td>
+                                    <td>{{ sale.coupon.no_of_leaflets }}</td>
+                                    <td>{{ sale.get_used_leaflets }}</td>
+                                    <td>{{ sale.get_unused_leaflets }}</td>
+                                    <td>{{ sale.rate }}</td>
+                                    <td>{{ sale.get_per_leaf_rate }}</td>
+                                    <td>{{ sale.customer_coupon.amount_recieved }}</td>
+                                    <td>{{ sale.customer_coupon.balance }}</td>
+                                </tr>
+                                {% endfor %}
+                                <tr>
+                                    <td colspan="9">Total</td>
+                                    <td>{{ total_rate }}</td>
+                                    <td>{{ total_per_leaf_rate }}</td>
+                                    <td>{{ total_amount_collected }}</td>
+                                    <td>{{ total_balance }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS (optional) -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        window.onload = function () {
+            window.print();
+        }
+    </script>
+</body>
+
+</html>

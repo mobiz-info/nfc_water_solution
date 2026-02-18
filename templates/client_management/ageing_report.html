@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+{% block title %} Ageing Report {% endblock %}
+{% block content %}
+{% load client_templatetags %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Ageing Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Client Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Ageing Report</li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Ageing Report
+                        </div>
+
+                    </div>
+                    <div class="card-body">
+                        
+                        <div class="mt">
+                            <form method="GET" action="{% url 'ageing_report' %}">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        
+                                        <div class="col-4">
+                                            <label for="route_name">Routes:</label>
+                                            <select id="route" name="route" class="form-control">
+                                                <option value="">Select a Route</option>
+                                                {% for route in routes %}
+                                                    <option value="{{ route.route_name }}" {% if selected_route and route.route_name == selected_route.route_name %}selected{% endif %}>
+                                                        {{ route.route_name }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-6 pt-3">
+                                            <input type="submit" class="btn btn-primary btn-sm mx-1" value="Apply Filter">
+                                            <button type="button" class="btn btn-secondary btn-sm mx-1" onclick="resetFilters()" style="width:max-content">Reset Filter</button>
+                                            <a href="{% url 'print_ageing_report' %}?route={{ selected_route.route_name }}" class="btn btn-info btn-sm mx-1" target="_blank">Print</a>
+                                            <button type="button" class="btn btn-success btn-sm mx-1" onclick="location.href='{% url 'ageing_report_excel' %}?route={{ selected_route.route_name }}'">Excel</button>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    
+
+                        {% if selected_route %}
+                        <div class="row mt-4">
+                            <div class="col-xl-12">
+                                <div class="card custom-card">
+                                    
+
+                                    <div id="table-container" style="overflow-x:auto;">
+                                        <div class="card-body">
+                                            <table class="table table-bordered text-wrap" style="width: 100%">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="text-align:center;width:5%;" scope="col">Sl.No</th>
+                                                        <th style="text-align:center;" scope="col">Customer Name</th>
+                                                        <th style="text-align:center;" scope="col">&lt; 30 days</th>
+                                                        <th style="text-align:center;" scope="col">31 - 60 days</th>
+                                                        <th style="text-align:center;" scope="col">61 - 90 days</th>
+                                                        <th style="text-align:center;" scope="col">91 - 150 days</th>
+                                                        <th style="text-align:center;" scope="col">151 - 365 days</th>
+                                                        <th style="text-align:center;" scope="col">More than 365</th>
+                                                        <th style="text-align:center;" scope="col">Grand Total</th>
+                                                        <th style="text-align:center;" scope="col">view</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% load el_pagination_tags %}
+                                                    
+                                                    {% get_customer_outstanding_aging selected_route.route_name as ageing_data %}
+                                                    {% paginate 40 ageing_data %}
+                                                    {% for item in ageing_data %}
+                                                        <tr>
+                                                            <td>{{ forloop.counter }}</td>
+                                                            <td>{{ item.customer_name }}</td>
+                                                            <td>{{ item.less_than_30 }}</td>
+                                                            <td>{{ item.between_31_and_60 }}</td>
+                                                            <td>{{ item.between_61_and_90 }}</td>
+                                                            <td>{{ item.between_91_and_150 }}</td>
+                                                            <td>{{ item.between_151_and_365 }}</td>
+                                                            <td>{{ item.more_than_365 }}</td>
+                                                            <td>{{ item.grand_total }}</td>
+                                                            <td>
+                                                                <a href="{% url 'customer_outstanding_detail' item.customer_id %}" class="btn btn-warning-light btn-sm">
+                                                                    <span class="bi bi-eye fs-14"></span>
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    {% empty %}
+                                                        <tr>
+                                                            <td colspan="10" style="text-align:center;">No data available</td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                    {% comment %} {% get_customer_outstanding_aging selected_route as ageing_data %}
+                                                    {% for data in ageing_data %}
+                                                        <tr>
+                                                            <td style="text-align:center;">{{ forloop.counter }}</td>
+                                                            <td>{{ data.customer_name }}</td>
+                                                            <td>{{ data.less_than_30 }}</td>
+                                                            <td>{{ data.between_31_and_60 }}</td>
+                                                            <td>{{ data.between_61_and_90 }}</td>
+                                                            <td>{{ data.between_91_and_150 }}</td>
+                                                            <td>{{ data.between_151_and_365 }}</td>
+                                                            <td>{{ data.more_than_365 }}</td>
+                                                            <td>{{ data.grand_total }}</td>
+                                                            <td>
+                                                                <a href="{% url 'customer_outstanding_detail' data.customer_id %}" aria-label="View" class="btn btn-warning-light btn-sm" data-bs-toggle="tooltip" data-bs-original-title="View">
+                                                                    <span class="bi bi-eye fs-14"></span>
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    {% empty %}
+                                                        <tr>
+                                                            <td colspan="9" style="text-align:center;">No data available</td>
+                                                        </tr>
+                                                    {% endfor %} {% endcomment %}
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr>
+                                                        <td colspan="2" style="text-align:right;"><strong>Totals:</strong></td>
+                                                        <td>{{ totals.total_less_than_30 }}</td>
+                                                        <td>{{ totals.total_between_31_and_60 }}</td>
+                                                        <td>{{ totals.total_between_61_and_90 }}</td>
+                                                        <td>{{ totals.total_between_91_and_150 }}</td>
+                                                        <td>{{ totals.total_between_151_and_365 }}</td>
+                                                        <td>{{ totals.total_more_than_365 }}</td>
+                                                        <td>{{ totals.total_grand_total }}</td>
+                                                        <td></td> <!-- For the view button column -->
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Pagination -->
+                                {% get_pages %}
+                                <div class="clearfix"></div>
+                                <div class="row pagi my-3">
+                                    <div class="col-sm-6 col-xs-6 tot my-pagination">
+                                        <div class="m-t-10 text-start">
+                                            Showing {{title}}
+                                            <span class="current_page_index">{{ pages.current_start_index }}</span> - <span
+                                            class="current_end_status">{{ pages.current_end_index }}</span> of <span
+                                            class="total_count">{{ pages.total_count }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-xs-6 text-end pagination-btn-div">{% show_pages %}</div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function resetFilters() {
+        location.href = "{% url 'ageing_report' %}";
+    }
+</script>
+
+{% endblock %}

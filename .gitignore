@@ -1,0 +1,46 @@
+# Created by Ramshid
+
+# Mac
+.DS_Store
+._*
+
+# JSON temp files
+data.json
+newdata.json
+database.json
+
+### Django ###
+*.log
+*.pot
+*.pyc
+__pycache__/
+*/__pycache__/
+*/*/__pycache__/
+
+# Migrations (ignore all except __init__)
+migrations/*.py
+*/migrations/*.py
+*/*/migrations/*.py
+!migrations/__init__.py
+!*/migrations/__init__.py
+!*/*/migrations/__init__.py
+
+# Database
+db.sqlite3
+db.sqlite3-journal
+
+# Media files
+media/
+
+# Environment variables
+.env
+settings.ini
+*.ini
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Firebase secret (keep private)
+# sanawater-ff102-firebase-adminsdk-l1rbm-26999217b4.json

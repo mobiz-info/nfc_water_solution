@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %} van {% endblock %}
+
+{% block content %}
+{% load static %}
+
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Update Staff</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Dashboards</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Update Staff for {{van.van_make}}
+                        </div>
+                    </div>
+                    <div class="container-fluid">
+                        <div class="col-md-offset-3 col-md-5">
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <strong><label for="{{ form.driver.id_for_label }}">Driver</label></strong>
+                                    {{ form.driver }}
+                                    {{ form.driver.errors }}
+                                </div>
+                                <br>
+                                <div class="form-group">
+                                    <strong><label for="{{ form.salesman.id_for_label }}">Salesman</label></strong>
+                                    {{ form.salesman }}
+                                    {{ form.salesman.errors }}
+                                </div>
+                                <br>
+                                <div class="form-group pull-right">
+                                    <button type="submit" class="btn btn-primary">Assign Staff</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

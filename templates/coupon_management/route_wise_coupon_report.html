@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% block title %} Route Wise Coupon Report {% endblock %}
+{% block content %}
+{% load static %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Route Wise Coupon Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Coupon Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Route Coupon Report</li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+
+        <!-- Start:: row -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+
+                    <div class="card-header">
+                        <div class="card-title">
+                            Route Wise Coupon Report
+                        </div>
+                    </div>
+
+                    <!-- FILTER (DATE ONLY) -->
+                    <div class="card-body border-bottom">
+                        <form method="get" class="row g-3 align-items-center">
+                            
+                            <div class="col-auto d-flex align-items-center">
+                                <label class="mb-0 me-2 fw-semibold">Start Date</label>
+                                <input type="date" name="start_date"
+                                       class="form-control"
+                                       style="width: 180px;"
+                                       value="{{ filter_data.start_date }}">
+                            </div>
+                    
+                            <div class="col-auto d-flex align-items-center">
+                                <label class="mb-0 me-2 fw-semibold">End Date</label>
+                                <input type="date" name="end_date"
+                                       class="form-control"
+                                       style="width: 180px;"
+                                       value="{{ filter_data.end_date }}">
+                            </div>
+                    
+                            <div class="col-auto d-flex gap-2">
+                                <button type="submit" class="btn btn-primary px-4">
+                                    <i class="ri-filter-fill me-1"></i> Filter
+                                </button>
+                    
+                                <button type="button" class="btn btn-secondary px-4" onclick="resetFilters()">
+                                    Reset
+                                </button>
+                            </div>
+                    
+                        </form>
+                    </div>
+                    
+                    
+
+                    <!-- TABLE -->
+                    <div id="table-container">
+                        <div class="card-body">
+
+                         <table class="table table-bordered text-wrap" style="width:100%">
+                              <thead>
+                                <tr>
+                                    <th>SL No</th>
+                                    <th>Route</th>
+                                    <th>Books Issued</th>
+                                    <th>Books Sold</th>
+                                    <th>Total Sale</th>
+                                    <th>Balance Books</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                  {% for row in routes %}
+                                  {% for row in routes %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ row.route_name }}</td>
+                                    <td>{{ row.books_issued }}</td>
+                                    <td>{{ row.books_sold }}</td>
+                                    <td>{{ row.sale_amount }}</td>
+                                    <td>
+                                        <a href="{% url 'route_balance_books' row.route_id %}" class="btn btn-sm btn-primary">
+                                            {{ row.balance_books }}
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+
+                                  {% empty %}
+                                  <tr>
+                                      <td colspan="5" class="text-center text-muted">
+                                          No data found
+                                      </td>
+                                  </tr>
+                                  {% endfor %}
+                              </tbody>
+                          </table>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function resetFilters() {
+        location.href = "{% url 'route_wise_coupon_report' %}";
+    }
+</script>
+
+{% endblock %}

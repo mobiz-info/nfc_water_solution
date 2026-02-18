@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Edit Vacation</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Vacation</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title mx-auto">
+                            Select Route</div>
+                        </div>
+                        <div class="card-body">
+                            <form method="get" action="{% url 'vacation_add' %}"  id="vacationForm">
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>  Route</label>
+                                        <select name="route" id="route" class="form-control reqired">
+                                            <option value="" disabled selected>Select a Route</option>
+                                            {% for route in routes %}
+                                            <option value="{{route.route_id}}">{{route.route_name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <p id="routeError" class="text-danger" style="display: none;">Please select a route</p>
+                                    </div>
+                                </div>
+                                
+                                
+                                <div class="col-12 text-end mt-5">
+                                    <input type="submit" class="btn btn-primary me-2 mb-2" value="Submit">
+                                    <button class="btn btn-success   me-md-2  mb-2" type="button" onClick="javascript:history.go(-1);">
+                                    <i class="bi bi-backspace-fill pe-1"></i>Back</button>
+                                    <a class="btn btn-success me-md-2  mb-2"
+                                        href="/"><i class="bi bi-backspace-fill pe-1"></i> Back to Dashboard 
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('vacationForm').addEventListener('submit', function(event) {
+        var route = document.getElementById('route').value;
+        if (route === '') {
+            event.preventDefault(); 
+            document.getElementById('routeError').style.display = 'block';
+        }
+    });
+</script>
+{% endblock %}

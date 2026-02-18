@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block title %} Products List {% endblock %}
+{% block content %}
+{% load static %}
+        <!-- End::app-sidebar -->
+        <!-- Page Header -->
+        <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+            <h4 class="fw-medium mb-0">Product Management</h4>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+            </ol>
+        </div>
+        <!-- Page Header Close -->
+        <!-- Start::app-content -->
+        <div class="main-content app-content">
+            <div class="container-fluid">
+                <!-- Start:: row-2 -->
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card custom-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    Products Reports
+                                </div>
+                                <div class="ms-auto">
+                                    <a href="{% url 'product_create' %}">
+                                        <button type="button" class="btn btn-success btn-wave text-end d-flex me-4 my-auto"><i class="bi bi-plus-circle me-1"></i>Create</button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-bordered text-nowrap" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" style="text-align:center !important;">Sl.No</th>
+                                            <th scope="col" style="text-align:center !important;">Product Category</th>
+                                            <th scope="col" style="text-align:center !important;">Product Name</th>
+                                            <th scope="col" style="text-align:center !important;">Unit</th>
+                                            <th scope="col" style="text-align:center !important;">Quantity</th>                                                                      
+                                            <th scope="col" style="text-align:center !important;">Rate</th>  
+                                            <th scope="col" style="text-align:center !important;">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% load el_pagination_tags %}
+                                        {% paginate 20 instances %}
+                                        {% for data in instances %}
+                                        <tr>
+                                            <td style="text-align:center;">{{forloop.counter}}</td>
+                                            <td style="text-align:left;" >{{data.product_name.category}}</td>
+                                            <td style="text-align:left;">{{data.product_name.product_name}}</td>
+                                            <td style="text-align:left;">{{data.product_name.unit}}</td>
+                                            <td style="text-align:center;">{{data.quantity}}</td>
+                                            <td style="text-align:center;">{{data.product_name.rate}}</td>
+                                           
+                                            <td style="text-align:left;">
+                                                <div class="g-2">
+                                                    <a href="{% url 'product_details' data.product_id %}" aria-label="anchor" class="btn  btn-warning-light btn-sm" data-bs-toggle="tooltip" data-bs-original-title="View">
+                                                        <span class="bi bi-eye fs-14"></span>
+                                                    </a>
+                                                    <a href="{% url 'product_edit' data.product_id %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Edit">
+                                                        <span class="ri-pencil-line fs-14"></span>
+                                                    </a>
+                                                    <a href="{% url 'product_delete' data.product_id %}"aria-label="anchor" class="btn btn-danger-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Delete">
+                                                        <span class="ri-delete-bin-7-line fs-14"></span>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {%endfor%}
+                                    </tbody>
+                                </table>
+                                {% get_pages %}
+                                <div class="clearfix"></div>
+                                <div class="row pagi my-3">
+                                    <div class="col-sm-6 col-xs-6 tot my-pagination">
+                                        <div class="m-t-10 text-start">
+                                            Showing {{title}}
+                                            <span class="current_page_index">{{ pages.current_start_index }}</span> - <span
+                                            class="current_end_status">{{ pages.current_end_index }}</span> of <span
+                                            class="total_count">{{ pages.total_count }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-xs-6 text-end pagination-btn-div">{% show_pages %}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End:: row-2 -->
+
+                      
+
+            </div>
+        </div>
+        <!-- End::app-content -->
+        {% endblock %}

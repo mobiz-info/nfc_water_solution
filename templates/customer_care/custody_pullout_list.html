@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block title %} Designation List {% endblock %}
+{% block content %}
+{% load static %}
+        <!-- End::app-sidebar -->
+        <!-- Page Header -->
+        <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+            <h4 class="fw-medium mb-0">Custody Pull Out List</h4>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Customer Care</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Custody Pull Out</li>
+            </ol>
+        </div>
+        <!-- Page Header Close -->
+
+        <!-- Start::app-content -->
+        <div class="main-content app-content">
+            <div class="container-fluid">
+
+                
+                         <!-- Start:: row-2 -->
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card custom-card">
+                            <div class="card-header">
+                                
+                                <div class="ms-auto">
+                                    <a href="{% url 'custody_pullout_create' customer_id %}">
+                                        <button type="button" class="btn btn-success btn-wave text-end d-flex me-4 my-auto"><i class="bi bi-plus-circle me-1"></i>Create</button>
+                                    </a>
+                                </div>
+                                
+                            </div>
+                            
+                            <div class="card-body">
+                                <table id="responsiveDataTable" class="table table-bordered text-nowrap" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Sl.No</th>
+                                            <th scope="col">Item Name</th>
+                                            <th scope="col">Quantity to be taken out</th>
+                                            <th scope="col">Scheduled Date</th>
+                                           
+                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for data in custody_pullout_list %}
+                                        <tr>
+                                            <td style="text-align:center;">{{forloop.counter}}</td>
+                                            <td style="text-align:center;">{{data.item_name}}</td>
+                                            <td style="text-align:center;">{{data.qty_to_be_taken_out}}</td>
+                                            <td style="text-align:center;">{{data.scheduled_date}}</td>
+
+                                            
+                                            
+
+                                           <!--  <td>
+                                                <div class="g-2">
+                                                    <a href=""  aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Edit">
+                                                        <span class="ri-pencil-line fs-14"></span>
+                                                    </a>
+                                                    <a aria-label="anchor" class="btn btn-danger-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Delete">
+                                                        <span class="ri-delete-bin-7-line fs-14"></span>
+                                                    </a>
+                                            </div>
+                                            </td> -->
+                                        </tr>
+                                        {%endfor%}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End:: row-2 -->
+
+                      
+
+            </div>
+        </div>
+        <!-- End::app-content -->
+        {% endblock %}

@@ -1,0 +1,423 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+{% load static %}
+{% load bottle_customer_stock %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Dashboard</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+    </ol>
+</div>
+
+<!-- Main Content Area -->
+<div class="main-content app-content" style={{"background:white"}}>
+    <div class="container-fluid">
+        <!-- Tab Buttons -->
+        <div class="tab mt-5 mb-3" style="border-bottom: 2px solid #bfbfbf;max-height: 40px;">
+            <button class="tablinks btn rounded-0" onclick="openOverview()">Overview</button>
+            <button class="tablinks btn rounded-0" onclick="openSales()">Sales</button>
+            <button class="tablinks btn rounded-0" onclick="openBottle()">Bottle</button>
+            <button class="tablinks btn rounded-0" onclick="openCoupons()">Coupons</button>
+            <button class="tablinks btn rounded-0" onclick="openCustomerStatistics()">Customer Statistics</button>
+            <button class="tablinks btn rounded-0" onclick="openOthers()">Others</button>
+        </div>
+      
+
+        <div id="Custormer_Statistics" class="tabcontent">
+            <div class="row">
+                <!-- Custormer_Statistics Cards -->
+                <div class="col-md-3">
+                    <div class="card" title='{% url 'customers' %}'
+                    style="border-radius:12px; border:2px solid rgba(245, 45, 204, 0.2); padding: 15px; cursor: pointer;">
+                    <a href="{% url 'customers' %}">
+                        <div class="card-body p-0 d-flex justify-content-between align-items-start">
+                            <div>
+                                <!-- Left side: Heading and value -->
+                                <h6 class="m-0" style="color:#6c757d;">Total Customers</h6>
+                                <p class="fs-3 fw-bold mt-2 mb-0">{{ total_customers_count }}</p>
+                            </div>
+                            <!-- Right side: Icon with background -->
+                            <div style="background-color: #ffe4f0;padding: 7px 17px;border-radius: 50%;">
+                                <i class="bi bi-people" style="font-size: 35px;color:#f52dcc;"></i>
+                            </div>
+                        </div>
+                        </a>
+                    </div>
+                </div>
+                
+        
+                <div class="col-md-3">
+                    <div class="card" title='{% url 'inactive_customers' %}'
+                    style="border-radius:12px; border:2px solid rgba(245, 45, 204, 0.2); padding: 15px; cursor: pointer;">
+                    <a href="{% url 'inactive_customers' %}">
+                        <div class="card-body p-0 d-flex justify-content-between align-items-start">
+                            <div>
+                                <!-- Left side: Heading and value -->
+                                <h6 class="m-0" style="color:#6c757d;">Inactive Customers</h6>
+                                <p class="fs-3 fw-bold mt-2 mb-0">{{ inactive_customers_count }}</p>
+                            </div>
+                            <!-- Right side: Icon with background -->
+                            <div style="background-color: #ffe4f0;padding: 7px 17px;border-radius: 50%;">
+                                <i class="bi bi-arrow-counterclockwise" style="font-size: 35px;color:#f52dcc;"></i>
+                            </div>
+                        </div>
+                    </a>
+                    </div>
+                </div>
+        
+                <div class="col-md-3">
+                    <div class="card" title='{% url 'customers' %}'
+                    style="border-radius:12px; border:2px solid rgba(245, 45, 204, 0.2); padding: 15px; cursor: pointer;">
+                    <a href="{% url 'customers' %}">
+                        <div class="card-body p-0 d-flex justify-content-between align-items-start">
+                            <div>
+                                <!-- Left side: Heading and value -->
+                                <h6 class="m-0" style="color:#6c757d;">Customer on Vacation</h6>
+                                <p class="fs-3 fw-bold mt-2 mb-0">{{ total_vocation_customers_count }}</p>
+                            </div>
+                            <!-- Right side: Icon with background -->
+                            <div style="background-color: #ffe4f0;padding: 7px 17px;border-radius: 50%;">
+                                <i class="bi bi-archive" style="font-size: 35px;color:#f52dcc;"></i>
+                            </div>
+                        </div>
+                    </a>
+                    </div>
+                </div>
+        
+                <div class="col-md-3">
+                    <div class="card" title='.'
+                    style="border-radius:12px; border:2px solid rgba(245, 45, 204, 0.2); padding: 15px; cursor: pointer;">
+                    <a href=".">
+                        <div class="card-body p-0 d-flex justify-content-between align-items-start">
+                            <div>
+                                <!-- Left side: Heading and value -->
+                                <h6 class="m-0" style="color:#6c757d;">Call Customers</h6>
+                                <p class="fs-3 fw-bold mt-2 mb-0">{{ call_customers_count }}</p>
+                            </div>
+                            <!-- Right side: Icon with background -->
+                            <div style="background-color: #ffe4f0;padding: 7px 17px;border-radius: 50%;">
+                                <i class="bi bi-telephone" style="font-size: 35px;color:#f52dcc;"></i>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                </div>
+            </div>
+        
+            <div class="row mt-4">
+                <!-- Monthly New Customers Chart -->
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header text-left text-white" style="background-color: #4776e6 !important;">
+                            <h5 class="card-title">Monthly New Customers</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="monthlyCustomersChart" width="400" height="300"></canvas>
+                        </div>
+                    </div>
+                </div>
+        
+                <!-- Planned Vs Actual Chart -->
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header text-left text-white" style="background-color: #4776e6 !important;">
+                            <h5 class="card-title">Planned Vs Actual</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="plannedVsActualChart" width="400" height="300"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="row mt-4">
+                <!-- Today Supply 5G Chart -->
+                <div class="col-md-6 mb-4" <a href="{% url 'customer_supply_list' %}" title="{% url 'customer_supply_list' %}"  style="cursor: pointer; "></a>
+                    <div class="card h-100">
+                        <div class="card-header text-left text-white" style="background-color: #4776e6 !important;">
+                            <h5 class="card-title">Today Supply </h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="salesmanSupplyPieChart" width="400" height="300"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="row mt-4">
+                <!-- Date Input and New Customers Table -->
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 border-0">
+                        <div class="card-header text-left border-0" >
+                            <h5 class="card-title">New Customers</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th style="color: white !important; background-color: #4776e6 !important;">Sl.No</th>
+                                        <th style="color: white !important; background-color: #4776e6 !important;">Route Name</th>
+                                        <th style="color: white !important; background-color: #4776e6 !important;">New Customers <br> Today</th>
+                                        <th style="color: white !important; background-color: #4776e6 !important;">New Customers <br> This Month</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    {% for data in route_data %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ data.routes__route_name }}</td>
+                                                <td>{{ data.today_new_customers }}</td>
+                                                <td>{{ data.month_new_customers }}</td>
+                                            </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 border-0">
+                        <div class="card-header text-left border-0" >
+                            <h5 class="card-title">Inactive Customers</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th style="color: white !important; background-color: #4776e6 !important;">Sl.No</th>
+                                        <th style="color: white !important; background-color: #4776e6 !important;">Route Name</th>
+                                        <th style="color: white !important; background-color: #4776e6 !important;">Inactive Customers <br> (Last 20 Days)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    {% for route_name, inactive_count in route_inactive_customer_count.items %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ route_name }}</td>
+                                            <td>{{ inactive_count }}</td>
+                                        </tr>
+                                    {% endfor %} 
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 border-0">
+                        <div class="card-header text-left border-0" >
+                            <h5 class="card-title">Nonvisited Customers</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th style="color: white !important; background-color: #4776e6 !important;">Sl.No</th>
+                                        <th style="color: white !important; background-color: #4776e6 !important;">Route Name</th>
+                                        <th style="color: white !important; background-color: #4776e6 !important;">Customers non visited</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    {% for data in non_visited_customers_data %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ data.route }}</td>
+                                        <td>{{ data.non_visited_customers_count }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+     
+
+    </div>
+</div>
+{% endblock %}
+{% block static %}
+{% load static %}
+<script>
+    function openOverview() {
+        window.location.href = '{% url 'overview' %}';
+    }
+    
+    function openSales() {
+        window.location.href = '{% url 'sales' %}';
+    }
+    
+    function openBottle() {
+        window.location.href = '{% url 'bottles' %}';
+    }
+    
+    function openCoupons() {
+        window.location.href = '{% url 'coupons' %}';
+    }
+    
+    function openCustomerStatistics() {
+        window.location.href = '{% url 'customer-statistics' %}';
+    }
+    
+    function openOthers() {
+        window.location.href = '{% url 'others' %}';
+    }
+    
+</script>
+
+
+<script>
+    // Get the chart data from Django context
+    const chartData = JSON.parse('{{ chart_data|safe }}');
+
+    const mcc = document.getElementById('monthlyCustomersChart');
+    const monthlyCustomersChart = new Chart(mcc, {
+        type: 'line',
+        data: {
+            labels: chartData.months,  
+            datasets: [
+                {
+                    label: 'New Customers',
+                    data: chartData.datasets.new_customers, 
+                    borderColor: 'blue',
+                    fill: false,
+                    
+                },
+                {
+                    label: 'Churn',
+                    data: chartData.datasets.churn,  
+                    borderColor: 'red',
+                    fill: false,
+                    
+                },
+            ],
+        },
+        options: {
+            plugins: {
+                legend: {
+                    display: true,
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            return `${context.dataset.label}: ${context.raw}`;
+                        },
+                    },
+                },
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Month',
+                    },
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Customer Count',
+                    },
+                },
+            },
+        },
+    });
+</script>
+<script>
+    const pvsa = document.getElementById('plannedVsActualChart').getContext('2d');
+    const plannedVsActualChart = new Chart(pvsa, {
+        type: 'bar',  // Choose bar chart type
+        data: {
+            labels: [
+                {% for route in route_data %}
+                "{{ route.route_name }}"{% if not loop.last %}, {% endif %}
+                {% endfor %}
+            ], 
+            datasets: [
+                {
+                    label: 'Planned Customers',
+                    data: {{ planned_data|safe }},  // Planned customers data from the view
+                    backgroundColor: 'blue',  // Color for planned bars
+                    borderColor: 'blue',
+                },
+                {
+                    label: 'Actual Customers',
+                    data: {{ actual_data|safe }},  // Actual customers data from the view
+                    backgroundColor: 'green',  // Color for actual bars
+                    borderColor: 'green',
+                }
+            ]
+        },
+        options: {
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'labels',
+                    },
+                },
+                y: {
+                    beginAtZero: true,  // Ensure Y-axis starts at 0
+                    title: {
+                        display: true,
+                        text: 'Customer Count'
+                    }
+                }
+            }
+        }
+    });
+  </script>
+
+  <script>
+    // Data from the view
+    var supplyData = {{ salesman_supply_data|safe }};
+    
+    // Prepare the chart labels and values
+    var labels = supplyData.map(item => item.salesman_name);
+    var supplyQuantities = supplyData.map(item => item.total_quantity);
+    
+    // Calculate the total quantity to determine the percentage
+    var totalQuantity = supplyQuantities.reduce((total, quantity) => total + quantity, 0);
+    var percentages = supplyQuantities.map(quantity => (quantity / totalQuantity) * 100);
+    
+    // Create the Pie chart
+    var ts = document.getElementById("salesmanSupplyPieChart").getContext('2d');
+    var myChart = new Chart(ts, {
+      type: 'pie',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Today\'s Supply Quantity by Salesman',
+          data: supplyQuantities,
+          backgroundColor: ["#0d6efd", "#198754", "#ffc107", "#dc3545", "#17a2b8",], // Customize colors as needed
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: function(tooltipItem) {
+                var label = tooltipItem.label || '';
+                var value = tooltipItem.raw || 0;
+                var percentage = percentages[tooltipItem.dataIndex].toFixed(2);
+                return `${label}: ${value} (${percentage}%)`;
+              }
+            }
+          }
+        }
+      }
+    });
+</script>
+{% endblock static %}
+ 

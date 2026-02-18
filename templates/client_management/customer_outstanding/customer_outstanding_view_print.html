@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }}</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @media print {
+            /* Add any styles for print-specific layout here */
+            body {
+                font-size: 12px;
+            }
+
+            .no-print {
+                display: none;
+            }
+
+            /* Set page margins and other print-specific styles */
+            body {
+                margin: 0;
+                padding: 10px;
+            }
+
+            .card {
+                border: none !important;
+                box-shadow: none;
+                margin-bottom: 20px;
+            }
+
+            .table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            .table-bordered th,
+            .table-bordered td {
+                border: 1px solid #dee2e6;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Outstanding Report
+                        </div>
+                    </div>
+
+                    {% if filter_data %}
+                        <!-- Customer Details -->
+                        <div class="mb-4">
+                            <div class="row align-items-center">
+                                <div class="col-md-3">
+                                    <p class="mb-0"><strong>Date:</strong> {{ date }} </p>
+                                </div>
+                                <div class="col-md-3">
+                                    <p class="mb-0"><strong>Customer Name:</strong> {{ customer_name }}</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <p class="mb-0"><strong>Customer ID:</strong> {{ customer_id }}</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <p class="mb-0"><strong>Mobile Num:</strong> {{ mobile_no }}</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <p class="mb-0"><strong>Route Name:</strong> {{ route_name }}</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <p class="mb-0"><strong>Product Name:</strong> {{ product_type|title }} </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Outstanding Table -->
+                        <table id="datatable-basic" class="table table-bordered text-wrap w-100">
+                            <thead>
+                                <tr>
+                                    <th>Sl No</th>
+                                    <th>Invoice No</th>
+                                    <th>Amount</th>
+                                    <th>Paid</th>
+                                    <th>Balance to Pay</th>
+                                    <th>No. of Days Passed</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for invoice in invoices %}
+                                    <tr>
+                                        <td>{{ invoice.sl_no }}</td>
+                                        <td>{{ invoice.invoice_number }}</td>
+                                        <td>{{ invoice.amount }}</td>
+                                        <td>{{ invoice.paid }}</td>
+                                        <td>{{ invoice.balance }}</td>
+                                        <td>{{ invoice.days_passed }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="2" class="text-end">Total</th>
+                                    <th>{{ total_amount }}</th>
+                                    <th>{{ total_paid }}</th>
+                                    <th>{{ total_balance }}</th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        window.onload = function() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

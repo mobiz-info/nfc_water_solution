@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block title %} Route Supply Report {% endblock %}
+{% block content %}
+{% load static %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Route Supply Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="javascript:void(0);" class="text-white-30">Reports</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Route Supply</li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    
+                    <div class="card-header">
+                        <div class="card-title">
+                            Most Supplied Routes
+                        </div>
+                    </div>
+
+                    <!-- Filter Section -->
+                    <div class="mt">
+                        <form method="get" class="row g-3 px-3">
+                            <div class="col-md-3">
+                                <label>Start Date</label>
+                                <input type="date" name="start_date" class="form-control"
+                                       value="{{ start_date|date:'Y-m-d' }}">
+                            </div>
+                            <div class="col-md-3">
+                                <label>End Date</label>
+                                <input type="date" name="end_date" class="form-control"
+                                       value="{{ end_date|date:'Y-m-d' }}">
+                            </div>
+                            <div class="col-md-3 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary me-2" id="submit">
+                                    Filter
+                                </button>
+                                <a href="{% url 'route_supply_report' %}" class="btn btn-secondary">
+                                    Reset
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Table -->
+                    <div id="table-container">
+                        <div class="card-body">
+                            <table class="table table-bordered text-wrap" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th>Sl No</th>
+                                        <th>Route Name</th>
+                                        <th>Total Bottles Supplied</th>
+                                        <th>Total Orders</th>
+                                        <th>Total Sales Amount</th>
+                                        <th>Custody Issued</th>
+                                        <th>Custody Pullout</th>
+                                        <th>Returned</th>
+                                        <th>Net Consumption</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for row in report %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td><b>{{ row.route }}</b></td>
+                                        <td>{{ row.total_bottles }}</td>
+                                        <td>{{ row.total_orders }}</td>
+                                        <td>₹ {{ row.total_amount }}</td>
+                                        <td>{{ row.custody_issued }}</td>
+                                        <td>{{ row.custody_pullout }}</td>
+                                        <td>{{ row.returned }}</td>
+                                        <td><b>{{ row.net_consumption }}</b></td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="9" class="text-center text-muted">
+                                            No route supply data found
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<script>
+ $('#submit').click(function(e){ 
+    e.preventDefault();       
+    $('#table-container').show();
+    $(this).closest('form').submit();
+ });
+</script>
+
+{% endblock %}

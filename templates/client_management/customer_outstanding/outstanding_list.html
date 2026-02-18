@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% block title %} Custody Report {% endblock %}
+{% block content %}
+{% load static %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Outstanding Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Client Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Outstanding Report</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">Outstanding Items</div>
+                        <div class="ms-auto">
+                            <a href="{% url 'create_customer_outstanding' %}{% if customer_pk %}?customer_pk={{customer_pk}}{% endif %}">
+                                <button type="button" class="btn btn-success btn-wave text-end d-flex me-4 my-auto">
+                                    <i class="bi bi-plus-circle me-1"></i>Create
+                                </button>
+                            </a>
+                        </div>
+                        <div >
+                            <a href="{% url 'upload_outstanding' %}">
+                                <button type="button" class="btn btn-primary btn-wave text-end d-flex me-4 my-auto">
+                                    <i class="bi bi-upload me-1"></i>Upload Outstanding
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="mt">
+                        <form method="GET" action="{% url 'outstanding_list' %}">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <!-- Date input -->
+                                    <div class="col-3">
+                                        <label for="date">Date:</label>
+                                        <input type="date" class="form-control" id="date" name="date" value="{{ filter_data.filter_date }}">
+                                    </div>
+
+                                    <!-- Routes Dropdown -->
+                                    <div class="col-3">
+                                        <label for="product">Routes :</label>
+                                        <select name="route_name" class="form-select">
+                                            <option value="">All Routes</option>
+                                            {% for route in route_li %}
+                                                <option value="{{ route.route_name }}" {% if route.route_name == filter_data.route_name %}selected{% endif %}>
+                                                    {{ route.route_name }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                    <!-- Other Filters -->
+                                    <div class="col-3">
+                                        <label for="sales_type">Customer Type:</label>
+                                        <select name="sales_type" class="form-select">
+                                            <option value="">All Customer Types</option>
+                                            {% for sales_type in sales_type_li %}
+                                                <option value="{{ sales_type }}" {% if sales_type == filter_data.sales_type %}selected{% endif %}>
+                                                    {{ sales_type }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                    <!-- Product Type -->
+                                    <div class="col-3">
+                                        <label for="product_type" class="form-label">Product Type:</label>
+                                        <select name="product_type" class="form-select form-select-sm">
+                                            <option value="">All Product Types</option>
+                                            {% for key, value in product_types.items %}
+                                                <option value="{{ key }}" {% if key == filter_data.product_type %}selected{% endif %}>
+                                                    {{ value }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                    <!-- Submit Button -->
+                                    <div class="col d-flex align-items-end justify-content-end">
+                                        <input type="submit" class="btn btn-primary btn-sm mx-1" value="Apply Filter">
+                                        {% if data_filter %}
+                                            <button type="button" class="btn btn-secondary btn-sm mx-1" onclick="resetFilters()" style="width:max-content">Reset Filter</button>
+                                        {% endif %}
+                                        <a href="{% url 'print_outstanding_report' %}?date={{ filter_data.filter_date }}&route_name={{ filter_data.route_name }}&sales_type={{ filter_data.sales_type }}&product_type={{ filter_data.product_type }}" class="btn btn-outline-success btn-sm mx-1" target="_blank">
+                                            <i class="fas fa-file-excel"></i> Print
+                                        </a>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                    {% if filters_applied %}
+                    <div id="table-container">
+                        <div class="card-body">
+                            <table class="table table-bordered text-wrap" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align:center; width:5%;">Sl No</th>
+                                        <th style="text-align:center;">Created Date</th>
+                                        <th style="text-align:center;">Invoice No</th>
+                                        <th style="text-align:center;">Customer ID</th>
+                                        <th style="text-align:center;">Customer</th>
+                                        <th style="text-align:center;">Customer Type</th>
+                                        <th style="text-align:center;">Building No</th>
+                                        <th style="text-align:center;">Route</th>
+                                        <th style="text-align:center;">Outstanding Type</th>
+                                        <th style="text-align:center;">Count</th>
+                                        <th style="text-align:center;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% comment %} {% load el_pagination_tags %} {% endcomment %}
+                                    {% comment %} {% paginate 20 instances %} {% endcomment %}
+                                    {% for item in instances %}
+                                    <tr>
+                                        <td style="text-align:center;">{{ forloop.counter }}</td>
+                                        <td style="text-align:center;">{{ item.created_date|date:'d-m-Y' }}</td>
+                                        <td style="text-align:center;">{{ item.invoice_no }}</td>
+                                        <td style="text-align:center;">{{ item.customer.custom_id }}</td>
+                                        <td style="text-align:center;">{{ item.customer.customer_name }}</td>
+                                        <td style="text-align:center;">{{ item.customer.sales_type }}</td>
+                                        <td style="text-align:center;">{{ item.customer.building_name }}</td>
+                                        <td style="text-align:center;">{{ item.customer.routes.route_name }}</td>
+                                        <td style="text-align:center;">{{ item.get_product_type_display }}</td>
+                                        <td style="text-align:center;">{{ item.get_outstanding_count }}</td>
+                                        <td>
+                                            <div class="g-2">
+                                                <a aria-label="anchor" class="action-button remove btn btn-danger-light btn-sm ms-2"
+                                                   data-bs-toggle="tooltip" data-bs-original-title="Delete"
+                                                   data-id="{{ item.pk }}" data-text="{{ confirm_delete_message }}" data-title="Are you sure?"
+                                                   href="{% url 'delete_outstanding' pk=item.pk %}">
+                                                    <span class="ri-delete-bin-7-line fs-14"></span>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="9" style="text-align:right;"><strong>Total Outstanding Count:</strong></td>
+                                        <td style="text-align:center;"><strong>{{ total_outstanding_count }}</strong></td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

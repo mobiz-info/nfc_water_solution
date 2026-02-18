@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% block title %} Custody Report {% endblock %}
+{% block content %}
+{% load static %}
+
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Customer Custody</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Client Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Customer Custody</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+            <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Customer Custody
+                        </div>
+                    </div>
+                    <div class="ms-auto">
+                         <a href="{% url 'customer_custody_item' customer.pk %}">
+                                    <button type="button" class="btn btn-success btn-wave text-end d-flex me-4 my-auto"><i class="bi bi-plus-circle me-1"></i>Create</button>
+                                </a>
+                                </div>
+
+                    {% comment %} <div class="mt">
+                        <form method="GET" action='{% url "custody_issue"%}'>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <label for="start_date">From Date:</label>
+                                        <input type="date" class="form-control" id="start_date" name="start_date">
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label for="end_date">To Date:</label>
+                                        <input type="date" class="form-control" id="end_date" name="end_date">
+                                    </div>
+                                    <div class="col-md-2 text-end ">
+                                        <input type="submit" class="btn btn-primary me-2 mb-2 mt-3" value="Submit">
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div> {% endcomment %}
+                    
+                    <div class="card-body">
+                        <table id="datatable-basic" class="table table-bordered text-wrap" style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th>Item Name</th>
+                                    <th>Date Of Issue</th>
+                                    <th>Deposit/Non Deposit</th>
+                                    <th>Serial Number</th>
+                                    <th>Form No</th>
+                                    <th>Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for custody_item_data in custody_items_with_products %}
+                                    {% for item in custody_item_data.custody_custom_items %}
+                                        <tr>
+                                            <td>{{ item.product.product_name }}</td>
+                                            <td>{{ custody_item_data.custody_custom.created_date }}</td>
+                                            <td>{{ custody_item_data.custody_custom.deposit_type }}</td>
+                                            <td>{{ item.serialnumber }}</td>
+                                            <td>{{ custody_item_data.custody_custom.agreement_no }}</td>
+                                            <td>{{ item.quantity }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endfor %}
+                            </tbody>                                                 
+                        </table>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+        $(document).ready(function () {
+            var defaultDateRange = "{{ filter_data.date_range }}";
+        
+            if (defaultDateRange) {
+                $('#reportrange').val(defaultDateRange);
+            }
+            $('#reportrange').daterangepicker({
+                autoApply: true,
+                locale: {
+                    format: 'MM/DD/YYYY'
+                }
+            });
+        });
+
+{% endblock %}

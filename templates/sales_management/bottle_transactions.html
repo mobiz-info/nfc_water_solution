@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block title %} Bottle Transaction Report {% endblock %}
+{% block content %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Bottle Transaction Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Sales Management </a></li>
+        <li class="breadcrumb-item active" aria-current="page">Bottle Transaction Report</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Bottle Transaction Report
+                        </div>
+                    </div>
+                    <div class="mt">
+                        <form method="GET" action="{% url 'bottle_transactions' %}">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <label for="start_date">From Date:</label>
+                                        <input type="date" class="form-control" id="start_date" name="start_date" value="{{ filter_data.start_date }}">
+                                    </div>
+                                    <div class="col">
+                                        <label for="end_date">To Date:</label>
+                                        <input type="date" class="form-control" id="end_date" name="end_date" value="{{ filter_data.end_date }}">
+                                    </div>
+                                    
+                                    <div class="col">
+                                        <label for="route_name">Routes:</label>
+                                        <select name="route_name" class="form-select">
+                                            <option value="">All Routes</option>
+                                            {% for route in route_li %}
+                                                <option value="{{ route.route_name }}"  {% if route.route_name == filter_data.route_name %}selected{% endif %}>{{ route.route_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col d-flex align-items-end justify-content-end">
+                                        <input type="submit" class="btn btn-primary btn-sm mx-1" value="Apply Filter">
+                                        <button type="button" class="btn btn-secondary btn-sm mx-1" onclick="resetFilters()" style="width:max-content">Reset Filter</button>
+                                        {% comment %} <a href="{% url 'bottle_transactions_excel' %}?start_date={{ filter_data.start_date }}&end_date={{ filter_data.end_date }}&route_name={{ filter_data.route_name }}" class="btn btn-outline-success"><i class="fas fa-file-excel"></i>Excel</a>
+                                        <a href="{% url 'bottle_transactions_pdf' %}?start_date={{ filter_data.start_date }}&end_date={{ filter_data.end_date }}&route_name={{ filter_data.route_name }}" class="btn btn-outline-success"><i class="fas fa-file-excel"></i>Print</a> {% endcomment %}
+                                    </div>
+                                </div>
+                            </div>
+                        </form> 
+                    </div>
+
+                    <div id="table-container" style="overflow-x:auto;">
+                        <div class="card-body">
+                            <table class="table table-bordered text-wrap" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align:center !important;">Route Name</th>
+                                        <th style="text-align:center !important;">Total Collected Empty Bottles</th>
+                                        <th style="text-align:center !important;">Total 5 Gallon Quantity</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        {% load el_pagination_tags %}
+                                        <td style="text-align:left;">{{ filter_data.route_name }}</td>
+                                        <td style="text-align:center;">{{ aggregated_data.total_collected_empty_bottle }}</td>
+                                        <td style="text-align:center;">{{ aggregated_data.total_fivegallon_quantity }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="row pagi my-3">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function resetFilters() {
+        // Redirect to the same page without filters
+        location.href = "{% url 'bottle_transactions' %}";
+    }
+</script>
+
+{% endblock %}

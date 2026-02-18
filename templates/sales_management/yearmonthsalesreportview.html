@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}Year&Month Sales Report View{% endblock %}
+{% block content %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Year&Month Sales Report View</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Sales Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Year&Month Sales Report</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div>
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card custom-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                Year&Month Sales Report View
+                            </div>
+                        </div>
+                        <div class="">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="row col-md-6">
+                                        <div class="col-md-4 ">
+                                        </div>
+                                    </div>
+                                    <div class="row col-md-6 ">
+                                        <div class="col-2"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <table id="datatable-basic" class="table table-bordered text-wrap " style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align:center;width:5%;" scope="col" style="border-bottom: 1; max-width: 5em;">Sl No</th>
+                                        <th style="text-align:center;" scope="col" style="border-bottom: 1; max-width: 11em;">Customer Name</th>
+                                        {% comment %} Iterate over the months and display headers {% endcomment %}
+                                        {% comment %} {% for i in ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"] %} {% endcomment %}
+                                        <th style="text-align:center;" scope="col" style="border-bottom: 1; max-width: 11em;">MTD</th>  
+                                        {% comment %} {% endfor %} {% endcomment %}
+                                        <th scope="col"></th>
+                                        <th scope="col"></th>
+                                        <th scope="col"></th>
+                                        <th scope="col"></th>
+                                        <th scope="col"></th>
+                                        <th scope="col"></th>
+                                        <th scope="col"></th>
+                                        <th scope="col"></th>
+                                        <th scope="col"></th>
+                                        <th scope="col"></th>
+                                        <th scope="col"></th>
+
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for customer_data in monthly_sales %}
+                                    <tr>
+                                        <td style="text-align:right;">{{ forloop.counter }}</td>
+                                        <td style="text-align:left;">{{ customer_data.customer.customer_name }}</td>
+                                        {% comment %} Iterate over monthly sales data for the current customer {% endcomment %}
+                                        {% for month_data in customer_data.monthly_sales %}
+                                        <td style="text-align:left;">{{ month_data }}</td>
+                                        {% endfor %}
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function printDiv(divName) {
+        var printContents = document.getElementById(divName).innerHTML;
+        var originalContents = document.body.innerHTML;
+        document.body.innerHTML = printContents;
+        window.print();
+        document.body.innerHTML = originalContents;
+    }
+</script>
+
+{% endblock %}

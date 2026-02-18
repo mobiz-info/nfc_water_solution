@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Issue Order</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Product</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Product Details -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title mx-auto">Product Details</div>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <tr>
+                                <td class="text-secondary">Product Category</td>
+                                <td>{{ issue_instance.product_id.category.category_name}}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-secondary">Product Name</td>
+                                <td>{{ issue_instance.product_id.product_name }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-secondary">Product Unit</td>
+                                <td>{{ issue_instance.product_id.unit }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-secondary">Requested Quantity</td>
+                                <td>{{ issue_instance.count }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-secondary">Max Van Bottle Quantity</td>
+                                <td>{{ max_van_bottle_count }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-secondary">Current Stock Bottle Count</td>
+                                <td>{{ van_current_stock_bottle_count }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Product Details -->
+
+        <!-- Start Form for Creating Product -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title mx-auto">Issue Order</div>
+                    </div>
+                    <div class="card-body">
+                        <form enctype="multipart/form-data" role="form" method="post" class="row g-3 needs-validation ajax redirect">
+                            {% csrf_token %}
+                            <!-- Row 1 -->
+                            {% if form.coupo_no %}
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Coupon Book</label>
+                                    {{form.coupo_no}}
+                                    <span style="color: red;">{{ form.coupon_book.errors }}</span>
+                                </div>
+                            </div>
+                            {% endif %}
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Issue Quantity</label>
+                                    {{ form.quantity_issued }}
+                                    <span style="color: red;">{{ form.quantity_issued.errors }}</span>
+                                </div>
+                            </div>
+                            {% comment %} <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Assign Route</label>
+                                    {{ form.van_route_id }}
+                                    <span style="color: red;">{{ form.van_route_id.errors }}</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Assign Salesman</label>
+                                    {{ form.salesman_id }}
+                                    <span style="color: red;">{{ form.salesman_id.errors }}</span>
+                                </div>
+                            </div> {% endcomment %}
+                            <div class="col-12 text-end mt-5">
+                                <input type="submit" class="btn btn-primary me-2 mb-2" value="Submit">
+                                <button class="btn btn-success me-md-2  mb-2" type="button" onClick="javascript:history.go(-1);">
+                                    <i class="bi bi-backspace-fill pe-1"></i>Back
+                                </button>
+                                <a class="btn btn-success me-md-2  mb-2" href="{% url 'dashboard' %}">
+                                    <i class="bi bi-backspace-fill pe-1"></i> Back to Dashboard
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Form for Creating Product -->
+
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,47 @@
+<!-- Start:: row-2 -->
+<div class="row d-none" id="payment_form">
+    <div class="col-xl-12">
+        <div class="card custom-card">
+            <div class="card-header">
+                <div class="card-title">
+                    Payment Form
+                </div>
+            </div>
+            <div class="card-body">
+                <form id="sale_form" method="get" action="">
+                    {% csrf_token %}
+                    <!-- Additional fields -->
+                    <div class="form-group mt-3">
+                        <label for="total_amount">Total Amount</label>
+                        <input type="number" class="form-control" id="total_amount" name="total_amount">
+                    </div>
+                    <div class="form-group mt-3">
+                        <label for="discount">Discount</label>
+                        <input type="number" class="form-control" id="discount" name="discount">
+                    </div>
+                    <div class="form-group mt-3">
+                        <label for="net_taxable">Net Taxable</label>
+                        <input type="number" class="form-control" id="net_taxable" name="net_taxable">
+                    </div>
+                    <div class="form-group mt-3">
+                        <label for="vat">VAT</label>
+                        <input type="number" class="form-control" id="vat" name="vat">
+                    </div>
+                    <div class="form-group mt-3">
+                        <label for="total_to_collect">Total to Collect</label>
+                        <input type="number" class="form-control" id="total_to_collect" name="total_to_collect">
+                    </div>
+                    <div class="form-group mt-3">
+                        <label for="amount_received">Amount Received</label>
+                        <input type="number" class="form-control" id="amount_received" name="amount_received">
+                    </div>
+                    <div class="form-group mt-3">
+                        <label for="balance">Balance</label>
+                        <input type="number" class="form-control" id="balance" name="balance">
+                    </div>
+                    <!-- End of additional fields -->
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

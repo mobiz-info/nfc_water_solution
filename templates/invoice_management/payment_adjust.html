@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">
+        Payment Adjustment – {{ customer.customer_name }}
+    </h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="javascript:void(0);" class="text-white-50">Invoice Management</a>
+        </li>
+        <li class="breadcrumb-item active">Payment Adjustment</li>
+    </ol>
+</div>
+
+<!-- App Content -->
+<div class="main-content app-content">
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+
+                    <div class="card-header">
+                        <div class="card-title">Payment Adjustment</div>
+                    </div>
+
+                    <div class="card-body">
+
+                        <!-- STATUS FILTER (GET FORM) -->
+                        <div class="d-flex justify-content-end mb-4">
+                            <form method="get" class="d-flex gap-3 align-items-center">
+                                <div class="form-check mb-0">
+                                    <input class="form-check-input"
+                                           type="radio"
+                                           name="status"
+                                           value="non_paid"
+                                           {% if status == 'non_paid' %}checked{% endif %}
+                                           onchange="this.form.submit()">
+                                    <label class="form-check-label fw-medium">
+                                        Non Paid
+                                    </label>
+                                </div>
+
+                                <div class="form-check mb-0">
+                                    <input class="form-check-input"
+                                           type="radio"
+                                           name="status"
+                                           value="paid"
+                                           {% if status == 'paid' %}checked{% endif %}
+                                           onchange="this.form.submit()">
+                                    <label class="form-check-label fw-medium">
+                                        Paid
+                                    </label>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- POST FORM (ONLY ONE) -->
+                        <form method="post" id="adjustmentForm">
+                            {% csrf_token %}
+
+                            <!-- Adjustment Date -->
+                            <div class="col-md-3 mb-3">
+                                <label for="date" class="form-label fw-semibold text-black">
+                                    Adjustment Date:
+                                </label>
+                                <input type="date"
+                                       class="form-control fw-semibold"
+                                       id="date"
+                                       name="date">
+                            </div>
+
+                            <!-- TABLE -->
+                            <div class="table-responsive">
+                                <table class="table table-bordered text-nowrap" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">Sl.No</th>
+                                            <th class="text-center">Invoice No</th>
+                                            <th class="text-center">Date</th>
+                                            <th class="text-center">Amount</th>
+                                            <th class="text-center">Received</th>
+                                            <th class="text-center">Balance</th>
+                                            <th class="text-center">Adjust</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for inv in invoices %}
+                                        <tr>
+                                            <td class="text-center">{{ forloop.counter }}</td>
+                                            <td class="text-center">{{ inv.invoice_no }}</td>
+                                            <td class="text-center">{{ inv.created_date|date:"d-m-Y" }}</td>
+                                            <td class="text-center">{{ inv.amout_total }}</td>
+                                            <td class="text-center">{{ inv.amout_recieved }}</td>
+                                            <td class="text-center fw-bold text-danger">
+                                                {{ inv.balance }}
+                                            </td>
+                                            <td class="text-center">
+                                                {% if status == 'non_paid' %}
+                                                <input type="number"
+                                                       name="adjust_{{ inv.pk }}"
+                                                       class="form-control form-control-sm adjust-input text-end mx-auto"
+                                                       style="max-width:120px"
+                                                       max="{{ inv.balance }}"
+                                                       step="0.01"
+                                                       value="0">
+                                                {% else %}
+                                                —
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="7" class="text-center text-muted">
+                                                No invoices found
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+
+                                        {% if status == 'non_paid' %}
+                                        <tr>
+                                            <td colspan="6" class="fw-bold text-end">
+                                                Total Adjusted :
+                                            </td>
+                                            <td class="fw-bold text-center" id="totalAdjusted">
+                                                0.00
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- SAVE BUTTON -->
+                            {% if status == 'non_paid' %}
+                            <div class="text-end mt-3">
+                                <button type="submit" class="btn btn-success btn-wave px-4">
+                                    Save Adjustment
+                                </button>
+                            </div>
+                            {% endif %}
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- SWEETALERT VALIDATION -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("adjustmentForm");
+    const dateInput = document.getElementById("date");
+
+    if (!form || !dateInput) return;
+
+    form.addEventListener("submit", function (e) {
+        if (!dateInput.value) {
+            e.preventDefault();
+
+            Swal.fire({
+                icon: "warning",
+                title: "Adjustment Date Required",
+                text: "Please select adjustment date",
+                confirmButtonColor: "#3085d6"
+            });
+        }
+    });
+});
+</script>
+
+<!-- AUTO TOTAL CALCULATION -->
+<script>
+document.querySelectorAll('.adjust-input').forEach(input => {
+    input.addEventListener('input', () => {
+        let total = 0;
+        document.querySelectorAll('.adjust-input').forEach(i => {
+            const val = parseFloat(i.value);
+            if (!isNaN(val)) total += val;
+        });
+        document.getElementById('totalAdjusted').innerText = total.toFixed(2);
+    });
+});
+</script>
+
+{% endblock %}

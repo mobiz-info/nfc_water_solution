@@ -1,0 +1,287 @@
+{% extends 'base.html' %}
+{% block title %} Payment Collection {% endblock %}
+{% block content %}
+{% load static %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Collection</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="javascript:void(0);" class="text-white-30">Sales Management</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Collection</li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-12">
+
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">Payment Collection</div>
+                    </div>
+
+                    <!-- Header -->
+                    <div class="text-center mb-4">
+                        <h5 class="text-muted">Customer: {{ customer.customer_name }}</h5>
+                        <h5 class="text-muted">Customer ID: {{ customer.custom_id }}</h5>
+                    </div>
+
+                    <!-- Invoice Table -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-body">
+                            <table class="table table-bordered text-center">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Sl No</th>
+                                        <th>Date</th>
+                                        <th>Reference No</th>
+                                        <th>Amount</th>
+                                        <th>Received</th>
+                                        <th>Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for invoice in invoices %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ invoice.created_date|date:"d-m-Y" }}</td>
+                                        <td>{{ invoice.reference_no }}</td>
+                                        <td>{{ invoice.amout_total }}</td>
+                                        <td>{{ invoice.amout_recieved }}</td>
+                                        <td>{{ invoice.balance_amount }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="6">No unpaid invoices found.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+
+                            <div class="text-end fw-bold m-4">
+                                Total Outstanding : {{ total_balance }}
+                            </div>
+                            <div class="text-end fw-bold m-4">
+                                Total Credit : {{ total_credit }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Tabs -->
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="mb-3">Select mode of payment</h5>
+
+                            <ul class="nav nav-tabs">
+                                <li class="nav-item">
+                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#cash">
+                                        Cash
+                                    </button>
+                                </li>
+                                <li class="nav-item">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#cheque">
+                                        Cheque
+                                    </button>
+                                </li>
+                                <li class="nav-item">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#card">
+                                        Card
+                                    </button>
+                                </li>
+                            </ul>
+
+                           
+
+                            <div class="tab-content mt-3">
+
+                                <!-- CASH -->
+                                <div class="tab-pane fade show active" id="cash">
+                                    <form method="POST" class="collectionPaymentForm"
+                                          action="{% url 'collection_payment' customer.customer_id %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="payment_method" value="cash">
+
+                                        <div class="mb-3">
+                                            <label>Payment Date</label>
+                                            <input type="date" name="payment_date" class="form-control"
+                                                   value="{{ today }}" required>
+                                        </div>
+
+                                       
+
+                                        <div class="mb-3">
+                                            <label>Cash Amount</label>
+                                            <input type="number" step="0.01" name="amount_received"
+                                                   class="form-control" value="{{ total_collection }}" required>
+                                        </div>
+
+                                        <button type="submit" class="btn btn-success submitBtn">
+                                            <span class="btnText">Save</span>
+                                            <span class="spinner-border spinner-border-sm d-none ms-2"></span>
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <!-- CHEQUE -->
+                                <div class="tab-pane fade" id="cheque">
+                                    <form method="POST" class="collectionPaymentForm"
+                                          action="{% url 'collection_payment' customer.customer_id %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="payment_method" value="cheque">
+
+                                        <div class="mb-3">
+                                            <label>Payment Date</label>
+                                            <input type="date" name="payment_date" class="form-control"
+                                                   value="{{ today }}" required>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label>Cheque No</label>
+                                            <input type="text" name="cheque_no" class="form-control" required>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label>Bank Name</label>
+                                            <input type="text" name="bank_name" class="form-control" required>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label>Cheque Date</label>
+                                            <input type="date" name="cheque_date" class="form-control"
+                                                   value="{{ today }}" required>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label>Amount</label>
+                                            <input type="number" step="0.01" name="amount_received"
+                                                   class="form-control" value="{{ total_balance }}" required>
+                                        </div>
+
+                                        <button type="submit" class="btn btn-primary submitBtn">
+                                            <span class="btnText">Save</span>
+                                            <span class="spinner-border spinner-border-sm d-none ms-2"></span>
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <!-- CARD -->
+                                <div class="tab-pane fade" id="card">
+                                    <form method="POST" class="collectionPaymentForm"
+                                          action="{% url 'collection_payment' customer.customer_id %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="payment_method" value="card">
+
+                                        <div class="mb-3">
+                                            <label>Payment Date</label>
+                                            <input type="date" name="payment_date" class="form-control"
+                                                   value="{{ today }}" required>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label>Customer Name</label>
+                                            <input type="text" name="customer_name" class="form-control"
+                                                   value="{{ customer.customer_name }}" required>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label>Card No</label>
+                                            <input type="text" name="card_no" class="form-control" required>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label>Card Type</label>
+                                            <input type="text" name="card_type" class="form-control" required>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label>Card Category</label>
+                                            <input type="text" name="card_category" class="form-control" required>
+                                        </div>
+
+                                        
+
+                                        <div class="mb-3">
+                                            <label>Amount</label>
+                                            <input type="number" step="0.01" name="amount_received"
+                                                   class="form-control" value="{{ total_balance }}" required>
+                                        </div>
+
+                                        <button type="submit" class="btn btn-warning submitBtn">
+                                            <span class="btnText">Save</span>
+                                            <span class="spinner-border spinner-border-sm d-none ms-2"></span>
+                                        </button>
+                                    </form>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+document.querySelectorAll(".collectionPaymentForm").forEach(form => {
+
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const submitBtn = form.querySelector(".submitBtn");
+        const btnText = form.querySelector(".btnText");
+        const spinner = form.querySelector(".spinner-border");
+
+        if (submitBtn.disabled) return;
+
+        submitBtn.disabled = true;
+        btnText.textContent = "Saving...";
+        spinner.classList.remove("d-none");
+
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+            method: "POST",
+            body: formData,
+            headers: {
+                "X-CSRFToken": formData.get("csrfmiddlewaretoken")
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === "true") {
+                Swal.fire({
+                    title: data.title || "Success",
+                    text: data.message,
+                    icon: "success",
+                    timer: 2000,
+                    didClose: () => {
+                        if (data.redirect === "true") {
+                            window.location.href = data.redirect_url;
+                        }
+                    }
+                });
+            } else {
+                throw new Error(data.message);
+            }
+        })
+        .catch(err => {
+            Swal.fire("Error", err.message || "Something went wrong", "error");
+            submitBtn.disabled = false;
+            btnText.textContent = "Save";
+            spinner.classList.add("d-none");
+        });
+    });
+
+});
+</script>
+
+{% endblock %}

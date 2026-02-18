@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %} Sales Report {% endblock %}
+{% block content %}
+{% load static %}
+<!-- End::app-sidebar -->
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Sales Management</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+    </ol>
+</div>
+<!-- Page Header Close -->
+<!-- Start::app-content -->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">Sales Report Details</div>
+                    </div>
+                    <div class="card-body">
+                        <table id="datatable-basic" class="table table-bordered text-nowrap" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Sl No</th>
+                                    <th scope="col">Customer</th>
+                                    <th scope="col">Customer Address</th>
+                                    <th scope="col">Customer Type</th>
+                                    <th scope="col">Customer Sales Type</th>
+                                    <th scope="col">Cash Coupon Quantity</th>
+                                    <th scope="col">Credit Coupon Quantity</th>                                  
+                                    <th scope="col">Cash Quantity</th>
+                                    <th scope="col">Credit Quantity</th>
+                                    <th scope="col">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for supply in customer_supplies %}
+                                {% comment %} {% for item in supply.customersupplyitems_set.all %} {% endcomment %}
+                                <tr>
+                                    <td>{{ forloop.parentloop.counter }}</td>
+                                    <td>{{ supply.customer.customer_name }}</td>
+                                    <td>{{ supply.customer.building_name }} {{ supply.customer.door_house_no }}</td>
+                                    <td>{{ supply.customer.customer_type }} </td>
+                                    <td>{{ supply.customer.sales_type }} </td>
+                                    <td>{% if supply.customer.sales_type == 'CASH COUPON' %} {{ cash_coupon_counts }} {% endif %}</td>
+                                    <td>{% if supply.customer.sales_type == 'CREDIT COUPON' %} {{ credit_coupon_counts }} {% endif %}</td>
+                                    <td>{% if supply.customer.sales_type == 'CASH' %} {{ cash_counts }} {% endif %}</td>
+                                    <td>{% if supply.customer.sales_type == 'CREDIT' %} {{ credit_counts }} {% endif %}</td>
+                                    <td>{{ item.amount }}</td>                                
+                                </tr>
+                                {% comment %} {% endfor %} {% endcomment %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <div class="col-12 text-end mt-5">
+                            <a target="_bank" href="{% url 'download_salesreport_pdf' %}" class="btn btn-primary me-2 mb-2">Download PDF</a>
+                            <a href="{% url 'download_salesreport_excel' %}" class="btn btn-success me-md-2 mb-2">Export to CSV</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End:: row-2 -->
+    </div>
+</div>
+
+<!-- End::app-content -->
+
+
+{% endblock %}

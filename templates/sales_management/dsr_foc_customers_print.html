@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load van_template_tags %}
+    {% load sales_templatetags %}
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FOC Customers Report - Print</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            body {
+                margin: 0;
+                padding: 10px;
+            }
+            .card {
+                border: none !important;
+                box-shadow: none;
+                margin-bottom: 20px;
+            }
+            .table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            .table-bordered th,
+            .table-bordered td {
+                border: 1px solid #dee2e6;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            FOC Customers Report
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        {% if van_route %}
+                        <div class="row align-items-center">
+                            <div class="col-4">
+                                <p><strong>Salesman: {{ van_route.van.salesman.get_fullname }}</strong></p>
+                            </div>
+                            <div class="col-4">
+                                <p><strong>Driver: {{ van_route.van.driver.get_fullname }}</strong></p>
+                            </div>
+                        </div>
+                        {% endif %}
+                        <div class="row align-items-center">
+                            <div class="col-4">
+                                <p>Date: {{ filter_data.filter_date }}</p>
+                            </div>
+                            {% if filter_data.route_name %}
+                            <div class="col-4">
+                                <p>Route: {{ filter_data.route_name }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div id="table-container" style="overflow:scroll;">
+                            <div class="card-body">
+                                <table class="table table-bordered text-wrap" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" style="text-align:center;">Sl No</th>
+                                            <th scope="col" style="text-align:center;">Customer Id</th>
+                                            <th scope="col" style="text-align:center;">Customer Name</th>
+                                            <th scope="col" style="text-align:center;">Route</th>
+                                            <th scope="col" style="text-align:center;">Quantity</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for foc in foc_customers %}
+                                    <tr>
+                                        <td style="text-align:center;">{{ forloop.counter }}</td>
+                                        <td>{{ foc.customer.custom_id }}</td>
+                                        <td>{{ foc.customer.customer_name }}</td>
+                                        <td style="text-align:center;">{{ foc.customer.routes.route_name }}</td>                                      
+                                        <td style="text-align:center;">{{ foc.get_total_supply_qty }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

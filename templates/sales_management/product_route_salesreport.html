@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% block title %} Product RouteWise Sales Report {% endblock %}
+{% block content %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Product RouteWise Sales Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Sales Management </a></li>
+        <li class="breadcrumb-item active" aria-current="page">Product RouteWise Sales Report</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Product RouteWise Sales Report
+                        </div>
+                    </div>
+                    <div class="mt">
+                        <form method="GET" action="{% url 'product_route_salesreport' %}">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <label for="start_date">From Date:</label>
+                                        <input type="date" class="form-control" id="start_date" name="start_date" value="{{filter_data.start_date}}">
+                                    </div>
+                                    <div class="col">
+                                        <label for="end_date">To Date:</label>
+                                        <input type="date" class="form-control" id="end_date" name="end_date" value="{{filter_data.end_date}}">
+                                    </div>
+                                    <div class="col">
+                                        <label for="product">Products :</label>
+                                        <select name="selected_product_id" id="product" class="form-select" style="width:100%">
+                                            {% for product in products %}
+                                                <option value="{{ product.id }}" {% if product.id == filter_data.product_id %}selected{% endif %}>{{ product.product_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <label for="product">Routes :</label>
+                                        <select name="route_name" class="form-select">
+                                            <option value="">All Routes</option>
+                                            {% for route in route_li %}
+                                                <option value="{{ route.route_name }}"  {% if route.route_name == filter_data.route_name %}selected{% endif %}>{{ route.route_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col d-flex align-items-end justify-content-end">
+                                        <input type="submit" class="btn btn-primary btn-sm mx-1" value="Apply Filter">
+                                        <button type="button" class="btn btn-secondary btn-sm mx-1" onclick="resetFilters()" style="width:max-content">Reset Filter</button>
+                                        <a href="{% url 'download_product_sales_excel' %}?start_date={{ filter_data.start_date }}&end_date={{ filter_data.end_date }}&route_name={{ filter_data.route_name }}&selected_product_id={{ filter_data.product_id }}" class="btn btn-outline-success"><i class="fas fa-file-excel"></i>Excel</a>
+                                        <a href="{% url 'download_product_sales_print' %}?start_date={{ filter_data.start_date }}&end_date={{ filter_data.end_date }}&route_name={{ filter_data.route_name }}&selected_product_id={{ filter_data.product_id }}" class="btn btn-outline-success"><i class="fas fa-file-excel"></i>Print</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="table-container" style="overflow:scroll;">
+                        <div class="card-body">
+                            <table id="responsiveDataTable" class="table table-bordered text-wrap" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align:center !important;width:5%;">Sl No</th>
+                                        <th style="text-align:center !important;">Time of Supply</th>
+                                        <th style="text-align:center !important;">Ref/Invoice No</th>
+                                        <th style="text-align:center !important;">Route Name</th>
+                                        <th style="text-align:center !important;">Customer Name</th>
+                                        <th style="text-align:center !important;">Customer ID</th>
+                                        <th style="text-align:center !important;">Mode of Supply</th>
+                                        <th style="text-align:center !important;">Quantity</th>
+                                        <th style="text-align:center !important;">Empty Bottle Collected</th>
+                                        <th style="text-align:center !important;">Coupon Collected</th>
+                                        <th style="text-align:center !important;">Amount Collected</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if selected_product and selected_product.category.category_name|lower == "coupons" %}
+                                    {% for coupon in combined_coupons %}
+                                        <tr>
+                                            <td style="text-align:center;">{{ forloop.counter }}</td>
+                                            <td style="text-align:center;">{{ coupon.customer_supply.created_date|date:"d/m/Y" }}</td>
+                                            <td style="text-align:center;">{{ coupon.customer_supply.reference_number }}</td>
+                                            <td style="text-align:left;">{{ coupon.customer_supply.customer.routes.route_name }}</td>
+                                            <td style="text-align:left;">{{ coupon.customer_supply.customer.customer_name }}</td>
+                                            <td style="text-align:left;">{{ coupon.customer_supply.customer.custom_id }}</td>
+                                            <td style="text-align:left;">{{ coupon.customer_supply.customer.sales_type }}</td>
+                                            <td style="text-align:right;">0</td>
+                                            <td style="text-align:right;">{{ coupon.customer_supply.collected_empty_bottle }}</td>
+                                            <td style="text-align:right;">
+                                                {% if coupon.leaf %}
+                                                    {{ coupon.leaf.count|default:0 }} + {{ coupon.free_leaf.count|default:0 }}
+                                                {% else %}
+                                                    {{ coupon.count }}
+                                                {% endif %}
+                                            </td>
+                                            <td style="text-align:right;">0</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                        {% for customersupplyitem in customersupplyitems %}
+                                            <tr>
+                                                <td style="text-align:center;">{{ forloop.counter }}</td>
+                                                <td style="text-align:center;">{{ customersupplyitem.customer_supply.created_date|date:"d/m/Y" }}</td>
+                                                <td style="text-align:center;">{{ customersupplyitem.customer_supply.reference_number }}</td>
+                                                <td style="text-align:left;">{{ customersupplyitem.customer_supply.customer.routes.route_name }}</td>
+                                                <td style="text-align:left;">{{ customersupplyitem.customer_supply.customer.customer_name }}</td>
+                                                <td style="text-align:left;">{{ customersupplyitem.customer_supply.customer.custom_id }}</td>
+                                                <td style="text-align:left;">{{ customersupplyitem.customer_supply.customer.sales_type }}</td>
+                                                <td style="text-align:right;">{{ customersupplyitem.quantity }}</td>
+                                                <td style="text-align:right;">{{ customersupplyitem.customer_supply.collected_empty_bottle }}</td>
+                                                <td style="text-align:right;">{{ customersupplyitem.leaf_count }}</td>
+                                                <td style="text-align:right;">{{ customersupplyitem.amount }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="7" style="text-align:right !important;">Total:</th>
+                                        <th style="text-align:right !important;">{{ totals.total_quantity|default:0 }}</th>
+                                        <th style="text-align:right !important;">{{ totals.total_empty_bottle|default:0 }}</th>
+                                        <th style="text-align:right !important;">{{ totals.total_coupon_collected|default:0 }}</th>
+                                        <th style="text-align:right !important;">{{ totals.total_amount_collected|default:0 }}</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        {% comment %} {% get_pages %}
+                        <div class="clearfix"></div>
+                        <div class="row pagi my-3">
+                            <div class="col-sm-6 col-xs-6 tot my-pagination">
+                                <div class="m-t-10 text-start">
+                                    Showing {{title}}
+                                    <span class="current_page_index">{{ pages.current_start_index }}</span> - <span
+                                    class="current_end_status">{{ pages.current_end_index }}</span> of <span
+                                    class="total_count">{{ pages.total_count }}</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xs-6 pagination-btn-div">{% show_pages %}</div>
+                        </div> {% endcomment %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function resetFilters() {
+        // Redirect to the same page
+        location.href = "{% url 'product_route_salesreport' %}";
+    }
+</script>
+
+{% endblock %}

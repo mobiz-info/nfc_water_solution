@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% block title %} Bottle Mapping {% endblock %}
+{% block content %}
+
+<!-- SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Bottle Mapping</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">Bottle Management</li>
+        <li class="breadcrumb-item active">Bottle Mapping</li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+
+                    <!-- <div class="card-header">
+                        <div class="card-title">Map Identifier to Bottle</div>
+                    </div> -->
+
+                    <div class="card-body">
+
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Bottle Serial</label>
+                                <select id="bottle_id" class="form-select">
+                                    {% for bottle in bottles %}
+                                        <option value="{{ bottle.id }}">
+                                            {{ bottle.serial_number }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Bottle UID</label>
+                                <input type="text"
+                                       id="nfc_uid"
+                                       class="form-control"
+                                       placeholder="e.g. UID-0001">
+                            </div>
+
+                            <div class="col-md-4 mt-4">
+                                <button class="btn btn-success btn-sm" onclick="mapBottle()">
+                                    Save Mapping
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function mapBottle() {
+    const bottleId = document.getElementById("bottle_id").value;
+    const uid = document.getElementById("nfc_uid").value.trim();
+
+    if (!uid) {
+        Swal.fire({
+            icon: "warning",
+            title: "Missing UID",
+            text: "Please enter bottle UID"
+        });
+        return;
+    }
+
+    fetch("{% url 'bottle_management:nfc_mapping_save' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify({
+            bottle_id: bottleId,
+            nfc_uid: uid
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            Swal.fire({
+                icon: "error",
+                title: "Mapping Failed",
+                text: data.error
+            });
+        } else {
+            Swal.fire({
+                icon: "success",
+                title: "Mapped Successfully",
+                html: `
+                    <b>Bottle:</b> ${data.bottle}<br>
+                    <b>UID:</b> ${data.nfc_uid}
+                `
+            }).then(() => {
+                location.reload();
+            });
+        }
+    })
+    .catch(() => {
+        Swal.fire({
+            icon: "error",
+            title: "Server Error",
+            text: "Something went wrong"
+        });
+    });
+}
+</script>
+
+{% endblock %}

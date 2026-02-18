@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+{% block title %} User View {% endblock %}
+{% block content %}
+{% load static %}
+
+<style>
+  .form-group input[type="checkbox"] {
+    display: inline-block;
+    margin-right: 10px; /* Adjust spacing between checkboxes as needed */
+}
+</style>
+
+  <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <!-- <h6 class="fw-medium mb-0">User Details</h6> -->
+      <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+      </ol>
+  </div>
+  
+
+  <div class="main-content app-content">
+      <div class="container-fluid">
+                <!-- Start:: row-1 -->
+                <div class="card card-product-details shadow">
+      
+                  <div class="card-header text-center">
+                    <h4>Customer Details</h4>
+                  </div>
+                  
+                  <div class="card-body p-0 ">
+                    <p class="card-text">
+                      <div class="table-responsive">
+                          <table class="table">
+                            <tbody>
+                              <tr >
+                                <td class="text-secondary">Customer Name</td>
+                                <td>{{user_det.customer_name}}</td>
+                                <td class="text-secondary">Building Name</td>
+                                <td>{{user_det.building_name}}</td>
+                              </tr>
+                              <tr>
+                                <td class="text-secondary">Door/House Number</td>
+                                <td>{{user_det.door_house_no}}</td>
+                                <td class="text-secondary">Floor Number</td>
+                                <td>{{user_det.floor_no}}</td>
+                              </tr>
+                              <tr>
+                                <td class="text-secondary">Sales Staff</td>
+                                <td>{{user_det.sales_staff.first_name}}</td>
+                                <td class="text-secondary">Route</td>
+                                <td>{{user_det.routes.route_name}}</td>
+                              </tr>
+                              <tr>
+                                <td class="text-secondary">Emirate</td>
+                                <td>{{user_det.emirate.name}}</td>
+                                <td class="text-secondary">Mobile Number</td>
+                                <td>{{user_det.mobile_no}}</td>
+                              </tr>
+                              <tr>
+                                <td class="text-secondary">Whatsapp Number</td>
+                                <td>{{user_det.whats_app}}</td>
+                                <td class="text-secondary">Email ID</td>
+                                <td>{{user_det.email_id}}</td>
+                              </tr>
+                              <tr>
+                                <td class="text-secondary">Customer Type</td>
+                                <td>{{user_det.customer_type}}</td>
+                                <td class="text-secondary">Sales Type</td>
+                                <td>{{user_det.sales_type}}</td>
+                              </tr>
+                              <tr>
+                                <td class="text-secondary">No Of Bottles Required</td>
+                                <td>{{user_det.no_of_bottles_required}}</td>
+                                <td class="text-secondary">Maximum Credit Limit</td>
+                                <td>{{user_det.max_credit_limit}}</td>
+                              </tr>
+                              <tr>
+                                <td class="text-secondary">Credit Days</td>
+                                <td>{{user_det.credit_days}}</td>
+                                <td class="text-secondary">No Of Permitted Invoices</td>
+                                <td>{{user_det.no_of_permitted_invoices}}</td>
+                              </tr>
+                            </tbody>
+                      
+                          </table>
+                          
+                        </div>
+      
+                    </p>
+                    
+                  </div>
+                  
+                </div>
+                  
+
+            <!-- Start:: row-2 -->
+            <div class="row">
+              <div class="col-xl-12">
+                  <div class="card custom-card">
+                      <div class="card-header">
+                          <div class="card-title">
+                              Supply Items
+                          </div>
+                      </div>
+                          <div class="card-body">
+                            <form id="sale_form" method="get" action="">
+                                <input type="hidden" id="customer_id" name="customer_id" value="{{user_det.customer_id}}">
+                                {{ product_form.as_p }}
+                                <div class="d-flex align-items-center">
+                                    <button id="initiate_sale" class="btn btn-success btn-wave me-2">Proceed</button>
+                                </div>
+                            </form>
+                        </div>
+                  <!-- End:: row-1 -->
+                </div>
+              </div>
+            <!-- Add JavaScript to handle dynamic product filtering -->
+
+
+            <!-- Start:: row-2 -->
+            <!-- Start:: row-2 -->
+              <div class="row">
+        
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+          // JavaScript code to allow only one checkbox to be selected   
+          $('input[type="checkbox"]').click(function () {
+            // If the clicked checkbox is checked, uncheck all other checkboxes
+            if ($(this).prop('checked')) {
+                $('input[type="checkbox"]').not(this).prop('checked', false);
+            }
+        });
+        $('#id_category').change(function () {
+            var category_id = $(this).val();
+            $.ajax({
+                url: '{% url "get_products_by_category" %}',
+                data: {'category_id': category_id},
+                dataType: 'json',
+                success: function (data) {
+                    var products_select = $('#id_product_name');
+                    var options_html = '';  // Initialize an empty string to store the HTML options
+                    $.each(data.products, function (index, product) {
+                        options_html += '<option value="' + product.product_id + '">' + product.product_name + '</option>';
+                    });
+                    products_select.html(options_html);  // Set the HTML of the select element
+                }
+            });
+        });
+        $('#id_product_name').change(function () {
+                    var product_id = $(this).val();
+                    $.ajax({
+                        url: '{% url "get_rate_by_products" %}',
+                        data: {'product_id': product_id},
+                        dataType: 'json',
+                        success: function (data) {
+                            //var products_select = $('#id_product_name');
+                           //var options_html = '';  // Initialize an empty string to store the HTML options
+                            //$.each(data.products, function (index, product) {
+                             //   options_html += '<option value="' + product.product_id + '">' + product.product_name + '</option>';
+                            //});
+                            //products_select.html(options_html);  // Set the HTML of the select element
+                        }
+                    });
+                });
+
+
+
+
+
+    });
+
+</script>
+
+
+
+
+
+{% endblock %}
+                        

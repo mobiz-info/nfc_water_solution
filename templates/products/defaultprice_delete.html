@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %} van {% endblock %}
+
+{% block content %}
+{% load static %}
+
+<html>
+<head>
+    <title>Confirm Delete</title>
+</head>
+<body>
+    <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+        <h4 class="fw-medium mb-0">Deleting default Rates</h4>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Dashboards</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+        </ol>
+    </div>
+
+    <div class="main-content app-content">
+        <div class="container-fluid">
+            <!-- Start:: row-2 -->
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card custom-card">
+                        <div class="card text-center mx-auto my-5 p-4" style="border: 2px solid #007bff; max-width: 400px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+                            <h3 class="mb-4" style="color: #007bff;">Confirm Delete</h3>
+                            <h6 class="mb-4">Are you sure you want to delete default rates for {{ product }}?</h6>
+                            <div class="row justify-content-center">
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger mr-3">Yes, I'm sure</button>
+                                    <a href="{% url 'defaultprice' %}" class="btn btn-secondary">No, cancel</a>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+{% endblock %}

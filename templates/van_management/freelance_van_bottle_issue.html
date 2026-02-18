@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Product Issue</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Van</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-1 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title mx-auto">
+                            Product Issue
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <form id="issueBottleForm" method="POST">
+                            <h4 class="mb-4">Issue Bottles to Van: {{ van }}</h4>
+
+                            <div class="alert alert-info">
+                                <strong>Max Bottle Count:</strong> {{ current_bottle_count }}
+                            </div>
+                            {% csrf_token %}
+                            {% comment %} <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label for="id_van" class="form-label">Van</label>
+                                    {{ form.van }}
+                                    <span style="color: red;">{{ form.van.errors }}</span>
+                                    <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                </div>
+                            </div> {% endcomment %}
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label for="id_product" class="form-label">Product</label>
+                                    {{ form.product }}
+                                    <span style="color: red;">{{ form.product.errors }}</span>
+                                    <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label for="id_empty_bottles" class="form-label">Empty Bottles</label>
+                                    {{ form.empty_bottles }}
+                                    <span style="color: red;">{{ form.empty_bottles.errors }}</span>
+                                    <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label for="id_extra_bottles" class="form-label">Extra Bottles</label>
+                                    {{ form.extra_bottles }}
+                                    <span style="color: red;">{{ form.extra_bottles.errors }}</span>
+                                    <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                </div>
+                            </div>
+                            
+                            
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label for="id_status" class="form-label">Status</label>
+                                    {{ form.status }}
+                                    <span style="color: red;">{{ form.status.errors }}</span>
+                                    <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                </div>
+                            </div>
+                            <div class="col-12 text-end mt-5">
+                                <input type="submit" class="btn btn-primary me-2 mb-2" value="Submit">
+                                <button class="btn btn-success   me-md-2  mb-2" type="button"
+                                    onClick="javascript:history.go(-1);">
+                                    <i class="bi bi-backspace-fill pe-1"></i>Back</button>
+                                <a class="btn btn-success me-md-2  mb-2" href="{% url 'dashboard' %}">
+                                    <i class="bi bi-backspace-fill pe-1"></i> Back to Dashboard
+                                </a>
+                            </div>
+
+                        </form>
+
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

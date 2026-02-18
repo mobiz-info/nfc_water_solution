@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block title %} Customer Complaint {% endblock %}
+{% block content %}
+{% load accounts_templatetags %}
+{% load static %}
+        <!-- End::app-sidebar -->
+        <!-- Page Header -->
+        <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+            <h4 class="fw-medium mb-0">Customer Complaint</h4>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Client Management</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Customer Complaint</li>
+            </ol>
+        </div>
+        <!-- Page Header Close -->
+
+
+
+        <!-- Start::app-content -->
+        <div class="main-content app-content">
+            <div class="container-fluid">
+
+                
+                         <!-- Start:: row-2 -->
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card custom-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    Customer Complaint
+                                </div>
+
+                                <div class="ms-auto">
+                                    <a href="{% url 'customer_create' %}">
+                                    <button type="button" class="btn btn-success btn-wave text-end d-flex me-4 my-auto"><i class="bi bi-plus-circle me-1"></i>Create</button>
+                                </a>
+                                </div>
+                            </div>
+                            
+                            <div class="card-body">
+                                <form method="post" action="{% url 'customer_complaint' pk=customer.customer_id %}">
+                                {% csrf_token %}
+
+                       
+                                <table class="table table-bordered text-nowrap" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                             <th>Select</th>
+                                            <th>Complaint</th>
+                                            <th>Category</th>
+                                            <th>Subcategory</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                  <tbody>
+                                        {% for complaint in complaints %}
+                                            <tr>
+                                                <td>{{forloop.counter}}</td>
+                                                <td>{{ complaint.complaint }}</td>
+                                                <td>{{ complaint.category }}</td>
+                                                <td>{{ complaint.subcategory }}</td>
+                                                <td>
+                                                    <form method="post" action="{% url 'customer_complaint' pk=customer.customer_id %}">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="complaint_id" value="{{ complaint.id }}">
+                                                        <div class="input-group">
+                                                            <select class="form-select" name="status">
+                                                                <option value="Pending" {% if complaint.status == 'Pending' %}selected{% endif %}>Pending</option>
+                                                                <option value="Completed" {% if complaint.status == 'Completed' %}selected{% endif %}>Completed</option>
+                                                            </select>
+                                                            <button type="submit" class="btn btn-primary">Update</button>
+                                                        </div>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    </table>
+                                </form>
+                                </table>
+                                
+                        </div>
+                    </div>
+                </div>
+                <!-- End:: row-2 -->
+            </div>
+        </div>
+        <!-- End::app-content -->
+
+        
+    
+
+       
+{% endblock %}

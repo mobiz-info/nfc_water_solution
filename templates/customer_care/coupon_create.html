@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Create Request Type</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Customer Care</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Request Type</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-1 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                   
+                    <div class="card-body">
+                        <form enctype="multipart/form-data" role="form" method="post" class="row g-3 needs-validation mb-4 ">
+                            {% csrf_token %}
+                            <!--row 1-->
+
+                            <div class="col-md-6">
+                                <div class="form-group required">
+
+                                    <label class='control-label'>Request Type</label>
+                                    
+                                    {{ form.request_type }}
+                                    <span style="color: red;">{{ form.request_type.errors }}</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <input type="hidden" id="customer_id_re" name="" value="{{pk}}"
+                                        class="form-control">
+                                </div>
+                            </div>
+
+
+                        </form>
+
+                        <form enctype="multipart/form-data" role="form" method="post" id="differentsectionbottle" class="row g-3 needs-validation">
+                            {% csrf_token %}
+                            <!--row 1-->
+
+                
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Coupon Type</label>
+                                    {{ form.coupon_type }}
+                                    <span style="color: red;">{{ form.coupon_type.errors }}</span>
+                                    <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Category</label>
+                                    {{ form.category }}
+                                    <span style="color: red;">{{ form.category.errors }}</span>
+                                    <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Number Of Books</label>
+                                    {{ form.number_of_books }}
+                                    <span style="color: red;">{{ form.number_of_books.errors }}</span>
+                                    <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Payment Status</label>
+                                    {{ form.payment_status }}
+                                    <span style="color: red;">{{ form.payment_status.errors }}</span>
+                                    <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Amount</label>
+                                        {{ form.amount }}
+                                        <span style="color: red;">{{ form.amount.errors }}</span>
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Free Coupon</label>
+                                    {{ form.free_coupon }}
+                                    <span style="color: red;">{{ form.free_coupon.errors }}</span>
+                                    <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Discount</label>
+                                    {{ form.discount }}
+                                    <span style="color: red;">{{ form.discount.errors }}</span>
+                                    <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                </div>
+                            </div>
+
+
+                            
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Delivery date</label>
+                                    {{ form.delivery_date }}
+                                    <span style="color: red;">{{ form.delivery_date.errors }}</span>
+                                    <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                </div>
+                            </div>
+
+                            <div class="col-12 text-end mt-5">
+                                <input type="submit" class="btn btn-primary me-2 mb-2 submitcls" value="Submit">
+                                <button class="btn btn-success   me-md-2  mb-2" type="button"
+                                    onClick="javascript:history.go(-1);">
+                                    <i class="bi bi-backspace-fill pe-1"></i>Back</button>
+                                <a class="btn btn-success me-md-2  mb-2" href="{% url 'branch' %}">
+                                    <i class="bi bi-backspace-fill pe-1"></i> Back to Dashboard
+                                </a>
+                            </div>
+                        </form>
+
+                     
+
+                      
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+   
+</div>
+
+
+
+{% endblock %}

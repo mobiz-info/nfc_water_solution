@@ -1,0 +1,79 @@
+<!-- ... (previous code) ... -->
+{% extends 'base.html' %}
+{% block title %} Location {% endblock %}
+{% block content %}
+{% load static custom_filters %}
+
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Location Management</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Dashboards</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Location
+                        </div>
+                        <div class="ms-auto">
+                            <a href="{% url 'licence_add' %}">
+                                <button type="button" class="btn btn-success btn-wave text-end d-flex me-4 my-auto">
+                                    <i class="bi bi-plus-circle me-1"></i>Create
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- {{ vans}} -->
+                        {% for van in vans %}
+                        {{van}}
+                        {% endfor %}
+                        <table>
+<thead>
+    <tr>
+        <th scope="col" style="border-bottom: 0;">Sl No</th>
+        <th scope="col" style="border-bottom: 0;">Plate No</th>
+        {% for emirate_name in emirate_names %}
+            <th>{{ emirate_name }}</th>
+        {% endfor %}
+        <th>Action</th>
+    </tr>
+</thead>
+<tbody>
+    {% for plate, van_data in vans.items %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ plate }}</td>
+            {% for emirate_name in emirate_names %}
+                <td class="text-center"> {{ van_data|get_item:emirate_name|date:"d-m-y"|default:"----" }}</td>
+            {% endfor %}
+            <td>
+                <!-- Action buttons go here -->
+            </td>
+        </tr>
+    {% empty %}
+        <tr>
+            <td colspan="{{ emirate_names|length|add:2 }}" class="text-center">No locations available</td>
+        </tr>
+    {% endfor %}
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+{% endblock %}
+
+<!-- ... (rest of the code) ... -->

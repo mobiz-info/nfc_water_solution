@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+{% block title %}Customer Outstanding Report{% endblock %}
+{% block content %}
+{% load static %}
+{% load client_templatetags %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Outstanding Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="javascript:void(0);" class="text-white-30">Client Management</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Outstanding Report</li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="w-100 d-flex justify-content-end align-items-center mb-3">
+                            <div class="d-flex">
+                                <div class="me-2">
+                                    <a href="{% url 'create_customer_outstanding' %}{% if customer_pk %}?customer_pk={{ customer_pk }}{% endif %}">
+                                        <button type="button" class="btn btn-success btn-wave"><i class="bi bi-plus-circle me-1"></i>Create</button>
+                                    </a>
+                                </div>
+                                <div class="me-2">
+                                    <a href="{% url 'upload_outstanding' %}">
+                                        <button type="button" class="btn btn-primary btn-wave"><i class="bi bi-upload me-1"></i>Upload</button>
+                                    </a>
+                                </div>
+                                <div class="me-2">
+                                    <a href="{% url 'print_customer_outstanding' %}?product_type={{ filter_data.product_type }}&q={{ filter_data.q|default_if_none:'' }}&route_name={{ filter_data.route_name|default_if_none:'' }}&date={{ filter_data.filter_date }}{% if customer_pk %}&customer_pk={{ customer_pk }}{% endif %}" target="_blank">
+                                        <button type="button" class="btn btn-success btn-wave">
+                                            <i class="fas fa-file-excel"></i> Print
+                                        </button>
+                                    </a>
+                                </div>
+                                <div class="me-2">
+                                    <a href="{% url 'customer_outstanding_list' %}?product_type={{ filter_data.product_type }}&q={{ filter_data.q|default_if_none:'' }}&route_name={{ filter_data.route_name|default_if_none:'' }}&date={{ filter_data.filter_date }}&salesman_id={{ filter_data.salesman_id }}&export=excel" target="_blank">
+                                        <button type="button" class="btn btn-warning btn-wave">
+                                            <i class="fas fa-file-excel"></i>Excel
+                                        </button>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-100 d-flex justify-content-end align-items-center">
+                            <div class="d-flex">
+                                <form method="GET">
+                                    <div class="d-flex align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <div class="input-group">
+                                                <select name="product_type" class="form-select me-2">
+                                                    <option value="amount" {% if filter_data.product_type == 'amount' %}selected{% endif %}>Amount</option>
+                                                    <option value="emptycan" {% if filter_data.product_type == 'emptycan' %}selected{% endif %}>Empty Can</option>
+                                                    <option value="coupons" {% if filter_data.product_type == 'coupons' %}selected{% endif %}>Coupon</option>
+                                                </select>
+                                               
+                                                <select name="route_name" class="form-select me-2">
+                                                    <option value="">All Routes</option>
+                                                    {% for route in route_li %}
+                                                        <option value="{{ route.route_name }}" {% if route.route_name == filter_data.route_name %}selected{% endif %}>{{ route.route_name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                 <select name="salesman_id" class="form-select me-2">
+                                                    <option value="">All Salesmen</option>
+                                                    {% for salesman in salesman_list %}
+                                                        <option value="{{ salesman.id }}"
+                                                            {% if salesman.id|stringformat:"s" == filter_data.salesman_id %}
+                                                                selected
+                                                            {% endif %}
+                                                        >
+                                                        {{ salesman.first_name|upper }} 
+                                                        </option>
+                                                    {% endfor %}
+                                                </select>
+                                                <input type="date" class="form-control" id="date" name="date" value="{{ filter_data.filter_date }}">
+                                                <input type="text" name="q" class="form-control" value="{{ filter_data.q }}" placeholder="Search" />
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="bi bi-search"></i> Search
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="table-container" class="card-body">
+                        
+                        <table id="" class="table table-bordered text-wrap" style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th>Sl No</th>
+                                    <th>Customer ID</th>
+                                    <th>Customer</th>
+                                    <th>Building No</th>
+                                    <th>Room No/Floor No</th>
+                                    <th>Route</th>
+                                    {% if filter_data.product_type == 'amount' %}
+                                    <th>Amount</th>
+                                    {% endif %}
+                                    {% if filter_data.product_type == 'emptycan' %}
+                                    <th>Empty Can</th>
+                                    {% endif %}
+                                    {% if filter_data.product_type == 'coupons' %}
+                                    <th>Coupon</th>
+                                    {% endif %}
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% load el_pagination_tags %}
+                                {% paginate 20 instances %}
+                                {% for row in instances %}
+                                {% with customer=row.customer %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ customer.custom_id }}</td>
+                                    <td>{{ customer.customer_name }}</td>
+                                    <td>{{ customer.building_name }}</td>
+                                    <td>{{ customer.door_house_no }}</td>
+                                    <td>{{ customer.routes.route_name }}</td>
+                            
+                                    {% if filter_data.product_type == 'amount' %}
+                                        <td class="out_amount">{{ row.net_amount }}</td>
+                                    {% endif %}
+                            
+                                    {% if filter_data.product_type == 'emptycan' %}
+                                        <td>{{ row.bottles }}</td>
+                                    {% endif %}
+                            
+                                    {% if filter_data.product_type == 'coupons' %}
+                                        <td>{{ row.coupons }}</td>
+                                    {% endif %}
+                            
+                                    <td class="text-center">
+                                        <a href="{% url 'customer_outstanding_details' customer.customer_id %}?product_type={{ filter_data.product_type }}"
+                                           class="btn btn-warning-light btn-sm">
+                                            <span class="bi bi-eye fs-14"></span>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endwith %}
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="6" class="text-end fw-bold">Total Outstanding Amount:</td>
+                                    {% if filter_data.product_type == 'amount' %}
+                                    <td class="fw-bold total_out_amount">{{ total_outstanding_amount }}</td>
+                                    {% endif %}
+                                    {% if filter_data.product_type == 'emptycan' %}
+                                    <td class="fw-bold">{{ total_outstanding_bottles }}</td>
+                                    {% endif %}
+                                    {% if filter_data.product_type == 'coupons' %}
+                                    <td class="fw-bold">{{ total_outstanding_coupons }}</td>
+                                    {% endif %}
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    
+                    {% get_pages %}
+                    <div class="clearfix"></div>
+                    <div class="row pagi my-3">
+                        <div class="col-sm-6 col-xs-6 tot my-pagination">
+                            <div class="m-t-10 text-start">
+                                Showing {{ title }}
+                                <span class="current_page_index">{{ pages.current_start_index }}</span> - <span class="current_end_status">{{ pages.current_end_index }}</span> of <span class="total_count">{{ pages.total_count }}</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xs-6 text-end pagination-btn-div">
+                            {% show_pages %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

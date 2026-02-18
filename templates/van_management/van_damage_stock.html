@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block title %} Excess Bottle Counts {% endblock %}
+
+{% block content %}
+  <!-- Page Header -->
+  <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Van Damage Bottles</h4>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+    </ol>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content app-content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-xl-12">
+          <div class="card custom-card">
+            <div class="card-header">
+              <div class="card-title">Damage Bottle Counts List</div>
+            </div>
+            <div class="card-body">
+                <form method="GET" action=".">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <label for="start_date">Start Date:</label>
+                            <input type="date" class="form-control" id="start_date" name="start_date" value="{{ filter_data.start_date }}">
+                        </div>
+                        <div class="col">
+                            <label for="end_date">End Date:</label>
+                            <input type="date" class="form-control" id="end_date" name="end_date" value="{{ filter_data.end_date }}">
+                        </div>
+                        <div class="col">
+                            <label for="sales_type">Route:</label>
+                            <select name="route" class="form-select">
+                                <option value="">All Routes</option>
+                                {% for route in route_li %}
+                                    <option value="{{ route.route_name }}" {% if route.route_name == filter_data.route_filter %}selected{% endif %}>{{ route.route_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col d-flex align-items-end justify-content-end">
+                            <input type="submit" class="btn btn-primary btn-sm mx-1 mt-3" value="Apply Filter">
+                            <button type="button" class="btn btn-secondary btn-sm mx-1 mt-3" onclick="resetFilters()" style="width:max-content">Reset Filter</button>
+                            <a href="?export=excel&start_date={{ filter_data.start_date }}&end_date={{ filter_data.end_date }}&route={{ filter_data.route_filter|default:'' }}" class="btn btn-outline-success btn-sm mx-1"><i class="fas fa-file-excel"></i> Excel</a>
+                            <a href="?print=print&start_date={{ filter_data.start_date }}&end_date={{ filter_data.end_date }}&route={{ filter_data.route_filter|default:'' }}" target="_brank" class="btn btn-outline-success btn-sm mx-1"><i class="fas fa-print"></i> Print</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="card-body">
+                <table id="datatable-basic" class="table table-bordered text-nowrap" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th scope="col">Sl.No</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Van</th>
+                            <th scope="col">Route</th>
+                            <th scope="col">Product</th>
+                            <th scope="col">Quantity</th>
+                            <th scope="col">Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for instance in van_damage_stock %}
+                          <tr>
+                              <td>{{ forloop.counter }}</td>
+                              <td>{{ instance.created_date|date }}</td>
+                              <td>{{ instance.van.salesman.get_fullname }}</td>
+                              <td>{{ instance.van.get_van_route }}</td>
+                              <td>{{ instance.product.product_name }}</td>
+                              <td>{{ instance.quantity }}</td>
+                              <td>{{ instance.reason.reason }}</td>
+                          </tr>
+                        {% endfor %}
+                        <tr>
+                          <td colspan="5">Total</td>
+                          <td>{{total_damage_count}}</td>
+                          <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block static %}
+{% load static %}
+<script>
+    function resetFilters() {
+        // Redirect to the same page
+        location.href = "{% url 'van_damage_stock' %}";
+    }
+</script>
+{% endblock static %}

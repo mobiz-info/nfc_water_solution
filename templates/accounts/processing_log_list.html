@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block title %} Processing Log List {% endblock %}
+{% block content %}
+{% load static %}
+        <!-- End::app-sidebar -->
+        <!-- Page Header -->
+        <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+            <h4 class="fw-medium mb-0">Processing Log List</h4>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page"> Dashboard</li>
+            </ol>
+        </div>
+        <!-- Page Header Close -->
+
+
+
+        <!-- Start::app-content -->
+        <div class="main-content app-content">
+            <div class="container-fluid">
+
+                
+                         <!-- Start:: row-2 -->
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card custom-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    Processing Log List
+                                </div>
+
+                            </div>
+                            
+                            <div  id="table-container" style="overflow:scroll;">
+                                <div class="card-body">
+                                    <div style="float:right;padding:10px 0px;">
+                                        <form method="get">
+                                            <div class="input-group">
+                                                <input type="date" name="start_date" class="form-control" value="{{ start_date|date:'Y-m-d' }}" placeholder="Start Date">
+                                                <input type="date" name="end_date" class="form-control" value="{{ end_date|date:'Y-m-d' }}" placeholder="End Date">
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="bi bi-filter"></i> Filter
+                                                </button>
+                                                <a href="{% url 'processing_log' %}" class="btn btn-secondary">
+                                                    <i class="bi bi-x-circle"></i> Clear
+                                                </a>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <table  class="table table-bordered text-wrap"  style="width:100%">
+                                        <thead>
+                                            <tr>
+                                            <th style="text-align:center !important;width:5%;">Sl.No</th>
+                                            <th style="text-align:center !important;" scope="col">Created By</th>
+                                            <th style="text-align:center !important;" scope="col">Created Date</th>
+                                            <th style="text-align:center !important;" scope="col">Description</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% load el_pagination_tags %}
+                                            {% paginate 50 logs %}
+                                            {% for log in logs  %}
+                                            <tr>
+                                                <td style="text-align:center;">{{forloop.counter}}</td>
+                                                <td style="text-align:left;">{{log.created_by}}</td>
+                                                <td style="text-align:left;">{{log.created_date}}</td>
+                                                <td style="text-align:left;">{{log.description}}</td>
+                                                
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    {% get_pages %}
+                                    <div class="clearfix"></div>
+                                    <div class="row pagi my-3">
+                                        <div class="col-sm-6 col-xs-6 tot my-pagination">
+                                            <div class="m-t-10 text-start">
+                                                Showing {{title}}
+                                                <span class="current_page_index">{{ pages.current_start_index }}</span> - <span
+                                                class="current_end_status">{{ pages.current_end_index }}</span> of <span
+                                                class="total_count">{{ pages.total_count }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6 col-xs-6 text-end pagination-btn-div">{% show_pages %}</div>
+                                    </div> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End:: row-2 -->
+
+                      
+
+            </div>
+        </div>
+        <!-- End::app-content -->
+        {% endblock %}

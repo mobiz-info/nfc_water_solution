@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+{% block title %} Users List {% endblock %}
+{% block content %}
+{% load accounts_templatetags %}
+{% load static %}
+<!-- End::app-sidebar -->
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Customers</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Client Management</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Customer</li>
+    </ol>
+</div>
+<!-- Page Header Close -->
+<!-- Start::app-content -->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Customers
+                        </div>
+
+                        <div class="ms-auto">
+                            <a href="{% url 'customer_list_excel' %}?q={{q}}&route_name={{route_filter}}" class="btn btn-outline-success" style="width: 7em;"><i class="fas fa-file-excel"></i> Excel</a>
+                            <a onclick="printDiv('printArea'); return false;" class="btn btn-outline-success me-2" style="width: 7em;"><i class="fas fa-print"></i> Print</a>
+                            <a onclick="document.getElementById('qr_print_form').submit(); return false;" class="btn btn-outline-primary me-2" style="width: 10em;"><i class="fas fa-print"></i> Print QR Code</a>
+                            <a href="{% url 'customer_create' %}" class="btn btn-success btn-wave"><i class="bi bi-plus-circle me-1"></i> Create</a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div style="float:right;padding:10px 0px;">
+                            <form method="GET">
+                                <div class="input-group">
+                                    <select name="route_name" class="form-select">
+                                        <option value="">All Routes</option>
+                                        {% for route in route_li %}
+                                            <option value="{{ route.route_name }}" {% if route.route_name == filter_data.route_filter %}selected{% endif %}>{{ route.route_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <select name="customer_type" class="form-select">
+                                        <option value="">All Customer type</option>
+                                        <option value="CASH" {% if filter_data.customer_type == 'CASH' %}selected{% endif %}>Cash</option>
+                                        <option value="CREDIT" {% if filter_data.customer_type == 'CREDIT' %}selected{% endif %}>Credit</option>
+                                        <option value="CASH COUPON" {% if filter_data.customer_type == 'CASH COUPON' %}selected{% endif %}>Coupon</option>
+                                        <option value="FOC" {% if filter_data.customer_type == 'FOC' %}selected{% endif %}>FOC</option>
+                                    </select>
+                                    <select name="non_visited_reason" class="form-control">
+                                        <option value=""> All Non-Visited Reason </option>
+                                        {% for reason in non_visit_reasons %}
+                                            <option value="{{ reason.id }}" {% if filter_data.non_visit_reason == reason.id|stringformat:"s" %}selected{% endif %}>
+                                                {{ reason.reason_text }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <select name="location" class="form-select">
+                                        <option value="">All Locations</option>
+                                        {% for location in locations %}
+                                            <option value="{{ location.location_id }}" {% if filter_data.location == location.location_id|stringformat:"s" %}selected{% endif %}>
+                                                {{ location.location_name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <select name="status" class="form-control">
+                                        <option value="">-- Select Status --</option>
+                                        <option value="active" {% if filter_data.status == 'active' %}selected{% endif %}>Active</option>
+                                        <option value="inactive" {% if filter_data.status == 'inactive' %}selected{% endif %}>Inactive</option>
+                                    </select>
+                                    <input type="date" name="created_date" class="form-control" value="{{ filter_data.created_date }}">
+                                    <input type="text" name="q" class="form-control" placeholder="Search ..." value="{{ filter_data.q }}">
+                                    <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i>Search</button>
+                                    <a href="{% url 'customers' %}" class="btn btn-secondary ms-2">Clear Filters</a>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="w-100 overflow-auto">
+                            <form method="post" id="qr_print_form" action="{% url 'print_multiple_qrs' %}" target="_blank">
+                                {% csrf_token %}
+                                <table class="table table-bordered text-nowrap">
+                                    <thead>
+                                        <tr>
+                                        <th style="text-align:center !important;width:5%;" scope="col"><input type="checkbox" id="select_all" onclick="toggleAll(this)"> Sl.No</th>
+                                        <th style="text-align:center !important;" scope="col">Created Date</th>
+                                        <th style="text-align:center !important;" scope="col">Customer ID</th>
+                                        <th style="text-align:center !important;" scope="col">Customer Name</th>
+                                        <th style="text-align:center !important;" scope="col">Route</th>
+                                        <th style="text-align:center !important;" scope="col">Location</th>
+                                        <th style="text-align:center !important;" scope="col">Mobile No</th>
+                                        <th style="text-align:center !important;" scope="col">Whatsapp No</th>
+                                        <th style="text-align:center !important;" scope="col">Building Name/<br>House No</th>
+                                        <th style="text-align:center !important;" scope="col">Next Visit <br>Date</th>
+                                        <th style="text-align:center !important;" scope="col">Bottle Stock</th>
+                                        <th style="text-align:center !important;" scope="col">Sales Type</th>
+                                        <th style="text-align:center !important;" scope="col">Rate</th>
+                                        <th style="text-align:center !important;" scope="col">Actions</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        
+                                        {% load el_pagination_tags %}
+                                        {% paginate 50 user_li %}
+                                        {% for data in user_li %}
+                                        <tr>
+                                            <td style="text-align:center;"><input type="checkbox" name="customer_ids" value="{{ data.pk }}"> {{forloop.counter}}</td>
+                                            <td style="text-align:left;">{{data.created_date|date:'d-m-Y'}}</td>
+                                            <td style="text-align:left;">{{data.custom_id}}</td>
+                                            <td style="text-align:left;">
+                                                <a href="{% url 'customer_complaint' data.customer_id %}" aria-label="anchor">{{data.customer_name}}</a>
+                                            </td>
+                                            <td style="text-align:left;">{{data.routes.route_name}}</td>
+                                            <td style="text-align:left;">{{data.location.location_name}}</td>
+                                            <td style="text-align:left;">{{data.mobile_no}}</td>
+                                            <td style="text-align:left;">{{data.whats_app}}</td>
+                                            <td style="text-align:left;">{{data.building_name}},<br> {{data.door_house_no}}</td>
+                                            {% get_next_visit_day data.pk as next_visit_date %}
+                                            <td style="text-align:left;">{{next_visit_date}}</td>
+                                            {% bottle_stock data.pk as total_bottle_count %}
+                                            <td style="text-align:left;">{{total_bottle_count}}</td>
+                                            <td style="text-align:left;">{{data.sales_type}}</td>
+                                            <td style="text-align:right;">{{data.rate}}</td>
+                                        
+                                            <td style="text-align:center;">
+                                                <div class="g-2">
+                                                    <a href="{% url 'customer_details' data.customer_id %}" aria-label="anchor" class="btn btn-warning-light btn-sm" data-bs-toggle="tooltip" data-bs-original-title="View">
+                                                        <span class="bi bi-eye-fill fs-14"></span> <!-- Icon updated for 'View' -->
+                                                    </a>
+                                                    <a href="{% url 'edit_customer' data.customer_id %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Edit">
+                                                        <span class="bi bi-pencil-square fs-14"></span> <!-- Icon updated for 'Edit' -->
+                                                    </a>
+                                                    <a href="{% url 'visit_days_assign' data.customer_id %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Assign Visit Days">
+                                                        <span class="bi bi-calendar-plus fs-14"></span> <!-- Icon updated for 'Assign Visit Days' -->
+                                                    </a>
+                                                    <a href="{% url 'customer_custody_items' data.customer_id %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Custody Item">
+                                                        <span class="bi bi-box-seam fs-14"></span> <!-- Icon updated for 'Custody Item' -->
+                                                    </a>
+                                                    <a href="{% url 'customer_rate_history' data.pk %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Customer Rate">
+                                                        <span class="bi bi-currency-exchange fs-14"></span> <!-- Icon updated for 'Custody Item' -->
+                                                    </a>
+                                                    <a href="{% url 'customer_outstanding_details' data.customer_id %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Outstanding">
+                                                        <span class="bi bi-cash-coin fs-14"></span> <!-- Icon updated for 'Outstanding' -->
+                                                    </a>
+                                                    <a href="{% url 'collection' data.customer_id %}" aria-label="anchor" 
+                                                        class="btn btn-info-light btn-sm ms-2" data-bs-toggle="tooltip" 
+                                                        data-bs-original-title="Collection">
+                                                            <span class="bi bi-wallet2 fs-14"></span>
+                                                    </a>
+                                                    <a href="{% url 'customer_transaction_list' %}?customer_pk={{ data.customer_id }}" aria-label="anchor" class="btn btn-success btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Customer Transaction">
+                                                        <span class="bi bi-receipt fs-14"></span> <!-- Icon updated for 'Customer Transaction' -->
+                                                    </a>
+                                                    <a href="{% url 'amount_change_list' %}?customer_pk={{ data.customer_id }}" aria-label="anchor" class="btn btn-warning btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Outstanding Variation">
+                                                        <span class="bi bi-receipt fs-14"></span> <!-- Icon updated for 'Customer Outstanding Variation' -->
+                                                    </a>
+                                                    <a href="{% url 'coupon_count_list' data.customer_id %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Coupons">
+                                                        <span class="bi bi-ticket-detailed fs-14"></span> <!-- Icon updated for 'Coupons' -->
+                                                    </a>
+                                                        <!-- Username Change -->
+                                                    <a href="{% url 'customer_username_change' data.customer_id %}" aria-label="anchor"
+                                                        class="btn btn-danger-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Username Change">
+                                                            <span class="bi bi-person-lines-fill fs-14"></span>
+                                                    </a>
+                                                    {% if data.user_id %}
+                                                        <!-- Password Change -->
+                                                        <a href="{% url 'customer_password_change' data.customer_id %}" aria-label="anchor"
+                                                            class="btn btn-danger-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Password Change">
+                                                                <span class="bi bi-key fs-14"></span>
+                                                        </a>
+                                                    {% else %}
+                                                    <!-- Disabled Password Change -->
+                                                        <a href="javascript:void(0);" class="btn btn-secondary-light btn-sm ms-2 disabled"
+                                                        data-bs-toggle="tooltip" data-bs-original-title="No user linked">
+                                                            <span class="bi bi-key fs-14 text-muted"></span>
+                                                        </a>
+                                                    {% endif %}
+                                                    <a aria-label="anchor" class="action-button remove btn btn-danger-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Delete"
+                                                    data-id="{{data.pk}}" data-text="{{confirm_delete_message}}" data-title="Are you sure?" href="{% url 'delete_customer' pk=data.pk %}">
+                                                        <span class="bi bi-trash3 fs-14"></span> <!-- Icon updated for 'Delete' -->
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {%endfor%}
+                                    </tbody>
+                                </table>
+                            </form>
+                        </div>
+                        {% get_pages %}
+                        <div class="clearfix"></div>
+                        <div class="row pagi my-3">
+                            <div class="col-sm-6 col-xs-6 tot my-pagination">
+                                <div class="m-t-10 text-start">
+                                    Showing {{title}}
+                                    <span class="current_page_index">{{ pages.current_start_index }}</span> - <span
+                                    class="current_end_status">{{ pages.current_end_index }}</span> of <span
+                                    class="total_count">{{ pages.total_count }}</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xs-6 text-end pagination-btn-div">{% show_pages %}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End:: row-2 -->
+    </div>
+</div>
+<!-- End::app-content -->
+{% endblock %}
+{% block static %}
+<script>
+    function toggleAll(source) {
+        const checkboxes = document.querySelectorAll('input[name="customer_ids"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = source.checked;
+        });
+    }
+</script>
+{% endblock static %}

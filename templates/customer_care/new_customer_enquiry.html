@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% block title %} Users List {% endblock %}
+{% block content %}
+{% load static %}
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Customers Enquiry</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Customer Care</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Customer</li>
+    </ol>
+</div>
+<!-- Page Header Close -->
+<!-- Start::app-content -->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Customers Enquiry
+                        </div>
+
+                        <div class="ms-auto">
+                            <a href="{% url 'customer_create' %}">
+                            <button type="button" class="btn btn-success btn-wave text-end d-flex me-4 my-auto"><i class="bi bi-plus-circle me-1"></i>Create</button>
+                        </a>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        
+                        <div style="float:right;padding:10px 10px">
+                            <form method="GET">
+                                <div class="input-group">
+                                    <select name="route_name" class="form-select">
+                                        <option value="">All Routes</option>
+                                        {% for route in route_li %}
+                                            <option value="{{ route.route_name }}">{{ route.route_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-search"></i> Search
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        <div style="float:right;padding:10px 0px">
+                            <form >
+                                <div class="input-group">
+                                    <input type="text" name="q" class="form-control" placeholder="Search ...">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-search"></i> Search
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        <table class="table table-bordered text-nowrap" style="width:100%">
+                            <thead>
+                                <tr>
+                                <th style="text-align:center !important;width:5%;" scope="col">Sl.No</th>
+                                <th style="text-align:center !important;" scope="col">Customer Name</th>
+                                <th style="text-align:center !important;" scope="col">Mobile No</th>
+                                <th style="text-align:center !important;" scope="col">Building Name</th>
+                                <th style="text-align:center !important;" scope="col">Room/<br>Flat No</th>
+                                <th style="text-align:center !important;" scope="col">No Bottle</th>
+                                <th style="text-align:center !important;" scope="col">Emirate</th>
+                                <th style="text-align:center !important;" scope="col">Location</th>
+                                <th style="text-align:center !important;" scope="col">Status</th>
+                                <th style="text-align:center !important;" scope="col">Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                {% load el_pagination_tags %}
+                                {% paginate 20 instances %}
+                                {% for instance in instances %}
+                                <tr>
+                                    <td style="text-align:center;">{{forloop.counter}}</td>
+                                    <td style="text-align:left;">{{instance.name}}</td>
+                                    <td style="text-align:right;">{{instance.phone_no}}</td>
+                                    <td style="text-align:left;">{{instance.building_name}}</td>
+                                    <td style="text-align:left;">{{instance.room_or_flat_no}}</td>
+                                    <td style="text-align:left;">{{instance.no_of_bottles_required}}</td>
+                                    <td style="text-align:left;">{{instance.location.location_name}}</td>
+                                    <td style="text-align:left;">{{instance.emirate.emirate_name}}</td>
+                                    <td style="text-align:left;">{{instance.get_status_display}}</td>
+                                    
+                                    {% comment %} <td style="text-align:center;">
+                                        <div class="g-2">
+                                            <a href="{% url 'customer_details' data.customer_id %}" aria-label="anchor" class="btn  btn-warning-light btn-sm" data-bs-toggle="tooltip" data-bs-original-title="View">
+                                                <span class="bi bi-eye fs-14"></span>
+                                            </a>
+                                            <a href="{% url 'new_request_home' data.customer_id %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="New Order">
+                                                <span class="bi bi-basket fs-14"></span>
+                                            </a>
+                                            <a href="{% url 'change_of_address' data.customer_id %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Change Of Address">
+                                                <span class="bi bi-envelope fs-14"></span>
+                                            </a>
+                                            <a href="{% url 'custody_pullout_list'  data.customer_id %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Custody Pullout ">
+                                                <span class="bi bi-cart fs-14"></span>
+                                            </a>
+                                            <a href="{% url 'default_bottle_qty' data.customer_id %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Default Bottle Quantity">
+                                                <span class="bi bi-water fs-14"></span>
+                                            </a>
+                                            
+                                            <a href="{% url 'coupon_purchase_list' data.customer_id %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Coupons">
+                                                <span class="bi bi-ticket-fill fs-14"></span>
+                                            </a>
+                                            <a href="{% url 'other_list' data.customer_id  %}" aria-label="anchor" class="btn btn-primary-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-original-title="Others">
+                                                <span class="bi bi-ticket-fill fs-14"></span>
+                                            </a>
+                                    </div>
+                                    </td> {% endcomment %}
+                                </tr>
+                            {%endfor%}
+                            </tbody>
+                        </table>
+                        {% get_pages %}
+                        <div class="clearfix"></div>
+                        <div class="row pagi my-3">
+                            <div class="col-sm-6 col-xs-6 tot my-pagination">
+                                <div class="m-t-10 text-start">
+                                    Showing {{title}}
+                                    <span class="current_page_index">{{ pages.current_start_index }}</span> - <span
+                                    class="current_end_status">{{ pages.current_end_index }}</span> of <span
+                                    class="total_count">{{ pages.total_count }}</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xs-6 text-end pagination-btn-div">{% show_pages %}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End:: row-2 -->
+    </div>
+</div>
+<!-- End::app-content -->
+{% endblock %}

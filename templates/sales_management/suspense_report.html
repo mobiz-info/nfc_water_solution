@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% block title %} Suspense Report {% endblock %}
+{% block content %}
+    {% load static %}
+    {% load sales_templatetags %}
+
+    <!-- Page Header -->
+    <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+        <h4 class="fw-medium mb-0">Suspense Report</h4>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Sales Management</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Suspense Report</li>
+        </ol>
+    </div>
+    <div class="main-content app-content">
+        <div class="container-fluid">
+            <!-- Start:: row-2 -->
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card custom-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                Suspense Report
+                            </div>
+                        </div>
+                        <div class="mt">
+                            <form method="GET" action="{% url 'suspense_report' %}">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col">
+                                            <label for="start_date">From Date:</label>
+                                            <input type="date" class="form-control" id="start_date" name="start_date" value="{{ filter_data.start_date }}">
+                                        </div>
+                                        <div class="col">
+                                            <button type="submit" class="btn btn-primary me-2 mb-2 mt-3">Submit</button>
+                                        </div>
+                                        <div class="col d-flex align-items-center justify-content-end">
+                                            <a href="{% url 'suspense_report_excel' %}?start_date={{ filter_data.start_date }}" class="btn btn-outline-success"><i class="fas fa-file-excel"></i>Excel</a>
+                                            <a href="{% url 'suspense_report_print' %}?start_date={{ filter_data.start_date }}" class="btn btn-outline-success"><i class="fas fa-file-excel"></i>Print</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div id="table-container" style="overflow:scroll;">
+                            <div class="card-body">
+                                <table  class="table table-bordered text-wrap" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Sl No</th>
+                                            <th>Van</th>
+                                            <th>Route</th>
+                                            <th>Salesman</th>
+                                            <th>Opening Suspense</th>
+                                            <th>Paid</th>
+                                            <th>Closing Suspense</th> 
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% load el_pagination_tags %}
+                                        {% paginate 20 van_instances %}
+                                        {% for van in van_instances %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ van.plate }}</td>
+                                                <td>{{ van.get_van_route }}</td>                                       
+                                                <td>{{ van.salesman.get_fullname }}</td>
+                                                {% get_suspense_collection filter_data.start_date van.salesman.pk as suspense_collection %}
+                                                <td>{{ suspense_collection.opening_balance }}</td>
+                                                <td>{{ suspense_collection.amount_paid }}</td>
+                                                <td>{{ suspense_collection.amount_balance }}</td>
+                                                <td>
+                                                    {% if suspense_collection.opening_balance != suspense_collection.amount_paid %}
+                                                    <div class="ms-auto">
+                                                        <a href="{% url 'create_suspense_collection' van.pk filter_data.start_date %}">
+                                                            <button type="button" class="btn btn-success btn-wave text-end d-flex me-4 my-auto">
+                                                                <i class="bi bi-plus-circle me-1"></i>Create
+                                                            </button>
+                                                        </a>
+                                                    </div>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <!-- Table Footer -->
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="5" style="text-align: right;">Total:</td>
+                                            <td>{{ total_opening_suspense }}</td>
+                                            <td>{{ total_paid }}</td>
+                                            <td>{{ total_closing_suspense }}</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                        {% get_pages %}
+                        <div class="clearfix"></div>
+                        <div class="row pagi my-3">
+                            <div class="col-sm-6 col-xs-6 tot my-pagination">
+                                <div class="m-t-10 text-start">
+                                    Showing {{title}}
+                                    <span class="current_page_index">{{ pages.current_start_index }}</span> - <span class="current_end_status">{{ pages.current_end_index }}</span> of <span class="total_count">{{ pages.total_count }}</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xs-6 pagination-btn-div">{% show_pages %}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<script>
+ $('#submit').click(function(e){ 
+    e.preventDefault();       
+    // Show the table when dates are selected
+    $('#table-container').show();
+ });
+</script>
+
+{% endblock %}

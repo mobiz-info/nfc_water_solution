@@ -1,0 +1,479 @@
+{% if sales_type == 'CASH COUPON' or sales_type == 'CREDIT COUPON' %}
+
+<div class="row" id="cash_customerform">
+    <div class="col-xl-12">
+        <div class="card custom-card">
+            <div class="card-header">
+                <div class="card-title">
+                    Customer Order form - {{ sales_type }}
+                </div>
+            </div>
+            <div class="card-body">
+                <form id="customer_order_form" action="{% url 'initiate_sale' %}" method="post" data-ajax-url="{% url 'initiate_sale' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="sales_type" value="{{ sales_type }}">
+                    <input type="hidden" name="customer_id" value="{{ customer_id }}">
+                    <input type="hidden" name="product_id" value="{{ product_id }}">
+                    
+                    <div class="form-group m-1">
+                        <label for="id_qty_needed">Quantity Needed:</label>
+                        <input type="number" id="id_qty_needed" name="qty_needed" class="form-control">
+                    </div>
+                    <div class="form-group m-1">
+                        <label for="avail_of_coupons">Available Coupons:</label>
+                        <input type="number" id="avail_of_coupons" name="no_of_coupons" value="{{sum_remaining_quantity_coupons}}" class="form-control">
+                    </div>
+                    <div class="form-group m-1">
+                        <label for="id_no_of_coupons">Coupons Collected:</label>
+                        <input type="number" id="id_no_of_coupons" name="no_of_coupons" class="form-control">
+                    </div>
+                    <div class="form-group m-1">
+                        <label for="id_coupon_variations">Coupon Variation:</label>
+                        <input type="number" id="id_coupon_variations" name="coupon_variations" class="form-control" readonly>
+                    </div>
+                    <div class="form-group m-1">
+                        <label for="id_empty_bottles">Empty Bottles:</label>
+                        <input type="number" id="id_empty_bottles" name="empty_bottles" class="form-control">
+                    </div>
+                    <div class="form-group m-1">
+                        <label for="id_collected_bottles">Collected Bottles:</label>
+                        <input type="number" id="id_collected_bottles" name="collected_bottles" class="form-control">
+                    </div>
+                    <div class="form-group m-1">
+                        <label for="id_bottle_variations">Bottle Variation:</label>
+                        <input type="number" id="id_bottle_variations" name="bottle_variations" class="form-control" readonly>
+                    </div>
+                    {% comment %} <div class="form-group m-1">
+                        <label for="id_get_discount">Enter Discount Percentage:</label>
+                        <input type="number" id="id_get_discount" name="get_discount" class="form-control" value="0" >
+                    </div> {% endcomment %}
+                    <div class="form-group m-1">
+                        <label for="id_status">Status:</label>
+                        <select id="id_status" name="status" class="form-control">
+                            <option value="FOC">FOC</option>
+                            <option value="PENDING">PENDING</option>
+                            <option value="CUSTODY">CUSTODY</option>
+                            <option value="PAID">PAID</option>
+                        </select>
+                    </div>
+                    <button type="submit" id="order_form_submit" class="btn btn-primary mt-4">Submit</button>
+                </form>
+                <a href="#" id="proceed_to_pay" style="display: none;" class="btn btn-primary mt-4">Proceed to Pay</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" id="payment_form" style="display: none;">
+    <div class="col-xl-12">
+        <div class="card custom-card">
+            <div class="card-header">
+                <div class="card-title">
+                    Payment Form - {{ sales_type }}
+                </div>
+            </div>
+            <div class="card-body">
+                <form id="payment_form" action="{% url 'initiate_sale' %}" method="post" data-ajax-url="{% url 'initiate_sale' %}" >
+                    {% csrf_token %}
+                    <input type="hidden" name="sales_type" id='sales_type'>
+                    <input type="hidden" name="status" id='status'>
+                    <div class="form-group m-1">
+                        <label for="invoice_number">Invoice Number:</label>
+                        <input type="number" id="invoice_number" name="invoice_number" class="form-control">
+                    </div>
+                    <div class="form-group m-1">
+                        <label for="total_amount">Total Amount:</label>
+                        <input type="number" id="total_amount" name="total_amount" class="form-control">
+                    </div>
+                    <div class="form-group m-1">
+                        <label for="discount">Discount:</label>
+                        <input type="number" id="discount" name="discount" class="form-control">
+                    </div>
+                    <div class="form-group m-1">
+                        <label for="net_taxable">Net Taxable:</label>
+                        <input type="number" id="net_taxable" name="net_taxable" class="form-control">
+                    </div>
+                    <div class="form-group m-1">
+                        <label for="vat">VAT:</label>
+                        <input type="number" id="vat" name="vat" class="form-control">
+                    </div>
+                    <div class="form-group m-1">
+                        <label for="total_to_collect">Total to Collect:</label>
+                        <input type="number" id="total_to_collect" name="total_to_collect" class="form-control">
+                    </div>
+                    <div class="form-group m-1">
+                        <label for="amount_received">Amount Received:</label>
+                        <input type="number" id="amount_received" name="amount_received" class="form-control">
+                    </div>
+                    <div class="form-group m-1">
+                        <label for="balance">Balance:</label>
+                        <input type="number" id="balance" name="balance" class="form-control">
+                    </div>
+                    <button id="submit_payment_button" type="submit" class="btn btn-primary mt-4 d-none">Submit Payment</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        function calculateBottleVariations() {
+            var emptyBottles = parseInt($('#id_empty_bottles').val()) || 0;
+            var collectedBottles = parseInt($('#id_collected_bottles').val()) || 0;
+            var bottleVariations = emptyBottles - collectedBottles;
+            $('#id_bottle_variations').val(bottleVariations);
+        }
+        
+        function calculateCouponVariations() {
+            var qtyNeeded = parseInt($('#id_qty_needed').val()) || 0;
+            var noOfCoupons = parseInt($('#id_no_of_coupons').val()) || 0;
+            var couponVariations = qtyNeeded - noOfCoupons;
+            $('#id_coupon_variations').val(couponVariations);
+        }
+        
+
+        calculateBottleVariations();
+        calculateCouponVariations();
+
+        $('#id_empty_bottles, #id_collected_bottles, #id_no_of_coupons').on('input', function() {
+            calculateBottleVariations();
+            calculateCouponVariations();
+        });
+
+        var status = $('#id_status').val();
+        checkStatus(status);
+
+        $('#id_status').change(function() {
+            var newStatus = $(this).val();
+            checkStatus(newStatus);
+        });
+
+        function checkStatus(status) {
+            if (status === 'PAID') {
+                $('#order_form_submit').hide();
+                $('#proceed_to_pay').show();
+            } else {
+                $('#order_form_submit').show();
+                $('#proceed_to_pay').hide();
+            }
+        }
+
+        $('#proceed_to_pay').click(function() {
+            var csrftoken = getCookie('csrftoken');
+
+            var salesType = $('#customer_order_form input[name="sales_type"]').val();
+            var customerId = $('#customer_order_form input[name="customer_id"]').val();
+            var productId = $('#customer_order_form input[name="product_id"]').val();
+            var qtyNeeded = $('#id_qty_needed').val();
+            var emptyBottles = $('#id_empty_bottles').val();
+            var collectedBottles = $('#id_collected_bottles').val();
+            var status = $('#id_status').val();
+            var discount_percentage = $('#id_get_discount').val();
+            var csrftoken = getCookie('csrftoken');
+            console.log("statusstatus", status)
+
+            var formData = {
+                'sales_type': salesType,
+                'customer_id': customerId,
+                'product_id': productId,
+                'qty_needed': qtyNeeded,
+                'empty_bottles': emptyBottles,
+                'collected_bottles': collectedBottles,
+                'status': status,
+                'discount_percentage': discount_percentage
+                
+            };
+
+            console.log("formData", formData)
+
+            $.ajax({
+                url: '{% url "payment_form" %}',
+                type: 'POST',
+                data: formData,
+                headers: {
+                    'X-CSRFToken': csrftoken
+                },
+                success: function(response) {
+                    $('#total_amount').val(response.total_amount).prop('readonly', true);
+                    $('#discount').val(response.discount_amount).prop('readonly', true);
+                    $('#net_taxable').val(response.net_taxable).prop('readonly', true);
+                    $('#vat').val(response.vat).prop('readonly', true);
+                    $('#status').val(response.status).prop('readonly', true);
+                    $('#sales_type').val(response.sales_type).prop('readonly', true);
+                    $('#invoice_number').val(response.invoice_number).prop('readonly', true);
+                    $('#balance').val(response.balance).prop('readonly', true);
+                    $('#total_to_collect').val(response.total_to_collect).prop('readonly', true);
+                    $('#submit_payment_button').removeClass('d-none').prop('disabled', false);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            });
+
+            $('#payment_form').show();
+            $('#customer_order_form input, #customer_order_form select').prop('disabled', true);
+            $(this).hide();
+        });
+
+        $('#amount_received').on('input', function() {
+            // Get the values of total_to_collect and Amount Received
+            var totalToCollect = parseFloat($('#total_to_collect').val());
+            var amountReceived = parseFloat($(this).val());
+
+            // Calculate the balance
+            var balance = totalToCollect - amountReceived;
+
+            // Set the value of the Balance field
+            $('#balance').val(balance);
+        });
+
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+    });
+
+
+</script>
+
+{% else %}
+
+<div class="row" id="coupon_customerform">
+    <div class="col-xl-12">
+        <div class="card custom-card">
+            <div class="card-header">
+                <div class="card-title">
+                    Customer Order form - {{ sales_type }}
+                </div>
+            </div>
+            <div class="card-body">
+                <form id="customer_order_form" action="{% url 'initiate_sale' %}" method="post" data-ajax-url="{% url 'initiate_sale' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="sales_type" value="{{ sales_type }}">
+                    <input type="hidden" name="customer_id" value="{{ customer_id }}">
+                    <input type="hidden" name="product_id" value="{{ product_id }}">
+                    
+                    <div class="form-group m-1">
+                        <label for="id_qty_needed">Quantity Needed:</label>
+                        <input type="number" id="id_qty_needed" name="qty_needed" class="form-control">
+                    </div>
+                    <div class="form-group m-1">
+                        <label for="id_empty_bottles">Empty Bottles:</label>
+                        <input type="number" id="id_empty_bottles" name="empty_bottles" class="form-control">
+                    </div>
+                    <div class="form-group m-1">
+                        <label for="id_collected_bottles">Collected Bottles:</label>
+                        <input type="number" id="id_collected_bottles" name="collected_bottles" class="form-control">
+                    </div>
+                    <div class="form-group m-1">
+                        <label for="id_bottle_variations">Bottle Variation:</label>
+                        <input type="number" id="id_bottle_variations" name="bottle_variations" class="form-control" readonly>
+                    </div>
+                    <div class="form-group m-1">
+                        <label for="id_get_discount">Enter Discount Percentage:</label>
+                        <input type="number" id="id_get_discount" name="get_discount" class="form-control" value="0" >
+                    </div>
+                    <div class="form-group m-1">
+                        <label for="id_status">Status:</label>
+                        <select id="id_status" name="status" class="form-control">
+                            <option value="FOC">FOC</option>
+                            <option value="PENDING">PENDING</option>
+                            <option value="CUSTODY">CUSTODY</option>
+                            <option value="PAID">PAID</option>
+                        </select>
+                    </div>
+                    <button type="submit" id="order_form_submit" class="btn btn-primary mt-4">Submit</button>
+                </form>
+                <a href="#" id="proceed_to_pay" style="display: none;" class="btn btn-primary mt-4">Proceed to Pay</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" id="payment_form" style="display: none;">
+    <div class="col-xl-12">
+        <div class="card custom-card">
+            <div class="card-header">
+                <div class="card-title">
+                    Payment Form - {{ sales_type }}
+                </div>
+            </div>
+            <div class="card-body">
+                <form  action="{% url 'initiate_sale' %}" method="post" data-ajax-url="{% url 'initiate_sale' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="sales_type" id='sales_type'>
+                    <input type="hidden" name="status" id='status'>
+                    
+
+                    <div class="form-group m-1">
+                        <label for="invoice_number">Invoice Number:</label>
+                        <input type="number" id="invoice_number" name="invoice_number" class="form-control">
+                    </div>
+                    <div class="form-group m-1">
+                        <label for="total_amount">Total Amount:</label>
+                        <input type="number" id="total_amount" name="total_amount" class="form-control">
+                    </div>
+                    <div class="form-group m-1">
+                        <label for="discount">Discount:</label>
+                        <input type="number" id="discount" name="discount" class="form-control">
+                    </div>
+                    <div class="form-group m-1">
+                        <label for="net_taxable">Net Taxable:</label>
+                        <input type="number" id="net_taxable" name="net_taxable" class="form-control">
+                    </div>
+                    <div class="form-group m-1">
+                        <label for="vat">VAT:</label>
+                        <input type="number" id="vat" name="vat" class="form-control">
+                    </div>
+                    <div class="form-group m-1">
+                        <label for="total_to_collect">Total to Collect:</label>
+                        <input type="number" id="total_to_collect" name="total_to_collect" class="form-control">
+                    </div>
+                    <div class="form-group m-1">
+                        <label for="amount_received">Amount Received:</label>
+                        <input type="number" id="amount_received" name="amount_received" class="form-control">
+                    </div>
+                    <div class="form-group m-1">
+                        <label for="balance">Balance:</label>
+                        <input type="number" id="balance" name="balance" class="form-control">
+                    </div>
+                <button id="submit_payment_button" type="submit" class="btn btn-primary mt-4 d-none">Submit Payment</button>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        function calculateBottleVariations() {
+            var emptyBottles = parseInt($('#id_empty_bottles').val()) || 0;
+            var collectedBottles = parseInt($('#id_collected_bottles').val()) || 0;
+            var bottleVariations = emptyBottles - collectedBottles;
+            $('#id_bottle_variations').val(bottleVariations);
+        }
+
+        $('#amount_received').on('input', function() {
+            // Get the values of total_to_collect and Amount Received
+            var totalToCollect = parseFloat($('#total_to_collect').val());
+            var amountReceived = parseFloat($(this).val());
+
+            // Calculate the balance
+            var balance = totalToCollect - amountReceived;
+
+            // Set the value of the Balance field
+            $('#balance').val(balance);
+        });
+
+        calculateBottleVariations();
+
+        $('#id_empty_bottles, #id_collected_bottles').on('input', function() {
+            calculateBottleVariations();
+        });
+        var status = $('#id_status').val();
+
+        checkStatus(status);
+
+        $('#id_status').change(function() {
+            var newStatus = $(this).val();
+            checkStatus(newStatus);
+        });
+  
+        function checkStatus(status) {
+            if (status === 'PAID') {
+                $('#order_form_submit').hide();
+                $('#proceed_to_pay').show();
+            } else {
+                $('#order_form_submit').show();
+                $('#proceed_to_pay').hide();
+            }
+        }
+
+    $('#proceed_to_pay').click(function() {
+        var csrftoken = getCookie('csrftoken');
+
+        var salesType = $('#customer_order_form input[name="sales_type"]').val();
+        var customerId = $('#customer_order_form input[name="customer_id"]').val();
+        var productId = $('#customer_order_form input[name="product_id"]').val();
+        var qtyNeeded = $('#id_qty_needed').val();
+        var emptyBottles = $('#id_empty_bottles').val();
+        var collectedBottles = $('#id_collected_bottles').val();
+        var status = $('#id_status').val();
+        var invoice_number = $('#invoice_number').val();
+        var discount_percentage = $('#id_get_discount').val();
+        var csrftoken = getCookie('csrftoken');
+        var formData = {
+            'sales_type': salesType,
+            'customer_id': customerId,
+            'product_id': productId,
+            'qty_needed': qtyNeeded,
+            'empty_bottles': emptyBottles,
+            'collected_bottles': collectedBottles,
+            'status': status,
+            'discount_percentage': discount_percentage
+        };
+
+        console.log("formData", formData)
+
+        $.ajax({
+            url: '{% url "payment_form" %}',
+            type: 'POST',
+            data: formData,
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
+            success: function(response) {
+                console.log("", response)
+                $('#total_amount').val(response.total_amount).prop('readonly', true);
+                $('#discount').val(response.discount_amount).prop('readonly', true);
+                $('#net_taxable').val(response.net_taxable).prop('readonly', true);
+                $('#vat').val(response.vat).prop('readonly', true);
+                $('#status').val(response.status).prop('readonly', true);
+                $('#sales_type').val(response.sales_type).prop('readonly', true);
+                $('#invoice_number').val(response.invoice_number).prop('readonly', true);
+                $('#balance').val(response.balance).prop('readonly', true);
+                $('#total_to_collect').val(response.total_to_collect).prop('readonly', true);
+                $('#submit_payment_button').removeClass('d-none').prop('disabled', false);
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+
+        $('#payment_form').show();
+        $('#customer_order_form input, #customer_order_form select').prop('disabled', true);
+        $(this).hide();
+    });
+
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    });
+</script>
+
+{% endif %}

@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% block title %} Custody Report {% endblock %}
+{% block content %}
+{% load static %}
+
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Custody Item Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Client Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Custody Issue</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+            <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Custody Issue
+                        </div>
+                    </div>
+                    <div class="ms-auto">
+                         <a href="{% url 'customer_custody_item' customer_id=customer.customer_id %}">
+                                    <button type="button" class="btn btn-success btn-wave text-end d-flex me-4 my-auto"><i class="bi bi-plus-circle me-1"></i>Create</button>
+                                </a>
+                                </div>
+
+                    <div class="mt">
+                        <form method="GET" action='{% url "custody_issue"%}'>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <label for="start_date">From Date:</label>
+                                        <input type="date" class="form-control" id="start_date" name="start_date">
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label for="end_date">To Date:</label>
+                                        <input type="date" class="form-control" id="end_date" name="end_date">
+                                    </div>
+                                    <div class="col-md-2 text-end ">
+                                        <input type="submit" class="btn btn-primary me-2 mb-2 mt-3" value="Submit">
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="card-body">
+                        <table id="datatable-basic" class="table table-bordered text-wrap" style="width: 100%">
+                        <thead>
+                            <tr>
+                                <th rowspan="2">Sl No</th>
+                                <th rowspan="2">Customer</th>
+                                <th rowspan="2">Mobile No</th>
+                                <th rowspan="2">Building No</th>
+                                <th rowspan="2">Room No/Floor No</th>
+                                <th rowspan="2">Route</th>
+                                <th colspan="2">5 Gallon</th>
+                                <th colspan="2">Dispenser</th>
+                                <th colspan="2">Cooler</th>
+                            </tr>
+                            <tr>
+                                <th>Deposit</th>
+                                <th>Non-Deposit</th>
+                                <th>Deposit</th>
+                                <th>Non-Deposit</th>
+                                <th>Deposit</th>
+                                <th>Non-Deposit</th>
+                            </tr>
+                        </thead> 
+                        <tbody>
+                            {% for customer, product_counts in customer_product_counts.items %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ customer.customer_name }}</td>
+                                    <td>{{ customer.mobile_no }}</td>
+                                    <td>{{ customer.building_name }}</td>
+                                    <td>{{ customer.door_house_no }}</td>
+                                    <td>{{ customer.routes }}</td>
+                                    <td>{{ product_counts.5_gallon_deposit }}</td>
+                                    <td>{{ product_counts.5_gallon_non_deposit }}</td>
+                                    <td>{{ product_counts.dispenser_deposit }}</td>
+                                    <td>{{ product_counts.dispenser_non_deposit }}</td>
+                                    <td>{{ product_counts.cooler_deposit }}</td>
+                                    <td>{{ product_counts.cooler_non_deposit }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                                
+        {% comment %} <!-- Display counters in the table footer -->
+        <tfoot>
+            <tr>
+                <td colspan="6"><strong>Total</strong></td>
+                <td>{{ gallon_deposit_counter }}</td>
+                <td>{{ gallon_non_deposit_counter }}</td>
+                <!-- Add similar cells for Dispenser and Cooler -->
+            </tr>
+        </tfoot>
+    </tbody> {% endcomment %}
+</table>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+        $(document).ready(function () {
+            var defaultDateRange = "{{ filter_data.date_range }}";
+        
+            if (defaultDateRange) {
+                $('#reportrange').val(defaultDateRange);
+            }
+            $('#reportrange').daterangepicker({
+                autoApply: true,
+                locale: {
+                    format: 'MM/DD/YYYY'
+                }
+            });
+        });
+
+{% endblock %}

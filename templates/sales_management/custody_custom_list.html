@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% block title %}Custody Custom Report{% endblock %}
+{% block content %}
+{% load static %}
+{% load el_pagination_tags %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Custody Custom Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Reports</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Custody Custom Report</li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: Filter Section -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">Custody Custom Report</div>
+                    </div>
+                    <div class="card-body">
+                        <form method="GET" action="">
+                            <div class="row align-items-center">
+                                <!-- From Date -->
+                                <div class="col">
+                                    <label for="start_date">From Date:</label>
+                                    <input type="date" class="form-control" id="start_date" name="start_date" value="{{ filter_data.filter_date_from }}">
+                                </div>
+
+                                <!-- To Date -->
+                                <div class="col">
+                                    <label for="end_date">To Date:</label>
+                                    <input type="date" class="form-control" id="end_date" name="end_date" value="{{ filter_data.filter_date_to }}">
+                                </div>
+
+                                <!-- Search Input -->
+                                <div class="col">
+                                    <label for="route_name">Search:</label>
+                                    <input type="text" name="q" class="form-control" placeholder="Search ..." value="{{ filter_data.q }}">
+                                </div>
+
+                                <!-- Buttons -->
+                                <div class="col d-flex align-items-end justify-content-end">
+                                    <input type="submit" class="btn btn-primary btn-sm mx-1 mb-1" value="Apply Filter">
+                                    <button type="button" class="btn btn-secondary btn-sm mx-1 mb-1" onclick="resetFilters()">Reset</button>
+                                    <a href="{% url 'offload_list_print' %}?start_date={{ filter_data.filter_date_from }}&end_date={{ filter_data.filter_date_to }}&route_name={{ filter_data.route_name }}&q={{ filter_data.q }}" class="btn btn-outline-success btn-sm mx-1 mb-1" target="_blank">
+                                        <i class="fas fa-file-print"></i> Print
+                                    </a>
+                                    <a href="{% url 'download_offload_excel' %}?start_date={{ filter_data.filter_date_from }}&end_date={{ filter_data.filter_date_to }}&route_name={{ filter_data.route_name }}&q={{ filter_data.q }}" class="btn btn-outline-success btn-sm mx-1 mb-1" target="_blank">
+                                        <i class="fas fa-file-excel"></i> Excel
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End:: Filter Section -->
+
+        <!-- Start:: Table Section -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <table class="table table-bordered text-wrap" style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>Sl.No</th>
+                                    <th>Created Date</th>
+                                    <th>Customer Name</th>
+                                    <th>Custom ID</th>
+                                    <th>Agreement No</th>
+                                    <th>Total Amount</th>
+                                    <th>Deposit Type</th>
+                                    <th>Reference No</th>
+                                    <th>Amount Collected</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% paginate 50 custody_records %}
+                                {% for custody in custody_records %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ custody.created_date|date:'d-m-Y' }}</td>
+                                        <td>{{ custody.customer.customer_name }}</td>
+                                        <td>{{ custody.customer.custom_id }}</td>
+                                        <td>{{ custody.agreement_no }}</td>
+                                        <td>{{ custody.total_amount }}</td>
+                                        <td>{{ custody.get_deposit_type_display }}</td>
+                                        <td>{{ custody.reference_no }}</td>
+                                        <td>{{ custody.amount_collected }}</td>
+                                        <td style="text-align:left;">
+                                            <a href="{% url 'custody_custom_detail' custody.custody_custom_id %}" class="btn btn-warning-light btn-sm" data-bs-toggle="tooltip" title="View">
+                                                <span class="bi bi-eye fs-14"></span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="8" class="text-center text-muted">No data available.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                        <!-- Pagination -->
+                        {% get_pages %}
+                        <div class="clearfix"></div>
+                        <div class="row pagi my-3">
+                            <div class="col-sm-6 text-start">
+                                <div class="m-t-10">
+                                    Showing {{ title }}
+                                    <span class="current_page_index">{{ pages.current_start_index }}</span> - <span class="current_end_status">{{ pages.current_end_index }}</span> of <span class="total_count">{{ pages.total_count }}</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 text-end">{% show_pages %}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End:: Table Section -->
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+    function resetFilters() {
+        location.href = "{% url 'custody_custom_list' %}";
+    }
+</script>
+
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %} Branch View {% endblock %}
+{% block content %}
+{% load static %}
+  <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Branch Details</h4>
+      <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+      </ol>
+  </div>
+
+<div class="main-content app-content">
+  <div class="container-fluid">
+  <!-- Start:: row-1 -->
+    <div class="card card-product-details shadow">
+      <div class="card-header text-center">
+      <h4>Branch Details</h4>
+      </div>
+
+      <div class="card-body ">
+        <p class="card-text">
+          <div class="table-responsive">
+            <table class="table">
+              <tbody>
+                <tr >
+                  <td class="text-secondary">Branch Name</td>
+                  <td>{{branch_det.name}}</td>
+                </tr>
+                <tr>
+                  <td class="text-secondary">Address</td>
+                  <td>{{branch_det.address}}</td>
+                </tr>
+                <tr>
+                  <td class="text-secondary">Mobile</td>
+                  <td>{{branch_det.mobile}}</td>
+                </tr>
+                <tr>
+                  <td class="text-secondary">Phone</td>
+                  <td>{{branch_det.phone}}</td>
+                </tr>
+                <tr>
+                  <td class="text-secondary">Fax</td>
+                  <td>{{branch_det.fax}}</td>
+                </tr>
+                <tr>
+                  <td class="text-secondary">Website</td>
+                  <td>{{branch_det.website}}</td>
+                </tr>
+                <tr>
+                  <td class="text-secondary">Email</td>
+                  <td>{{branch_det.email}}</td>
+                </tr>
+                <tr>
+                  <td class="text-secondary">Emirate</td>
+                  <td>{{branch_det.emirate}}</td>
+                </tr>
+                <tr>
+                  <td class="text-secondary">Landline</td>
+                  <td>{{branch_det.landline}}</td>
+                </tr>
+                <tr>
+                  <td class="text-secondary">TRN</td>
+                  <td>{{branch_det.trn}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </p>
+        <div class="row my-3 me-1">
+          <div class="col-12 text-end">
+            <a href="{% url 'branch' %}">
+              <button class="btn btn-success me-md-2 " type="button"><i class="bi bi-backspace-fill pe-1"></i>Back</button>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End:: row-1 -->
+  </div>
+</div>
+  {% endblock %}

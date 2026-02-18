@@ -1,0 +1,292 @@
+    {% extends 'base.html' %}
+{% block title %} Offload List {% endblock %}
+{% block content %}
+{% load static %}
+{% load van_template_tags %}
+<!-- End::app-sidebar -->
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Van Management</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Van Management</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Offload</li>
+    </ol>
+</div>
+<!-- Page Header Close -->
+<!-- Start::app-content -->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                           Items Offload
+                        </div>
+                         
+                    </div>
+                    <div class="m-3">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="page-title-box">
+                                    <form method="GET">
+                                        <div class="row">
+                                            <div class="col">
+                                                <div class="mt">
+                                                    <div class="card-body">
+                                                        <div class="row col-md-6">
+                                                            <div class="col-auto col-form-label text-end">
+                                                                <h6>Date</h6>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <input name="date" type="date" class="form-select" style="width: min-content;" value="{% if filter_data.filter_date %}{{ filter_data.filter_date }}{% else %}{% now 'Y-m-d' %}{% endif %}">
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <input type="submit" class="btn btn-primary btn-sm mt-1" >
+                                                            </div>
+                                                        
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div><!--end col-->
+                                            
+                                        </div><!--end row-->       
+                                    </form>                                                       
+                                </div><!-- end page-title-box -->
+                            </div><!--end col-->
+                        </div><!--end row-->
+                        
+                    </div>
+                    <div class="card-body">
+                        <table id="datatable-basic" class="table table-bordered text-nowrap" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Item Name</th>
+                                    <th scope="col">Current Stock</th>
+                                    <th scope="col" style="width:30%">Qty Offloaded</th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for data in product_items %}
+                                {% if data.product.product_name == "5 Gallon" and data.stock > 0 %}
+                                <tr>
+                                    <td>{{data.product.product_name}} {% if data.product.product_name == "5 Gallon" and data.get_stock_type_display == "Empty Can" %} ({{data.get_stock_type_display}}){% endif %}</td>
+                                    <td style="text-align:center;">{{data.stock}}</td>
+                                    <td style="text-align:center;">
+                                        <form method="post" action="{% url 'edit_product_count' data.pk %}" enctype="multipart/form-data"  class="row g-3 ajax reload" autocomplete="off" novalidate>
+                                            {% csrf_token %}
+                                            <input type="hidden" class="form-control" name="stock_type" value="stock">
+                                            <div class="input-group"> 
+                                                <input type="text" class="form-control" name="count" placeholder="Recipient's username" value="{{ data.stock }}" aria-label="Recipient's username"
+                                                aria-describedby="basic-addon2"> 
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-success" type="submit"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-save"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                {% if data.product.product_name == "5 Gallon" and data.empty_can_count > 0 %}
+                                <tr>
+                                    <td>{{data.product.product_name}} (Empty Can)</td>
+                                    <td style="text-align:center;">{{data.empty_can_count}}</td>
+                                    <td style="text-align:center;">
+                                        <form method="post" action="{% url 'edit_product_count' data.pk %}" enctype="multipart/form-data"  class="row g-3 ajax reload" autocomplete="off" novalidate>
+                                            {% csrf_token %}
+                                            <input type="hidden" class="form-control" name="stock_type" value="empty_can">
+                                            <div class="input-group"> 
+                                                <input type="text" class="form-control" name="count" placeholder="Recipient's username" value="{{ data.empty_can_count }}" aria-label="Recipient's username"
+                                                aria-describedby="basic-addon2"> 
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-success" type="submit"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-save"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                
+                                {% if data.product.product_name == "5 Gallon" and data.damage_count > 0 %}
+                                <tr>
+                                    <td>{{data.product.product_name}} (Damege)</td>
+                                    <td style="text-align:center;">{{data.damage_count}}</td>
+                                    <td style="text-align:center;">
+                                        <form method="post" action="{% url 'edit_product_count' data.pk %}" enctype="multipart/form-data"  class="row g-3 ajax reload" autocomplete="off" novalidate>
+                                            {% csrf_token %}
+                                            <input type="hidden" class="form-control" name="stock_type" value="damage_count">
+                                            <div class="input-group"> 
+                                                <input type="text" class="form-control" name="count" value="{{data.damage_count}}"> 
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-success" type="submit"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-save"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endif %}
+
+                                {% if data.product.product_name == "5 Gallon" and data.return_count > 0 %}
+                                <tr>
+                                    <td>{{data.product.product_name}} (Return Can)</td>
+                                    <td style="text-align:center;">{{data.return_count}}</td>
+                                    <td style="text-align:center;">
+                                        <form method="post" action="{% url 'edit_product_count' data.pk %}" enctype="multipart/form-data"  class="row g-3 ajax reload" autocomplete="off" novalidate>
+                                            {% csrf_token %}
+                                            <input type="hidden" class="form-control" name="stock_type" value="return_count">
+                                            <div class="input-group"> 
+                                                <div style="display: inline-block;text-align: start;">
+                                                    <label>Scrap Count</label>
+                                                    <input type="text" class="form-control" id="scrap_count" name="scrap_count" placeholder="scrap count" value="0"> 
+                                                    <label>Service Count</label>
+                                                    <input type="text" class="form-control" id="washing_count" name="washing_count" placeholder="washing count" value="0">
+                                                </div>
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-success" type="submit"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-save"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                {% if data.product.product_name == "5 Gallon" and data.change_count > 0 %}
+                                <tr>
+                                    <td>{{data.product.product_name}} (Change)</td>
+                                    <td style="text-align:center;">{{data.change_count}}</td>
+                                    <td style="text-align:center;">
+                                        <form method="post" action="{% url 'edit_product_count' data.pk %}" enctype="multipart/form-data"  class="row g-3 ajax reload" autocomplete="off" novalidate>
+                                            {% csrf_token %}
+                                            <input type="hidden" class="form-control" name="stock_type" value="change_count">
+                                            <div class="input-group"> 
+                                                <input type="text" class="form-control" name="count" placeholder="Recipient's username" value="{{ data.pending_count }}" aria-label="Recipient's username"
+                                                aria-describedby="basic-addon2"> 
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-success" type="submit"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-save"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                                {% for data in coupon_items %}
+                                {% get_coupon_vanstock_count van_pk filter_data.filter_date data.product_name as van_coupon_count %}
+                                {% if van_coupon_count > 0 %}
+                                <tr>
+                                    <td>{{data.product_name}}</td>
+                                    <td style="text-align:center;">{{van_coupon_count}}</td>
+                                    <td style="text-align:center;">
+                                        <div class="g-2">
+                                            <button class="btn btn-primary-light btn-sm" data-product_name="{{data.product_name}}" data-van_id="{{van_pk}}" data-stock_date="{{ filter_data.filter_date }}" data-href="{% url 'get_van_coupon_bookno' %}" onclick="handleButtonClick(this)"><span class="bi bi-plus-circle fs-14"></span> Offload</button>
+                                        </div>
+                                        {% comment %} <form method="post" action="{% url 'edit_coupon_count' data.pk %}">
+                                            {% csrf_token %}
+                                            <div class="input-group"> 
+                                                <input type="text" class="form-control" name="count" placeholder="Recipient's username" value="{{van_coupon_count}}" aria-label="Recipient's username"
+                                                aria-describedby="basic-addon2"> 
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-success" type="submit"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-save"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></button>
+                                                </div>
+                                            </div>
+                                        </form> {% endcomment %}
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <div class="col-12 text-end mt-5">
+                                <button class="btn btn-success   me-md-2  mb-2" type="button" onClick="javascript:history.go(-1);">
+                                    <i class="bi bi-backspace-fill pe-1"></i>Back</button>
+                            <a class="btn btn-success me-md-2  mb-2"
+                            href="{% url 'dashboard' %}"><i class="bi bi-backspace-fill pe-1"></i> Back to Dashboard </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End:: row-2 -->
+    </div>
+</div>
+<!-- End::app-content -->
+<!-- Modal -->
+<div class="modal fade" id="couponIssueModal" tabindex="-1" role="dialog" aria-labelledby="couponIssueModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+            <h5 class="modal-title" id="exampleModalLabel">Check Coupon Book</h5>
+            <button type="button" class="btn-close text-dark" data-bs-dismiss="modal" aria-label="Close" onclick="clearForm()"></button>
+            </div>
+            <form action="{% url 'edit_coupon_count' van_pk %}" role="form" method="post" enctype="multipart/form-data"  class="row g-3 ajax reload" autocomplete="off" novalidate>
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="row justify-content-center">
+                        <div class="col-12">
+                            <div id="modalBookNumbers">
+                                <!-- Checkboxes will be added here dynamically -->
+                            </div>
+                            <input type="hidden" name="request_id" id="modalRequestId">
+                        </div>
+                    </div>
+                </div>                             
+                <div class="modal-footer">
+                    <button type="submit" class="btn bg-gradient-secondary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block static %}
+{% load static %}
+<script>
+    function handleButtonClick(button) {
+        var productName = $(button).data("product_name");
+        var vanId = $(button).data("van_id");
+        var stockDate = $(button).data("stock_date");
+        console.log("date" + stockDate);
+
+        $("#modalRequestId").val(productName);
+        
+        $.ajax({
+            url: "{% url 'get_van_coupon_bookno' %}",
+            method: "GET",
+            data: {
+                vanId: vanId,
+                productName: productName,
+                stockDate: stockDate,
+            },
+            success: function(response) {
+                if (response.data.length > 0) {
+                    var bookNumbers = response.data;
+                    var checkboxesHtml = "";
+                    for (var i = 0; i < bookNumbers.length; i++) {
+                        checkboxesHtml += '<div class="form-check">' +
+                                          '<input class="form-check-input" type="checkbox" name="coupon_book_no" value="' + bookNumbers[i].book_no + '">' +
+                                          '<label class="form-check-label" for="couponBook' + bookNumbers[i].book_no + '">' + bookNumbers[i].book_no + '</label>' +
+                                          '</div>';
+                    }
+                    $("#modalRequestId").val(productName);
+                    $("#modalBookNumbers").html(checkboxesHtml);
+                    $('#couponIssueModal').modal('show');
+                } else {
+                    $("#modalBookNumbers").html('<p>No book numbers found.</p>');
+                    $('#couponIssueModal').modal('show');
+                }
+            },
+            error: function(xhr, status, error) {
+                // Handle error
+                console.error(xhr.responseText);
+            }
+        });
+    }
+</script>
+{% endblock static %}
+
+
+
+

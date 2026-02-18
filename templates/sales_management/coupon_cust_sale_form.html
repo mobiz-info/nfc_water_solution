@@ -1,0 +1,93 @@
+
+{% if sales_type == 'CASH COUPON' or  sales_type == 'CREDIT COUPON' %}
+
+
+
+<div class="row" id="cash_customerform">
+    <div class="col-xl-12">
+        <div class="card custom-card">
+            <div class="card-header">
+                <div class="card-title">
+                    Customer Order form - {{ sales_type }}
+                </div>
+            </div>
+            <div class="card-body">
+                <form id="customer_order_form" action="{% url 'initiate_sale' %}" method="post">
+                    {% csrf_token %}
+                    <div class="form-group m-2">
+                        <label for="id_qty_needed">Quantity Needed:</label>
+                        <input type="number" id="id_qty_needed" name="qty_needed" class="form-control">
+                    </div>
+                    <div class="form-group m-2">
+                        <label for="id_no_of_coupons">Number of Coupons:</label>
+                        <input type="number" id="id_no_of_coupons" name="no_of_coupons" class="form-control">
+                    </div>
+                    <div class="form-group m-2">
+                        <label for="id_coupon_variations">Coupon Variation:</label>
+                        <input type="number" id="id_coupon_variations" name="coupon_variations" class="form-control" readonly>
+                    </div>
+                    <div class="form-group m-2">
+                        <label for="id_empty_bottles">Empty Bottles:</label>
+                        <input type="number" id="id_empty_bottles" name="empty_bottles" class="form-control">
+                    </div>
+                    <div class="form-group m-2">
+                        <label for="id_collected_bottles">Collected Bottles:</label>
+                        <input type="number" id="id_collected_bottles" name="collected_bottles" class="form-control">
+                    </div>
+
+                    <div class="form-group m-2">
+                        <label for="id_bottle_variations">Bottle Variation:</label>
+                        <input type="number" id="id_bottle_variations" name="bottle_variations" class="form-control" readonly>
+                    </div>
+
+                    <!-- Add other form fields here -->
+                    <button type="submit" class="btn btn-primary mt-4">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Function to calculate bottle variations
+        function calculateBottleVariations() {
+            var emptyBottles = parseInt($('#id_empty_bottles').val()) || 0;
+            var collectedBottles = parseInt($('#id_collected_bottles').val()) || 0;
+            var bottleVariations = Math.max(0, emptyBottles - collectedBottles);
+            $('#id_bottle_variations').val(bottleVariations);
+        }
+
+        // Function to calculate coupon variations
+        function calculateCouponVariations() {
+            var qtyNeeded = parseInt($('#id_qty_needed').val()) || 0;
+            var noOfCoupons = parseInt($('#id_no_of_coupons').val()) || 0;
+            var couponVariations = Math.max(0, qtyNeeded - noOfCoupons);
+            $('#id_coupon_variations').val(couponVariations);
+        }
+
+        // Call the functions initially to prepopulate the fields
+        calculateBottleVariations();
+        calculateCouponVariations();
+
+        // Bind change event to collected bottles, empty bottles, and no of coupons fields
+        $('#id_empty_bottles, #id_collected_bottles, #id_no_of_coupons').on('input', function() {
+            calculateBottleVariations();
+            calculateCouponVariations();
+        });
+    });
+</script>
+
+
+{% else %}
+
+
+
+
+
+
+
+
+
+
+{% endif %}

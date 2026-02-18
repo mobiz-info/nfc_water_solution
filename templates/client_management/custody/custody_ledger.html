@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% block title %} Custody Ledger {% endblock %}
+{% block content %}
+{% load static %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Custody Ledger</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{% url 'custody:custody_product_summary' %}">Product Custody</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="javascript:history.back()">Customer Custody</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+            Ledger
+        </li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+
+                    <div class="card-header">
+                        <div class="card-title">
+                            Custody Ledger
+                        </div>
+                    </div>
+
+                    <!-- Filter -->
+                    <div class="mt">
+                        <form method="get">
+                            <div class="row mt-3">
+                                <div class="row col-md-6">
+                                    <div class="row col-12" style="justify-content: space-around;">
+                                        <div class="col-md-5">
+                                            <label>From Date</label>
+                                            <input type="date" name="start_date"
+                                                   value="{{ start_date|date:'Y-m-d' }}"
+                                                   class="form-select">
+                                        </div>
+                                        <div class="col-md-5">
+                                            <label>To Date</label>
+                                            <input type="date" name="end_date"
+                                                   value="{{ end_date|date:'Y-m-d' }}"
+                                                   class="form-select">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row col-md-6 mt-4">
+                                    <div class="col-md-5 text-end">
+                                        <input type="submit" class="btn btn-primary btn-sm" value="Apply Filter">
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Table -->
+                    <div id="table-container">
+                        <div class="card-body">
+
+                            <!-- Context Info -->
+                            <div class="mb-3">
+                                <strong>Customer :</strong> {{ customer.customer_name }} <br>
+                                <strong>Route :</strong> {{ route.route_name }} <br>
+                                <strong>Product :</strong> {{ product.product_name }} <br>
+                                <strong>Total Qty :</strong> {{ total_qty }}
+                            </div>
+
+                            <table class="table table-bordered text-wrap" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>Sl No</th>
+                                        <th>Date</th>
+                                        <th>Qty</th>
+                                        <th>Deposit Type</th>
+                                        <th>Deposit Charge</th>
+                                        <th>Water Charge</th>
+                                        <th>Total Amount</th>
+                                        <!-- <th>Running Qty</th> -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for row in rows %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ row.created_date|date:"d-m-Y" }}</td>
+                                        <td>{{ row.qty }}</td>
+                                        <td>{{ row.deposit_type }}</td>
+                                        <td>{{ row.can_deposite_chrge }}</td>
+                                        <td>{{ row.five_gallon_water_charge }}</td>
+                                        <td>{{ row.amount }}</td>
+                                        <!-- <td>{{ row.running_qty }}</td> -->
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted">
+                                            No ledger data found
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

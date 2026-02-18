@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% block title %} Stock Report {% endblock %}
+{% block content %}
+{% load static %}
+{% load van_template_tags %}
+{% load sales_templatetags %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Stock Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Sales Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Stock Report</li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Stock Report
+                        </div>
+                    </div>
+                   
+                    <div class="mt">
+                        <form method="GET" action="{% url 'dsr_stock_report' %}">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-3">
+                                        <label for="from_date">From Date:</label>
+                                        <input type="date" class="form-control" id="from_date" name="from_date" value="{{ filter_data.from_date }}">
+                                    </div>
+                                    <div class="col-3">
+                                        <label for="to_date">To Date:</label>
+                                        <input type="date" class="form-control" id="to_date" name="to_date" value="{{ filter_data.to_date }}">
+                                    </div>
+                                    <div class="col-3">
+                                        <label for="route_name">Routes:</label>
+                                        <select name="route_name" class="form-select">
+                                            <option value="">All Routes</option>
+                                            {% for route in routes_instances %}
+                                                <option value="{{ route.route_name }}"  {% if route.route_name == filter_data.route_name %}selected{% endif %}>{{ route.route_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col d-flex align-items-end justify-content-end">
+                                        <input type="submit" class="btn btn-primary btn-sm mx-1" value="Apply Filter">
+                                        {% if data_filter %}
+                                        <button type="button" class="btn btn-secondary btn-sm mx-1" onclick="resetFilters()" style="width:max-content">Reset Filter</button>
+                                        {% endif %}
+                                        <a href="{% url 'dsr_stock_report_print' %}?from_date={{ filter_data.from_date }}&to_date={{ filter_data.to_date }}&route_name={{ filter_data.route_name }}" class="btn btn-outline-success btn-sm mx-1" target="__blank"><i class="fas fa-file-excel"></i>Print</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    {% if data_filter %}
+                    <div>
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-4">
+                                    <p><strong>Salesman: {{van_route.van.salesman.get_fullname}}</strong></p>
+                                </div>
+                                <div class="col-4">
+                                    <p><strong>Driver: {{van_route.van.driver.get_fullname}}</strong></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="table-container">
+                        <div class="card-body">
+                            <table class="table table-bordered text-wrap" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center text-bold" colspan="10">Stock Report</th>
+                                    </tr>
+                                    <tr>
+                                        <th scope="col" style="text-align:center;">Date</th>
+                                        <th scope="col" style="text-align:center;">Product Name</th>
+                                        <th scope="col" style="text-align:center;">Opening Stock</th>
+                                        <th scope="col" style="text-align:center;">Issued</th>
+                                        <th scope="col" style="text-align:center;">Sold</th>
+                                        <th scope="col" style="text-align:center;">FOC</th>
+                                        <th scope="col" style="text-align:center;">Returned</th>
+                                        <th scope="col" style="text-align:center;">Damage Bottle</th>
+                                        <th scope="col" style="text-align:center;">Empty Bottle</th>
+                                        <th scope="col" style="text-align:center;">Fresh Stock</th>
+                                        <th scope="col" style="text-align:center;">Closing</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for van_data in van_product_stock %}
+                                    {% get_van_product_wise_stock filter_data.from_date van_data.van.pk van_data.product.pk as stock_details %}
+                                    <tr>
+                                        <td style="text-align:center;">{{van_data.created_date|date:'d/m/Y'}}</td>
+                                        <td style="text-align:center;">{{van_data.product.product_name}}</td>
+                                        <td style="text-align:center;">{{van_data.opening_count}}</td>
+                                        <td style="text-align:center;">{{stock_details.issued_count}}</td>
+                                        <td style="text-align:center;">{{van_data.sold_count }}</td>
+                                        <td style="text-align:center;">{{van_data.foc }}</td>
+                                        <td style="text-align:center;">{{van_data.return_count}}</td>
+                                        <td style="text-align:center;">{{van_data.damage_count}}</td>
+                                        <td style="text-align:center;">{{van_data.empty_can_count}}</td>
+                                        <td style="text-align:center;">{{stock_report_total}}</td>
+                                        <td style="text-align:center;">{{van_data.closing_count}}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<script>
+    $('#submit').click(function(e){ 
+        e.preventDefault();       
+        // Show the table when dates are selected
+        if($("#from_date").val() && $("#to_date").val()){
+            $('#table-container').show(); 
+        }else{
+            $('#table-container').hide();
+        }
+    });
+
+    function resetFilters() {
+        // Reset the form and refresh the page
+        document.querySelector('form').reset();
+        window.location.href = "{% url 'dsr_stock_report' %}";
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% block title %} User View {% endblock %}
+{% block content %}
+{% load static %}
+
+<style>
+  .form-group input[type="checkbox"] {
+    display: inline-block;
+    margin-right: 10px; /* Adjust spacing between checkboxes as needed */
+}
+</style>
+
+  <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <!-- <h6 class="fw-medium mb-0">User Details</h6> -->
+      <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+      </ol>
+  </div>
+  
+
+  <div class="main-content app-content">
+      <div class="container-fluid">
+       
+                <!-- Start:: row-1 -->
+      
+                  
+               
+                  
+                </div>
+                  
+
+            <!-- Start:: row-2 -->
+            <div class="row">
+              <div class="col-xl-12">
+                  <div class="card custom-card">
+                      <div class="card-header">
+                          <div class="card-title">
+                              Add
+                          </div>
+                      </div>
+                          {% comment %} <div class="card-body">
+                            <form id="sale_form" method="post" action="">
+                                {% csrf_token %}
+
+                                <input type="hidden" id="customer_id" name="customer_id" value="{{user_det.customer_id}}">
+                                {{ form.as_p }}
+                                 
+
+
+                                <div class="d-flex align-items-center">
+                                    <button id="initiate_sale" class="btn btn-success btn-wave me-2">Add</button>
+                                </div>
+                            </form>
+                            
+                        </div> {% endcomment %}
+                        <div class="card custom-card">
+                            <div class="card-header">
+                                <div class="card-title">Add Custody Item for {{ route.route_name }}</div>
+                            </div>
+                            <div class="card-body">
+                                <form id="custody_item_form" method="post" action="{% url 'create_custody_item' route_id=route.route_id %}">
+                                    {% csrf_token %}
+                                    <!-- Add form fields here -->
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </form>
+                            </div>
+                        </div>
+                  <!-- End:: row-1 -->
+                </div>
+              </div>
+            <!-- Add JavaScript to handle dynamic product filtering -->
+          
+
+            <!-- Start:: row-2 -->
+            <!-- Start:: row-2 -->
+              <div class="row">
+        
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+          // JavaScript code to allow only one checkbox to be selected   
+          $('input[type="checkbox"]').click(function () {
+            // If the clicked checkbox is checked, uncheck all other checkboxes
+            if ($(this).prop('checked')) {
+                $('input[type="checkbox"]').not(this).prop('checked', false);
+            }
+        });
+        $('#id_category').change(function () {
+            var category_id = $(this).val();
+            $.ajax({
+                url: '{% url "get_products_by_category" %}',
+                data: {'category_id': category_id},
+                dataType: 'json',
+                success: function (data) {
+                    var products_select = $('#id_product_name');
+                    var options_html = '';  // Initialize an empty string to store the HTML options
+                    options_html += '<option> --- </option>';
+                 
+                    $.each(data.products, function (index, product) {
+                        options_html += '<option value="' + product.product_id + '">' + product.product_name + '</option>';
+                    });
+                    products_select.html(options_html);  // Set the HTML of the select element
+                }
+            });
+        });
+        $('#id_product_name').change(function () {
+                    var product_id = $(this).val();
+                    console.log("product_id",product_id)
+                    $.ajax({
+                        url: '{% url "get_rate_by_products" %}',
+                        data: {'product_id': product_id},
+                        dataType: 'json',
+                        success: function (data) {
+                            $("#id_drate").val(data.product_rate)
+                        }
+                    });
+                });
+
+
+
+
+
+    });
+
+</script>
+
+
+
+
+
+{% endblock %}
+                        

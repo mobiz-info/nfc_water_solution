@@ -1,0 +1,269 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Create Custody Items</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Client Management</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Create Custody Items</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-1 -->
+        <div class="row justify-content-center">
+            <div class="col-auto">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title mx-auto">
+                            Create Custody Items
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form action="{% url 'customer_custody_item' customer_instance.pk %}" role="form" method="post" enctype="multipart/form-data"  class="row g-3 ajax redirect" autocomplete="off" novalidate>
+                            {% csrf_token %}
+                            <!--row 1-->
+                            <div class="row mt-2">
+                                <div class="col-12" style="overflow: auto;">
+                                    <table class="table table-bordered text-nowrap" style="width:100%;">
+                                        <thead>
+                                            <tr>
+                                            <th scope="col" class="text-left">Customer Name</th>
+                                            <th scope="col" class="text-left">Mobile No</th>
+                                            <th scope="col" class="text-center">Building Name</th>
+                                            <th scope="col" class="text-center">Door House No</th>
+                                            <th scope="col" class="text-center">Route Name</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="customerTableBody">
+                                            <tr>
+                                                <td class="text-left">{{customer_instance.customer_name}}</td>
+                                                <td class="text-left">{{customer_instance.mobile_no}}</td>
+                                                <td class="text-center">{{customer_instance.building_name}}</td>
+                                                <td class="text-center">{{customer_instance.door_house_no}}</td>
+                                                <td class="text-center">{{customer_instance.routes.route_name}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div> 
+                            </div>
+                            <div class="row mt-2">
+                                <div class="row">
+                                    <div class="table-responsive card-body add_item_container custody_items_formset">
+                                        <table id="data-table-basic" class="table table-striped table-vmiddle">
+                                            <thead>
+                                                <tr>
+                                                    <th data-column-id="image" colspan="4">Add Custody Items</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <th style="min-width: 15px;">Product</th>
+                                                <th style="min-width: 15px;">Quantity</th>
+                                                <th style="min-width: 15px;">Serial Number</th>
+                                                <th style="min-width: 15px;">Amount</th>
+                                                <th style="min-width: 15px;"></th>
+                                                {% for item in custody_items_formset.forms %}
+                                                <tr class="form_set_row custody_items_formset">
+                                                    {{item.id}}
+                                                    <td>
+                                                        <span class="product">
+                                                            {{ item.product }}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="quantity">
+                                                            {{ item.quantity }}
+                                                        </span>
+                                                    </td>
+
+                                                    <td>
+                                                        <span class="serialnumber">
+                                                            {{ item.serialnumber }}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="amount">
+                                                            {{ item.amount }}
+                                                        </span>
+                                                    </td>
+                                                    <td class="delete">
+                                                        {% if item.instance.pk %}{{ item.DELETE }}{% endif %}
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                        {{ custody_items_formset.management_form }}
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-2">
+                                        <div class="form-group required">
+                                            <label class='control-label'>Deposit Type</label>
+                                            <div class="py-2">
+                                                <input type="radio" name="deposit_type" value="deposit" checked> Deposit
+                                                <input type="radio" name="deposit_type" value="non_deposit" class="ml-3"> Non Deposit
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-2">
+                                        <div class="form-group required">
+                                            <label class='control-label'>Total Amount</label>
+                                            {{custody_custom_form.total_amount}}
+                                            <span style="color: red;">{{ custody_custom_form.total_amount.errors }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-2">
+                                        <div class="form-group required">
+                                            <label class='control-label'>Agrement No</label>
+                                            {{custody_custom_form.agreement_no}}
+                                            <span style="color: red;"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 text-end mt-5">
+                                        <input type="submit" class="btn btn-primary me-2 mb-2" value="Submit">
+                                        <button class="btn btn-success   me-md-2  mb-2" type="button" onClick="javascript:history.go(-1);"> <i class="bi bi-backspace-fill pe-1"></i>Back</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block static %}
+{% load static %}
+<style>
+    .dynamic-formset-add td{
+        text-align: center !important;
+    }
+    .custody_items_formset a.add-row::before{
+        content: "+ Add"
+    }
+    .custody_items_formset a.remove::before{
+        content: "Remove"
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        $('.custody_items_formset table tr.form_set_row').formset({
+            prefix: '{{ custody_items_formset.prefix }}',
+            formCssClass: 'dynamic-formset',
+
+            'added': function (row) {
+                
+            },
+        });
+    });
+</script>
+{% comment %} <script type="text/javascript">
+    function calculateGrandTotal() {
+        var grandTotal = 0;
+        $('.total_including_vat').each(function() {
+            var totalIncludingVat = parseFloat($(this).val().trim());
+            if (!isNaN(totalIncludingVat)) {
+                grandTotal += totalIncludingVat;
+            }
+        });
+        $('#id_grand_total').val(grandTotal.toFixed(2));
+        calculateSubTotal();
+    }
+    
+    $('.total_including_vat').on('input', function() {
+        calculateGrandTotal();
+    });
+
+    $('#id_discount').on('input', function() {
+        calculateGrandTotal();
+    });
+
+    $('#id_amout_recieved').on('input', function() {
+        var totalAmnt = parseFloat($('#id_amout_total').val().trim());
+        var recievedAmt = parseFloat($('#id_amout_recieved').val().trim());
+
+        var balanceAmt = totalAmnt - recievedAmt
+        $('#id_balance_amount').val(balanceAmt.toFixed(2));
+
+    });
+</script>
+<script>
+    $('.product-category').change(function(){
+        var elemId = $(this).attr("id");
+        var formCount = elemId.match(/\d+/);
+        var category_id = $(this).val(); // Parse the amount as a float
+        
+        if(category_id){
+            $.ajax({
+                url: '/invoice-management/get-products/' + category_id, 
+                type: 'GET',
+                dataType: 'json',
+                success: function(data){
+                    $('#id_custody_items_formset-'+formCount+'-product').empty();
+                    $('#id_custody_items_formset-'+formCount+'-product').append($('<option>').text('Select Product').attr('value', ''));
+                    $.each(data.data, function(index, product){
+                        $('#id_custody_items_formset-'+formCount+'-product').append($('<option>').text(product.product_name).attr('value', product.product_id));
+                    });
+                }
+            });
+        }else{
+            $('#id_custody_items_formset-'+formCount+'-product').empty();
+            $('#id_custody_items_formset-'+formCount+'-product').append($('<option>').text('Select Product').attr('value', ''));
+        }
+    });
+</script>
+
+<script>
+    $('.product-item').change(function(){
+        var elemId = $(this).attr("id");
+        var formCount = elemId.match(/\d+/);
+        var productId = $(this).val(); 
+        var customerId = $("#customer_id_hfield").val();
+        
+        if(productId && customerId){
+            $.ajax({
+                url: '/invoice-management/get-customer-rate/' + productId + '/' + customerId, 
+                type: 'GET',
+                dataType: 'json',
+                success: function(data){
+                    $('#id_custody_items_formset-'+formCount+'-rate').val(data.product_price);
+                }
+            });
+        }else{
+            $('#id_custody_items_formset-'+formCount+'-rate').empty();
+        }
+    });
+</script>
+<script>
+    function createInvoiceBtn(button){
+        var customerId = $(button).data("customer_id");
+        $('#customer_id_hfield').val(customerId);        
+    };
+    
+</script>
+
+{% if is_edit %}
+<script>
+    $(document).ready(function(){
+        calculateGrandTotal();
+
+        var totalAmnt = parseFloat($('#id_amout_total').val().trim());
+        var recievedAmt = parseFloat($('#id_amout_recieved').val().trim());
+
+        var balanceAmt = totalAmnt - recievedAmt
+        $('#id_balance_amount').val(balanceAmt.toFixed(2));
+
+        customerFinding() 
+    });
+</script>
+{% endif %} {% endcomment %}
+    
+
+{% endblock static %}

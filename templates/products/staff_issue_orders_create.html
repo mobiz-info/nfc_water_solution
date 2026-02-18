@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Issue Order</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Product</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Product Details -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title mx-auto">Product Details</div>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <tr>
+                                <td class="text-secondary">Product Name</td>
+                                <td>{{ product_id }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-secondary">Product Category</td>
+                                <td>{{ product_category }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-secondary">Product Unit</td>
+                                <td>{{ productunit }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-secondary">Requested Quantity</td>
+                                <td>{{ count }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-secondary">Max Van Bottle Quantity</td>
+                                <td>{{ max_van_bottle_count }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-secondary">Current Stock Bottle Count</td>
+                                <td>{{ van_current_stock_bottle_count }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Product Details -->
+
+        <!-- Start Form for Creating Product -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title mx-auto">Issue Order</div>
+                    </div>
+                    <div class="card-body">
+                        <form enctype="multipart/form-data" role="form" method="post" class="row g-3 needs-validation">
+                            {% csrf_token %}
+                            <!-- Row 1 -->
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Issue Quantity</label>
+                                    {{ form.quantity_issued }}
+                                    <span style="color: red;">{{ form.quantity_issued.errors }}</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Bottle Selection Area -->
+                            <div class="col-md-12" id="bottle-selection-container" style="display:none;">
+                                <div class="form-group">
+                                    <label class="control-label">Select Bottles</label>
+                                    <div id="bottle-list">
+                                        <!-- Bottles will be loaded here -->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Assign Route</label>
+                                    {{ form.van_route_id }}
+                                    <span style="color: red;">{{ form.van_route_id.errors }}</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Assign Salesman</label>
+                                    {{ form.salesman_id }}
+                                    <span style="color: red;">{{ form.salesman_id.errors }}</span>
+                                </div>
+                            </div>
+                            <div class="col-12 text-end mt-5">
+                                <input type="submit" class="btn btn-primary me-2 mb-2" value="Submit">
+                                <button class="btn btn-success me-md-2  mb-2" type="button" onClick="javascript:history.go(-1);">
+                                    <i class="bi bi-backspace-fill pe-1"></i>Back
+                                </button>
+                                <a class="btn btn-success me-md-2  mb-2" href="{% url 'products' %}">
+                                    <i class="bi bi-backspace-fill pe-1"></i> Back to Dashboard
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Form for Creating Product -->
+
+    </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const productCategory = "{{ product_category }}";
+        const productName = "{{ product_id }}";
+        const quantityInput = document.getElementById("id_quantity_issued");
+        const bottleSelectionContainer = document.getElementById("bottle-selection-container");
+        const bottleListContainer = document.getElementById("bottle-list");
+        const form = document.querySelector("form");
+
+        // Logic check: Is this a 5 Gallon product?
+        // Note: product_id context variable seems to return the product name string based on the template viewing.
+        // Ideally we should check product object or category.
+        // Assuming "5 Gallon" text check for now based on previous context.
+        const isFiveGallon = productName.includes("5 Gallon"); 
+
+        if (isFiveGallon) {
+            bottleSelectionContainer.style.display = "block";
+            quantityInput.setAttribute("readonly", true); // Make quantity read-only as it depends on selection
+            fetchBottles();
+        }
+
+        function fetchBottles() {
+            // We need the actual product ID. 
+            // The template uses {{ product_id }} which renders as name?? 
+            // Let's inspect the context in the view. `product_id` in context is `issue.product_id` which is a ProductItemMaster object.
+            // So {{ product_id.pk }} would be the ID. 
+            // Wait, looking at the template: 
+            // 25: <td>{{ product_id }}</td> 
+            // This suggests it might be rendering the __str__
+            
+            // To be safe, we need the UUID. 
+            // I'll grab it from the URL or add a hidden field if I could edit the view context, 
+            // but I can edit the template to output the ID.
+            
+            const productId = "{{ issue_instance.product_id.pk }}"; // Accessing via issue_instance
+            
+            fetch(`{% url 'bottle_management:get_available_bottles' %}?product_id=${productId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.bottles) {
+                        displayBottles(data.bottles);
+                    } else {
+                        bottleListContainer.innerHTML = "<p>No bottles available in Godown.</p>";
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching bottles:', error);
+                    bottleListContainer.innerHTML = "<p>Error loading bottles.</p>";
+                });
+        }
+
+        function displayBottles(bottles) {
+            bottleListContainer.innerHTML = "";
+            if (bottles.length === 0) {
+                 bottleListContainer.innerHTML = "<p>No bottles available.</p>";
+                 return;
+            }
+
+            // Create a select2 or simple checkbox list
+            // For simplicity, let's use checkboxes for now.
+            
+            // Search Box
+            const searchInput = document.createElement("input");
+            searchInput.type = "text";
+            searchInput.placeholder = "Search Serial Number...";
+            searchInput.className = "form-control mb-2";
+            searchInput.onkeyup = function() {
+                const filter = searchInput.value.toLowerCase();
+                const items = bottleListContainer.querySelectorAll(".bottle-item");
+                items.forEach(item => {
+                    const text = item.textContent.toLowerCase();
+                    item.style.display = text.includes(filter) ? "" : "none";
+                });
+            };
+            bottleListContainer.appendChild(searchInput);
+
+
+            const listDiv = document.createElement("div");
+            listDiv.style.maxHeight = "200px";
+            listDiv.style.overflowY = "auto";
+            listDiv.style.border = "1px solid #ddd";
+            listDiv.style.padding = "10px";
+
+            bottles.forEach(bottle => {
+                const div = document.createElement("div");
+                div.className = "form-check bottle-item";
+                
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.className = "form-check-input bottle-checkbox";
+                checkbox.name = "selected_bottles";
+                checkbox.value = bottle.id;
+                checkbox.id = "bottle_" + bottle.id;
+                
+                checkbox.addEventListener("change", updateQuantity);
+
+                const label = document.createElement("label");
+                label.className = "form-check-label";
+                label.htmlFor = "bottle_" + bottle.id;
+                label.textContent = bottle.serial_number;
+
+                div.appendChild(checkbox);
+                div.appendChild(label);
+                listDiv.appendChild(div);
+            });
+            bottleListContainer.appendChild(listDiv);
+        }
+
+        function updateQuantity() {
+            const selected = document.querySelectorAll(".bottle-checkbox:checked").length;
+            quantityInput.value = selected;
+        }
+        
+        // Form submission handler to ensure quantity matches
+        form.addEventListener("submit", function(e) {
+            if (isFiveGallon) {
+                 const selected = document.querySelectorAll(".bottle-checkbox:checked").length;
+                 if (selected === 0) {
+                     e.preventDefault();
+                     alert("Please select at least one bottle.");
+                 }
+            }
+        });
+    });
+</script>
+{% endblock %}

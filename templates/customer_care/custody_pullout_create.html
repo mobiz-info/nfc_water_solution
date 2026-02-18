@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Custody Pull Out
+    </h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Customer care</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Custody Pul Out</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+             <!-- Start:: row-1 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title mx-auto">
+                            Custody Pull Out
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form enctype="multipart/form-data" role="form" method="post" class="row g-3 needs-validation">
+                            {% csrf_token %}
+            <!--row 1-->
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <input type="hidden" id="customer" name="" value="{{customer}}"
+                                        class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    {{ form.customer_custody_item}}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Request Type</label>
+                                    {{ form.request_type }}
+                                    <span style="color: red;">{{ form.request_type.errors }}</span>
+                                    <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                </div>
+                            </div>
+                         
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Item Name</label>
+                                    {{ form.item_name }}
+                                    <span style="color: red;">{{ form.item_name.errors }}</span>
+                                    <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Quantity To Be Taken Out</label>
+                                    {{ form.qty_to_be_taken_out }}
+                                    <span style="color: red;">{{ form.qty_to_be_taken_out.errors }}</span>
+                                    <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Scheduled Date</label>
+                                    {{ form.scheduled_date }}
+                                    <span style="color: red;">{{ form.scheduled_date.errors }}</span>
+                                    <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                </div>
+                            </div>
+                            <div class="col-12 text-end mt-5">
+                                <input type="submit" class="btn btn-primary me-2 mb-2" value="Submit">
+                                <button class="btn btn-success   me-md-2  mb-2" type="button" onClick="javascript:history.go(-1);">
+                                    <i class="bi bi-backspace-fill pe-1"></i>Back</button>
+                                <a class="btn btn-success me-md-2  mb-2" href="{% url 'requestType' %}">
+                                    <i class="bi bi-backspace-fill pe-1"></i> Back to Dashboard
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#id_item_name').change(function () {
+            console.log("select_change");
+            customer = document.getElementById("customer").value
+            item_name = $(this).val();
+            console.log(customer,"customer",item_name,"item_name");
+            $.ajax({
+            type: "get",
+            url: "{% url 'get_item_quantity' %}",
+            data: {'customer': customer,'item_name':item_name},
+            datatype:"json",
+            success: function (data)
+                    {
+                        console.log(data.item_count)
+                        $('#id_qty_to_be_taken_out').val(data.item_count);
+                        $('#id_customer_custody_item').val(data.customer_custody_item);
+
+                    }
+            });
+
+
+        });
+    });
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

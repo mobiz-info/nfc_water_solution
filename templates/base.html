@@ -1,0 +1,2247 @@
+<!DOCTYPE html> 
+{%load static%}
+
+<html lang="en" dir="ltr" data-nav-layout="vertical"  data-theme-mode="light" data-header-styles="gradient" data-menu-styles="dark">
+
+<head>
+    <!-- Meta Data -->
+    <meta charset="UTF-8">
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Sana Water</title>
+    <meta name="Description" content="Sana water admin dashboard">
+    <meta name="Author" content="Mobiz Technologies">
+	<meta name="keywords" content="Sana water admin dashboard">
+
+    <!-- Favicon -->
+    <link rel="icon" href="{%static 'images/brand-logos/desktop-logos.png'%}" type="image/x-icon">
+
+    <!-- Choices JS -->
+    <script src="{%static 'libs/choices.js/public/assets/scripts/choices.min.js'%}"></script>
+
+    <!-- Main Theme Js -->
+    <script src="{%static 'js/main.js'%}"></script>
+
+    <!-- Bootstrap Css -->
+    <link id="style" href="{%static 'libs/bootstrap/css/bootstrap.min.css'%}" rel="stylesheet">
+
+    <!-- Style Css -->
+    <link href="{%static 'css/styles.css'%}" rel="stylesheet">
+
+    <!-- Icons Css -->
+    <link href="{%static 'css/icons.css'%}" rel="stylesheet">
+
+    <!-- Simplebar Css -->
+    <link href="{%static 'libs/simplebar/simplebar.min.css'%}" rel="stylesheet">
+
+    <!-- Color Picker Css -->
+    <link rel="stylesheet" href="{%static 'libs/flatpickr/flatpickr.min.css'%}">
+    <link rel="stylesheet" href="{%static 'libs/@simonwep/pickr/themes/nano.min.css'%}">
+
+    <!-- Choices Css -->
+    <link rel="stylesheet" href="{%static 'libs/choices.js/public/assets/styles/choices.min.css'%}">
+    <link rel="stylesheet" href="{%static 'sweet/sweetalert2.css'%}">
+    
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.3.0/css/responsive.bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+
+    <style>
+        .my-pagina{
+            padding-top: 3px;
+            padding-bottom: 3px;
+        }
+        .pagination-btn-div{
+            display: flex;
+            border: 1px solid #dee2e6;
+            width: fit-content;
+            border-radius: 8px;
+            text-align: right !important;
+            padding-left: 0;
+            padding-right: 0;
+        }
+        .pagination-btn-div span.endless_page_current,.pagination-btn-div a{
+            padding: 5px 15px;
+        }
+        .pagination-btn-div span.endless_page_current{
+            color: #f0f0f0;
+            background-color: rgb(142, 84, 233);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Start Switcher -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="switcher-canvas" aria-labelledby="offcanvasRightLabel">
+        <div class="offcanvas-header border-bottom">
+            <h5 class="offcanvas-title text-default" id="offcanvasRightLabel">Switcher</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <nav class="border-bottom border-block-end-dashed">
+                <div class="nav nav-tabs nav-justified" id="switcher-main-tab" role="tablist">
+                    <button class="nav-link active" id="switcher-home-tab" data-bs-toggle="tab" data-bs-target="#switcher-home"
+                        type="button" role="tab" aria-controls="switcher-home" aria-selected="true">Theme Styles</button>
+                    <button class="nav-link" id="switcher-profile-tab" data-bs-toggle="tab" data-bs-target="#switcher-profile"
+                        type="button" role="tab" aria-controls="switcher-profile" aria-selected="false">Theme Colors</button>
+                </div>
+            </nav>
+            <div class="tab-content" id="nav-tabContent">
+                <div class="tab-pane fade show active border-0" id="switcher-home" role="tabpanel" aria-labelledby="switcher-home-tab"
+                    tabindex="0">
+                    <div class="">
+                        <p class="switcher-style-head">Theme Color Mode:</p>
+                        <div class="row switcher-style gx-0">
+                            <div class="col-4">
+                                <div class="form-check switch-select">
+                                    <label class="form-check-label" for="switcher-light-theme">
+                                        Light
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="theme-style" id="switcher-light-theme"
+                                        checked>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-check switch-select">
+                                    <label class="form-check-label" for="switcher-dark-theme">
+                                        Dark
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="theme-style" id="switcher-dark-theme">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="">
+                        <p class="switcher-style-head">Directions:</p>
+                        <div class="row switcher-style gx-0">
+                            <div class="col-4">
+                                <div class="form-check switch-select">
+                                    <label class="form-check-label" for="switcher-ltr">
+                                        LTR
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="direction" id="switcher-ltr" checked>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-check switch-select">
+                                    <label class="form-check-label" for="switcher-rtl">
+                                        RTL
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="direction" id="switcher-rtl">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="">
+                        <p class="switcher-style-head">Navigation Styles:</p>
+                        <div class="row switcher-style gx-0">
+                            <div class="col-4">
+                                <div class="form-check switch-select">
+                                    <label class="form-check-label" for="switcher-vertical">
+                                        Vertical
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="navigation-style" id="switcher-vertical"
+                                        checked>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-check switch-select">
+                                    <label class="form-check-label" for="switcher-horizontal">
+                                        Horizontal
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="navigation-style"
+                                        id="switcher-horizontal">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="navigation-menu-styles">
+                        <p class="switcher-style-head">Vertical &amp; Horizontal Menu Styles:</p>
+                        <div class="row switcher-style gx-0  gy-2">
+                            <div class="col-4">
+                                <div class="form-check switch-select">
+                                    <label class="form-check-label" for="switcher-menu-click">
+                                        Menu Click
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="navigation-menu-styles"
+                                        id="switcher-menu-click">
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-check switch-select">
+                                    <label class="form-check-label" for="switcher-menu-hover">
+                                        Menu Hover
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="navigation-menu-styles"
+                                        id="switcher-menu-hover">
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-check switch-select">
+                                    <label class="form-check-label" for="switcher-icon-click">
+                                        Icon Click
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="navigation-menu-styles"
+                                        id="switcher-icon-click">
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-check switch-select">
+                                    <label class="form-check-label" for="switcher-icon-hover">
+                                        Icon Hover
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="navigation-menu-styles"
+                                        id="switcher-icon-hover">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidemenu-layout-styles">
+                        <p class="switcher-style-head">Sidemenu Layout Styles:</p>
+                        <div class="row switcher-style gx-0  gy-2">
+                            <div class="col-sm-6">
+                                <div class="form-check switch-select">
+                                    <label class="form-check-label" for="switcher-default-menu">
+                                        Default Menu
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="sidemenu-layout-styles"
+                                        id="switcher-default-menu" checked>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-check switch-select">
+                                    <label class="form-check-label" for="switcher-closed-menu">
+                                        Closed Menu
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="sidemenu-layout-styles"
+                                        id="switcher-closed-menu">
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-check switch-select">
+                                    <label class="form-check-label" for="switcher-icontext-menu">
+                                        Icon Text
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="sidemenu-layout-styles"
+                                        id="switcher-icontext-menu">
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-check switch-select">
+                                    <label class="form-check-label" for="switcher-icon-overlay">
+                                        Icon Overlay
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="sidemenu-layout-styles"
+                                        id="switcher-icon-overlay">
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-check switch-select">
+                                    <label class="form-check-label" for="switcher-detached">
+                                        Detached
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="sidemenu-layout-styles"
+                                        id="switcher-detached">
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-check switch-select">
+                                    <label class="form-check-label" for="switcher-double-menu">
+                                        Double Menu
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="sidemenu-layout-styles"
+                                        id="switcher-double-menu">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="">
+                        <p class="switcher-style-head">Page Styles:</p>
+                        <div class="row switcher-style gx-0">
+                            <div class="col-4">
+                                <div class="form-check switch-select">
+                                    <label class="form-check-label" for="switcher-regular">
+                                        Regular
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="page-styles" id="switcher-regular"
+                                        checked>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-check switch-select">
+                                    <label class="form-check-label" for="switcher-classic">
+                                        Classic
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="page-styles" id="switcher-classic">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="">
+                        <p class="switcher-style-head">Layout Width Styles:</p>
+                        <div class="row switcher-style gx-0">
+                            <div class="col-4">
+                                <div class="form-check switch-select">
+                                    <label class="form-check-label" for="switcher-full-width">
+                                        Full Width
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="layout-width" id="switcher-full-width"
+                                        checked>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-check switch-select">
+                                    <label class="form-check-label" for="switcher-boxed">
+                                        Boxed
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="layout-width" id="switcher-boxed">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="">
+                        <p class="switcher-style-head">Menu Positions:</p>
+                        <div class="row switcher-style gx-0">
+                            <div class="col-4">
+                                <div class="form-check switch-select">
+                                    <label class="form-check-label" for="switcher-menu-fixed">
+                                        Fixed
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="menu-positions" id="switcher-menu-fixed"
+                                        checked>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-check switch-select">
+                                    <label class="form-check-label" for="switcher-menu-scroll">
+                                        Scrollable
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="menu-positions" id="switcher-menu-scroll">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="">
+                        <p class="switcher-style-head">Header Positions:</p>
+                        <div class="row switcher-style gx-0">
+                            <div class="col-4">
+                                <div class="form-check switch-select">
+                                    <label class="form-check-label" for="switcher-header-fixed">
+                                        Fixed
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="header-positions"
+                                        id="switcher-header-fixed" checked>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-check switch-select">
+                                    <label class="form-check-label" for="switcher-header-scroll">
+                                        Scrollable
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="header-positions"
+                                        id="switcher-header-scroll" >
+                                </div>
+                            </div>
+                            <div class="col-4 rounded-header">
+                                <div class="form-check switch-select">
+                                    <label class="form-check-label" for="switcher-header-rounded">
+                                        Rounded
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="header-positions"
+                                        id="switcher-header-rounded">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="">
+                        <p class="switcher-style-head">Loader:</p>
+                        <div class="row switcher-style gx-0">
+                            <div class="col-4">
+                                <div class="form-check switch-select">
+                                    <label class="form-check-label" for="switcher-loader-enable">
+                                        Enable
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="page-loader"
+                                        id="switcher-loader-enable">
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-check switch-select">
+                                    <label class="form-check-label" for="switcher-loader-disable">
+                                        Disable
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="page-loader"
+                                        id="switcher-loader-disable" checked>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade border-0" id="switcher-profile" role="tabpanel" aria-labelledby="switcher-profile-tab" tabindex="0">
+                    <div>
+                        <div class="theme-colors">
+                            <p class="switcher-style-head">Menu Colors:</p>
+                            <div class="d-flex switcher-style pb-2">
+                                <div class="form-check switch-select me-3">
+                                    <input class="form-check-input color-input color-white" data-bs-toggle="tooltip"
+                                        data-bs-placement="top" title="Light Menu" type="radio" name="menu-colors"
+                                        id="switcher-menu-light">
+                                </div>
+                                <div class="form-check switch-select me-3">
+                                    <input class="form-check-input color-input color-dark" data-bs-toggle="tooltip"
+                                        data-bs-placement="top" title="Dark Menu" type="radio" name="menu-colors"
+                                        id="switcher-menu-dark" checked>
+                                </div>
+                            </div>
+                            <div class="px-4 pb-3 text-muted fs-11">Note:If you want to change color Menu dynamically change from below Theme Primary color picker</div>
+                        </div>
+                        <div class="theme-colors">
+                            <p class="switcher-style-head">Header &amp; Bredcrumb Colors:</p>
+                            <div class="d-flex switcher-style pb-2">
+                                <div class="form-check switch-select me-3">
+                                    <input class="form-check-input color-input color-dark" data-bs-toggle="tooltip"
+                                        data-bs-placement="top" title="Dark Header" type="radio" name="header-colors"
+                                        id="switcher-header-dark">
+                                </div>
+                                <div class="form-check switch-select me-3">
+                                    <input class="form-check-input color-input color-primary" data-bs-toggle="tooltip"
+                                        data-bs-placement="top" title="Color Header" type="radio" name="header-colors"
+                                        id="switcher-header-primary">
+                                </div>
+                                <div class="form-check switch-select me-3">
+                                    <input class="form-check-input color-input color-gradient" data-bs-toggle="tooltip"
+                                        data-bs-placement="top" title="Gradient Header" type="radio" name="header-colors"
+                                        id="switcher-header-gradient">
+                                </div>
+                                <div class="form-check switch-select me-3">
+                                    <input class="form-check-input color-input color-transparent" data-bs-toggle="tooltip"
+                                        data-bs-placement="top" title="Transparent Header" type="radio" name="header-colors"
+                                        id="switcher-header-transparent">
+                                </div>
+                            </div>
+                            <div class="px-4 pb-3 text-muted fs-11">Note:If you want to change color Header dynamically change from below Theme Primary color picker</div>
+                        </div>
+                        <div class="theme-colors">
+                            <p class="switcher-style-head">Header Colors:</p>
+                            <div class="d-flex switcher-style pb-2">
+                                <div class="form-check switch-select me-3">
+                                    <input class="form-check-input color-input color-white" data-bs-toggle="tooltip"
+                                        data-bs-placement="top" title="Default Light Header" type="radio" name="header-colors"
+                                        id="switcher-default-header-light">
+                                </div>
+                                <div class="form-check switch-select me-3">
+                                    <input class="form-check-input color-input color-dark" data-bs-toggle="tooltip"
+                                        data-bs-placement="top" title="Default Dark Header" type="radio" name="header-colors"
+                                        id="switcher-default-header-dark">
+                                </div>
+                                <div class="form-check switch-select me-3">
+                                    <input class="form-check-input color-input color-primary" data-bs-toggle="tooltip"
+                                        data-bs-placement="top" title="Default Color Header" type="radio" name="header-colors"
+                                        id="switcher-default-header-primary">
+                                </div>
+                                <div class="form-check switch-select me-3">
+                                    <input class="form-check-input color-input color-gradient" data-bs-toggle="tooltip"
+                                        data-bs-placement="top" title="Default Gradient Header" type="radio" name="header-colors"
+                                        id="switcher-default-header-gradient">
+                                </div>
+                                <div class="form-check switch-select me-3">
+                                    <input class="form-check-input color-input color-transparent" data-bs-toggle="tooltip"
+                                        data-bs-placement="top" title="Default Transparent Header" type="radio" name="header-colors"
+                                        id="switcher-default-header-transparent">
+                                </div>
+                            </div>
+                            <div class="px-4 pb-3 text-muted fs-11">Note:If you want to change color Header dynamically change from below Theme Primary color picker</div>
+                        </div>
+                        <div class="theme-colors">
+                            <p class="switcher-style-head">Theme Primary:</p>
+                            <div class="d-flex flex-wrap align-items-center switcher-style">
+                                <div class="form-check switch-select me-3">
+                                    <input class="form-check-input color-input color-primary-1" type="radio"
+                                        name="theme-primary" id="switcher-primary">
+                                </div>
+                                <div class="form-check switch-select me-3">
+                                    <input class="form-check-input color-input color-primary-2" type="radio"
+                                        name="theme-primary" id="switcher-primary1">
+                                </div>
+                                <div class="form-check switch-select me-3">
+                                    <input class="form-check-input color-input color-primary-3" type="radio" name="theme-primary"
+                                        id="switcher-primary2">
+                                </div>
+                                <div class="form-check switch-select me-3">
+                                    <input class="form-check-input color-input color-primary-4" type="radio" name="theme-primary"
+                                        id="switcher-primary3">
+                                </div>
+                                <div class="form-check switch-select me-3">
+                                    <input class="form-check-input color-input color-primary-5" type="radio" name="theme-primary"
+                                        id="switcher-primary4">
+                                </div>
+                                <div class="form-check switch-select ps-0 mt-1 color-primary-light">
+                                    <div class="theme-container-primary"></div>
+                                    <div class="pickr-container-primary"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="theme-colors">
+                            <p class="switcher-style-head">Theme Background:</p>
+                            <div class="d-flex flex-wrap align-items-center switcher-style">
+                                <div class="form-check switch-select me-3">
+                                    <input class="form-check-input color-input color-bg-1" type="radio"
+                                        name="theme-background" id="switcher-background">
+                                </div>
+                                <div class="form-check switch-select me-3">
+                                    <input class="form-check-input color-input color-bg-2" type="radio"
+                                        name="theme-background" id="switcher-background1">
+                                </div>
+                                <div class="form-check switch-select me-3">
+                                    <input class="form-check-input color-input color-bg-3" type="radio" name="theme-background"
+                                        id="switcher-background2">
+                                </div>
+                                <div class="form-check switch-select me-3">
+                                    <input class="form-check-input color-input color-bg-4" type="radio"
+                                        name="theme-background" id="switcher-background3">
+                                </div>
+                                <div class="form-check switch-select me-3">
+                                    <input class="form-check-input color-input color-bg-5" type="radio"
+                                        name="theme-background" id="switcher-background4">
+                                </div>
+                                <div class="form-check switch-select ps-0 mt-1 tooltip-static-demo color-bg-transparent">
+                                    <div class="theme-container-background"></div>
+                                    <div class="pickr-container-background"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="menu-image mb-3">
+                            <p class="switcher-style-head">Menu With Background Image:</p>
+                            <div class="d-flex flex-wrap align-items-center switcher-style">
+                                <div class="form-check switch-select m-2">
+                                    <input class="form-check-input bgimage-input bg-img1" type="radio"
+                                        name="theme-background" id="switcher-bg-img">
+                                </div>
+                                <div class="form-check switch-select m-2">
+                                    <input class="form-check-input bgimage-input bg-img2" type="radio"
+                                        name="theme-background" id="switcher-bg-img1">
+                                </div>
+                                <div class="form-check switch-select m-2">
+                                    <input class="form-check-input bgimage-input bg-img3" type="radio" name="theme-background"
+                                        id="switcher-bg-img2">
+                                </div>
+                                <div class="form-check switch-select m-2">
+                                    <input class="form-check-input bgimage-input bg-img4" type="radio"
+                                        name="theme-background" id="switcher-bg-img3">
+                                </div>
+                                <div class="form-check switch-select m-2">
+                                    <input class="form-check-input bgimage-input bg-img5" type="radio"
+                                        name="theme-background" id="switcher-bg-img4">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-grid canvas-footer"> 
+                    <a href="javascript:void(0);" id="reset-all" class="btn btn-danger">Reset</a> 
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Switcher -->
+    <!-- Loader -->
+    <div id="loader" >
+        <img src="{%static 'images/media/loader.svg'%}" alt="">
+    </div>
+    <!-- Loader -->
+
+    <div class="page">
+         <!-- app-header -->
+         <header class="app-header">
+
+            <!-- Start::main-header-container -->
+            <div class="main-header-container container-fluid">
+
+                <!-- Start::header-content-left -->
+                <div class="header-content-left">
+
+                    <!-- Start::header-element -->
+                    <div class="header-element">
+                        <div class="horizontal-logo">
+                            <a href="index.html" class="header-logo">
+                                <img src="{%static 'images/brand-logos/desktop-logos.png'%}" alt="logo" class="desktop-logo">
+                                <img src="{%static 'images/brand-logos/toggle-logo.png'%}" alt="logo" class="toggle-logo">
+                                <img src="{%static 'images/brand-logos/logo_1.png'%}" alt="logo" width="50" height="50">
+                                <img src="{%static 'images/brand-logos/toggle-dark.png'%}" alt="logo" class="toggle-dark">
+                            </a>
+                        </div>
+                    </div>
+                    <!-- End::header-element -->
+
+                    <!-- Start::header-element -->
+                    <div class="header-element">
+                        <!-- Start::header-link -->
+                        <a aria-label="anchor" href="javascript:void(0);" class="sidemenu-toggle header-link" data-bs-toggle="sidebar">
+                            <span class="open-toggle me-2">
+                                <i class="bx bx-menu header-link-icon"></i>
+                              </span>
+                        </a>
+                        {% comment %} <div class="main-header-center  d-none d-lg-block  header-link">
+                            <input type="text" class="form-control form-control-lg" id="typehead" placeholder="Search for results..."
+                                autocomplete="off">
+                            <button type="button"  aria-label="button" class="btn pe-1"><i class="fe fe-search" aria-hidden="true"></i></button>
+                            <div id="headersearch" class="header-search">
+                                <div class="p-3">
+                                    <div class="">
+                                        <p class="fw-semibold text-muted mb-2 fs-13">Recent Searches</p>
+                                        <div class="ps-2">
+                                            <a  href="javascript:void(0)" class="search-tags"><i class="fe fe-search me-2"></i>People<span></span></a>
+                                            <a  href="javascript:void(0)" class="search-tags"><i class="fe fe-search me-2"></i>Pages<span></span></a>
+                                            <a  href="javascript:void(0)" class="search-tags"><i class="fe fe-search me-2"></i>Articles<span></span></a>
+                                        </div>
+                                    </div>
+                                     <div class="mt-3">
+                                        <p class="fw-semibold text-muted mb-2 fs-13">Apps and pages</p>
+                                        <ul class="ps-2">
+                                            <li class="p-1 d-flex align-items-center text-muted mb-2 search-app">
+                                                <a href="full-calendar.html"><span><i class="bx bx-calendar me-2 fs-14 bg-primary-transparent p-2 rounded-circle"></i>Calendar</span></a>
+                                            </li>
+                                            <li class="p-1 d-flex align-items-center text-muted mb-2 search-app">
+                                                <a href="mail.html"><span><i class="bx bx-envelope me-2 fs-14 bg-primary-transparent p-2 rounded-circle"></i>Mail</span></a>
+                                            </li>
+                                            <li class="p-1 d-flex align-items-center text-muted mb-2 search-app">
+                                                <a href="buttons.html"><span><i class="bx bx-dice-1 me-2 fs-14 bg-primary-transparent p-2 rounded-circle"></i>Buttons</span></a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="mt-3">
+                                       <p class="fw-semibold text-muted mb-2 fs-13">Links</p>
+                                       <ul class="ps-2">
+                                            <li class="p-1 align-items-center text-muted mb-1 search-app">
+                                                    <a href="javascript:void(0)" class="text-primary"><u>http://spruko/spruko.com</u></a>
+                                            </li>
+                                            <li class="p-1 align-items-center text-muted mb-1 search-app">
+                                                    <a href="javascript:void(0)" class="text-primary"><u>http://spruko/spruko.com</u></a>
+                                            </li>
+                                        </ul>
+                                   </div>
+                                </div>
+                                <div class="py-3 border-top px-0">
+                                    <div class="text-center">
+                                        <a href="javascript:void(0)" class="text-primary text-decoration-underline fs-15">View all</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> {% endcomment %}
+
+                        <!-- End::header-link -->
+                    </div>
+                    <!-- End::header-element -->
+
+                    <!-- Start::header-element -->
+                    <div class="header-element header-search d-lg-none d-block ">
+                        <!-- Start::header-link -->
+                        <a aria-label="anchor" href="javascript:void(0);" class="header-link" data-bs-toggle="modal" data-bs-target="#searchModal">
+                            <i class="bx bx-search-alt-2 header-link-icon"></i>
+                        </a>
+                        <!-- End::header-link -->
+                    </div>
+                    <!-- End::header-element -->
+
+                </div>
+                <!-- End::header-content-left -->
+
+                <!-- Start::header-content-right -->
+                <div class="header-content-right">
+
+                    
+
+                    <!-- Start::header-element -->
+                    <div class="header-element header-theme-mode">
+                        <!-- Start::header-link|layout-setting -->
+                        <a aria-label="anchor" href="javascript:void(0);" class="header-link layout-setting">
+                                <!-- Start::header-link-icon -->
+                                    <i class="bx bx-sun bx-flip-horizontal header-link-icon ionicon  dark-layout"></i>
+                                <!-- End::header-link-icon -->
+                                <!--  Start::header-link-icon -->
+                                    <i class="bx bx-moon bx-flip-horizontal header-link-icon ionicon light-layout"></i>
+                                <!-- End::header-link-icon -->
+                        </a>
+                        <!-- End::header-link|layout-setting -->
+                    </div>
+                    <!-- End::header-element -->
+
+
+                    <!-- End::header-element -->
+
+                    <!-- Start::header-element -->
+                    {% comment %} <div class="header-element notifications-dropdown ">
+                        <!-- Start::header-link|dropdown-toggle -->
+                        <a href="javascript:void(0);" class="header-link dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" id="messageDropdown" aria-expanded="false">
+                             <i class="bx bx-bell bx-flip-horizontal header-link-icon ionicon"></i>
+                           <span class="badge bg-info rounded-pill header-icon-badge pulse pulse-secondary" id="notification-icon-badge">5</span>
+                        </a>
+                        <!-- End::header-link|dropdown-toggle -->
+                        <!-- Start::main-header-dropdown -->
+                        <div class="main-header-dropdown dropdown-menu  border-0 dropdown-menu-end" data-popper-placement="none">
+                            <div class="p-3">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <p class="mb-0 fs-17 fw-semibold">Notifications</p>
+                                    <span class="badge bg-secondary-transparent" id="notifiation-data">5 Unread</span>
+                                </div>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <ul class="list-unstyled mb-0" id="header-notification-scroll">
+                                <li class="dropdown-item">
+                                    <div class="d-flex align-items-start">
+                                         <div class="pe-2">
+                                             <span class="avatar avatar-md bg-secondary-transparent rounded-2">
+                                                <img src="{% static 'images/faces/2.jpg' %}" alt="">
+                                             </span>
+                                         </div>
+                                         <div class="flex-grow-1 d-flex  justify-content-between">
+                                            <div>
+                                                <p class="mb-0 fw-semibold"><a href="notifications.html">Olivia James</a></p>
+                                                <span class="fs-12 text-muted fw-normal">Congratulate for New template start</span>
+                                            </div>
+                                            <div class="min-w-fit-content ms-2 text-end">
+                                                <a aria-label="anchor" href="javascript:void(0);" class="min-w-fit-content text-muted me-1 dropdown-item-close1"><i class="ti ti-x fs-14"></i></a>
+                                                <p class="mb-0 text-muted fs-11">2 min ago</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="dropdown-item">
+                                    <div class="d-flex align-items-start">
+                                         <div class="pe-2">
+                                             <span class="avatar avatar-md bg-warning-transparent rounded-2"><i class="bx bx-pyramid fs-18"></i></span>
+                                         </div>
+                                         <div class="flex-grow-1 d-flex  justify-content-between">
+                                            <div>
+                                                <p class="mb-0 fw-semibold"><a href="notifications.html">Order Placed <span class="text-warning">ID: #1116773</span></a></p>
+                                                <span class="fs-12 text-muted fw-normal header-notification-text">Order Placed Successfully</span>
+                                            </div>
+                                            <div class="min-w-fit-content ms-2 text-end">
+                                                <a aria-label="anchor" href="javascript:void(0);" class="min-w-fit-content text-muted me-1 dropdown-item-close1"><i class="ti ti-x fs-14"></i></a>
+                                                <p class="mb-0 text-muted fs-11">5 min ago</p>
+                                            </div>
+                                         </div>
+                                    </div>
+                                </li>
+                                <li class="dropdown-item">
+                                    <div class="d-flex align-items-start">
+                                         <div class="pe-2">
+                                             <span class="avatar avatar-md bg-secondary-transparent rounded-2">
+                                                <img src="{% static 'images/faces/8.jpg' %}" alt="">
+                                             </span>
+                                         </div>
+                                         <div class="flex-grow-1 d-flex  justify-content-between">
+                                            <div>
+                                                <p class="mb-0 fw-semibold"><a href="notifications.html">Elizabeth Lewis</a></p>
+                                                <span class="fs-12 text-muted fw-normal">added new schedule realease date</span>
+                                            </div>
+                                            <div class="min-w-fit-content ms-2 text-end">
+                                                <a aria-label="anchor" href="javascript:void(0);" class="min-w-fit-content text-muted me-1 dropdown-item-close1"><i class="ti ti-x fs-14"></i></a>
+                                                <p class="mb-0 text-muted fs-11">10 min ago</p>
+                                            </div>
+                                         </div>
+                                    </div>
+                                </li>
+                                <li class="dropdown-item">
+                                    <div class="d-flex align-items-start">
+                                         <div class="pe-2">
+                                             <span class="avatar avatar-md bg-primary-transparent rounded-2"><i class="bx bx-pulse fs-18"></i></span>
+                                         </div>
+                                         <div class="flex-grow-1 d-flex  justify-content-between">
+                                            <div>
+                                                <p class="mb-0 fw-semibold"><a href="notifications.html">Your Order Has Been Shipped</a></p>
+                                                <span class="fs-12 text-muted fw-normal header-notification-text">Order No: 123456 Has Shipped To Your Delivery Address</span>
+                                            </div>
+                                            <div class="min-w-fit-content ms-2 text-end">
+                                                <a aria-label="anchor" href="javascript:void(0);" class="min-w-fit-content text-muted me-1 dropdown-item-close1"><i class="ti ti-x fs-14"></i></a>
+                                                <p class="mb-0 text-muted fs-11">12 min ago</p>
+                                            </div>
+                                         </div>
+                                    </div>
+                                </li>
+                                <li class="dropdown-item">
+                                    <div class="d-flex align-items-start">
+                                         <div class="pe-2">
+                                             <span class="avatar avatar-md bg-pink-transparent rounded-2"><i class="bx bx-badge-check"></i></span>
+                                         </div>
+                                         <div class="flex-grow-1 d-flex  justify-content-between">
+                                            <div>
+                                                <p class="mb-0 fw-semibold"><a href="notifications.html">Account Has Been Verified</a></p>
+                                                <span class="fs-12 text-muted fw-normal  header-notification-text">Your Account Has Been Verified Sucessfully</span>
+                                            </div>
+                                            <div class="min-w-fit-content ms-2 text-end">
+                                                <a aria-label="anchor" href="javascript:void(0);" class="min-w-fit-content text-muted me-1 dropdown-item-close1"><i class="ti ti-x fs-14"></i></a>
+                                                <p class="mb-0 text-muted fs-11">20 min ago</p>
+                                            </div>
+                                         </div>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div class="p-3 empty-header-item1 border-top">
+                                <div class="d-grid">
+                                    <a href="notifications.html" class="btn btn-primary">View All</a>
+                                </div>
+                            </div>
+                            <div class="p-5 empty-item1 d-none">
+                                <div class="text-center">
+                                    <span class="avatar avatar-xl avatar-rounded bg-secondary-transparent">
+                                        <i class="bx bx-bell-off bx-tada fs-2"></i>
+                                    </span>
+                                    <h6 class="fw-semibold mt-3">No New Notifications</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End::main-header-dropdown -->
+                    </div> {% endcomment %}
+                    <!-- End::header-element -->
+                    {% comment %} <div class="header-element d-flex header-settings header-shortcuts-dropdown">
+                        <a aria-label="anchor" href="javascript:void(0);" class=" header-link nav-link icon" data-bs-toggle="offcanvas" data-bs-target="#apps" aria-controls="apps">
+                         <i class="bx bx-category  header-link-icon"></i>
+                        </a>
+                     </div> {% endcomment %}
+
+                    {% comment %} <div class="offcanvas offcanvas-end wd-330" tabindex="-1" id="apps" aria-labelledby="appsLabel">
+                    <div class="offcanvas-header border-bottom">
+                        <h5 id="appsLabel" class="mb-0 fs-18">Related Apps</h5>
+                        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"> <i class="bx bx-x   apps-btn-close"></i></button>
+                    </div> {% endcomment %}
+                    {% comment %} <div class="p-3">
+                        <div class="row g-3">
+                            <div class="col-6">
+                                    <a href="full-calendar.html">
+                                        <div class="text-center p-3 related-app border">
+                                            <span class="avatar fs-23 bg-success-transparent p-2 mb-2">
+                                                <i class="bx bx-calendar text-success"></i>
+                                            </span>
+                                            <span class="d-block fs-13 text-muted fw-semibold">Calendar</span>
+                                        </div>
+                                    </a>
+                            </div>
+                            <div class="col-6">
+                                    <a href="mail.html">
+                                        <div class="text-center p-3 related-app border">
+                                            <span class="avatar  fs-23 bg-info-transparent p-2 mb-2">
+                                                <i class="bx bx-envelope  text-info"></i>
+                                            </span>
+                                            <span class="d-block fs-13 text-muted fw-semibold">Mail</span>
+                                        </div>
+                                    </a>
+                            </div>
+                            <div class="col-6">
+                                <a href="profile.html">
+                                        <div class="text-center p-3 related-app border">
+                                            <span class="avatar bg-warning-transparent fs-23 bg p-2 mb-2">
+                                                <i class="bx bx-user  text-warning"></i>
+                                            </span>
+                                            <span class="d-block fs-13 text-muted fw-semibold">Profile</span>
+                                        </div>
+                                    </a>
+                            </div>
+                            <div class="col-6">
+                                <a href="chat.html">
+                                        <div class="text-center p-3 related-app border">
+                                            <span class="avatar    bg-pink-transparent fs-23 bg p-2 mb-2">
+                                                <i class="bx bx-chat text-pink"></i>
+                                            </span>
+                                            <span class="d-block fs-13 text-muted fw-semibold">Chat</span>
+                                        </div>
+                                    </a>
+                            </div>
+                            <div class="col-6">
+                                <a href="contacts.html">
+                                        <div class="text-center p-3 related-app border">
+                                            <span class="avatar    bg-secondary-transparent fs-23 bg p-2 mb-2">
+                                                <i class="bx bx-phone text-secondary"></i>
+                                            </span>
+                                            <span class="d-block fs-13 text-muted fw-semibold">Contacts</span>
+                                        </div>
+                                    </a>
+                            </div>
+                            <div class="col-6">
+                                <a href="mail-settings.html">
+                                        <div class="text-center p-3 related-app border">
+                                            <span class="avatar    bg-teal-transparent fs-23 bg p-2 mb-2">
+                                                <i class="bx bx-cog text-teal"></i>
+                                            </span>
+                                            <span class="d-block fs-13 text-muted fw-semibold">Settings</span>
+                                        </div>
+                                    </a>
+                            </div>
+                        </div>
+                    </div>
+                    </div> {% endcomment %}
+                    <!-- Start::header-element -->
+
+                    <!-- Start::header-element -->
+                    {% comment %} <div class="header-element header-fullscreen">
+                        <!-- Start::header-link -->
+                        <a aria-label="anchor" onclick="openFullscreen();" href="javascript:void(0);" class="header-link">
+                                <i class="bx bx-fullscreen header-link-icon  full-screen-open"></i>
+                                <i class="bx bx-exit-fullscreen header-link-icon  full-screen-close  d-none"></i>
+                           </a>
+                        <!-- End::header-link -->
+                    </div> {% endcomment %}
+                    <!-- End::header-element -->
+
+                     <!-- Start::header-element -->
+                     {% comment %} <div class="header-element d-flex header-settings">
+                        <a aria-label="anchor"  href="javascript:void(0);" class=" header-link nav-link icon me-1" data-bs-toggle="offcanvas" data-bs-target="#sidebar-right" aria-controls="sidebar-right">
+                         <i class="bx bx-slider header-link-icon"></i>
+                        </a>
+                     </div> {% endcomment %}
+                   <!-- End::header-element -->
+
+                    <!-- Start::header-element -->
+                    <div class="header-element mainuserProfile">
+                        <!-- Start::header-link|dropdown-toggle -->
+                        <a href="javascript:void(0);" class="header-link dropdown-toggle" id="mainHeaderProfile" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                            <div class="d-flex align-items-center">
+                                <div class="d-sm-flex wd-100p">
+                                    <div class="avatar avatar-sm"><img alt="avatar" class="rounded-circle" src="{% static 'images/faces/1.jpg' %}"></div>
+                                    <div class="ms-2 my-auto d-none d-xl-flex">
+                                        <h6 class=" font-weight-semibold mb-0 fs-13 user-name d-sm-block d-none">{{request.user}}</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                        <!-- End::header-link|dropdown-toggle -->
+                        <ul class="dropdown-menu  border-0 main-header-dropdown  overflow-hidden header-profile-dropdown" aria-labelledby="mainHeaderProfile">
+                            {% comment %} <li><a class="dropdown-item border-bottom" href="profile.html"><i class="fs-13 me-2 bx bx-user"></i>Profile</a></li> {% endcomment %}
+                            {% comment %} <li><a class="dropdown-item border-bottom" href="mail.html"><i class="fs-13 me-2 bx bx-comment"></i>Message</a></li> {% endcomment %}
+                            {% comment %} <li><a class="dropdown-item border-bottom" href="mail-settings.html"><i class="fs-13 me-2 bx bx-cog"></i>Settings</a></li> {% endcomment %}
+                            {% comment %} <li><a class="dropdown-item border-bottom" href="faq's.html"><i class="fs-13 me-2 bx bx-help-circle"></i>Help</a></li> {% endcomment %}
+                            <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fs-13 me-2 bx bx-arrow-to-right"></i>Log Out</a></li>
+                        </ul>
+                    </div>
+                    <!-- End::header-element -->
+
+                    <!-- Start::header-element -->
+                    {% comment %} <div class="header-element">
+                        <!-- Start::header-link|switcher-icon -->
+                        <a aria-label="anchor" href="javascript:void(0);" class="header-link switcher-icon ms-1" data-bs-toggle="offcanvas" data-bs-target="#switcher-canvas">
+                             <i class="bx bx-cog bx-spin header-link-icon"></i>
+                          </a>
+                        <!-- End::header-link|switcher-icon -->
+                    </div> {% endcomment %}
+                    <!-- End::header-element -->
+
+                </div>
+                <!-- End::header-content-right -->
+
+            </div>
+            <!-- End::main-header-container -->
+
+        </header>
+        <!-- /app-header -->
+        <!-- Start::app-sidebar -->
+        <aside class="app-sidebar" id="sidebar">
+
+            <!-- Start::main-sidebar-header -->
+            <div class="main-sidebar-header">
+                <a href="" class="header-logo">
+                    <img src="{%static 'images/brand-logos/logo_1.png' %}" alt="logo" class="desktop-logo">
+                    <img src="{%static 'images/brand-logos/logo_1.png' %}" alt="logo" class="toggle-logo">
+                    <img src="{%static 'images/brand-logos/logo_1.png' %}" alt="logo" width="50" height="50" style="display: block; margin: 0 auto;">
+                    <img src="{%static 'images/brand-logos/logo_1.png' %}" alt="logo" class="toggle-dark">
+                </a>
+            </div>
+            <!-- End::main-sidebar-header -->
+
+            <!-- Start::main-sidebar -->
+            <div class="main-sidebar" id="sidebar-scroll">
+
+                <!-- Start::nav -->
+                <nav class="main-menu-container nav nav-pills flex-column sub-open">
+                    <a href="{% url 'dashboard' %}">
+                        <div class="slide-left" id="slide-left" >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191" width="24" height="24" viewBox="0 0 24 24"> <path d="M13.293 6.293 7.586 12l5.707 5.707 1.414-1.414L10.414 12l4.293-4.293z"></path> </svg>
+                    </div>
+                    </a>
+                    <a href="{% url 'dashboard' %}" class="side-menu__item">
+                        <span class=" side-menu__icon">
+                            <i class='bx bx-desktop'></i>
+                        </span>
+                        <span class="side-menu__label">Dashboard</span>
+                    </a>
+                                        <!-- Start::nav -->
+                        <nav class="main-menu-container nav nav-pills flex-column sub-open">
+                            <a href="{% url 'overview' %}">
+                                <div class="slide-left" id="slide-left" >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191" width="24" height="24" viewBox="0 0 24 24"> 
+                                        <path d="M13.293 6.293 7.586 12l5.707 5.707 1.414-1.414L10.414 12l4.293-4.293z"></path>
+                                    </svg>
+                                </div>
+                            </a>
+                            <a href="{% url 'overview' %}" class="side-menu__item">
+                                <span class="side-menu__icon">
+                                    <i class='bx bx-desktop'></i>
+                                </span>
+                                <span class="side-menu__label">Overview</span>
+                            </a>
+                            <!-- End::slide__category -->
+
+                        </nav>
+                        <!-- End::nav -->
+
+                    <ul class="main-menu">
+                        <!-- Start::slide__category -->
+                        <li class="slide__category"><span class="category-name">Main</span></li>
+                        <!-- End::slide__category -->
+
+                        <!-- Start::slide -->
+                        <li class="slide has-sub">
+                            <a href="javascript:void(0);" class="side-menu__item">
+                                <span class=" side-menu__icon">
+                                    <i class='bx bx-desktop'></i>
+                                </span>
+                                <span class="side-menu__label">Master<span class="badge bg-warning-transparent ms-2 d-inline-block">4</span></span>
+                                <i class="fe fe-chevron-right side-menu__angle"></i>
+                            </a>
+                            <ul class="slide-menu child1">
+                                <li class="slide side-menu__label1">
+                                    <a href="javascript:void(0)"></a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'branch' %}" class="side-menu__item">Branch</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'designation' %}" class="side-menu__item">Designation</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'route' %}" class="side-menu__item">Route</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'locations_list' %}" class="side-menu__item">Location</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'amount_change_customer_list' %}" class="side-menu__item">amount change customer list</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="slide__category"><span class="category-name">Accounts</span></li>
+                        <!-- End::slide__category -->
+
+                        <!-- Start::slide -->
+                        <li class="slide has-sub">
+                            <a href="javascript:void(0);" class="side-menu__item">
+                                <span class=" side-menu__icon">
+                                    <i class='bx bx-desktop'></i>
+                                </span>
+                                <span class="side-menu__label">Accounts<span class="badge bg-warning-transparent ms-2 d-inline-block">1</span></span>
+                                <i class="fe fe-chevron-right side-menu__angle"></i>
+                            </a>
+                            <ul class="slide-menu child1">
+                                <li class="slide side-menu__label1">
+                                    <a href="javascript:void(0)"></a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'users' %}" class="side-menu__item">User</a>
+                                </li>
+                               
+                            </ul>
+                        </li>
+                        <li class="slide__category"><span class="category-name">Sales Management</span></li>
+
+                        <li class="slide has-sub">
+                            <a href="javascript:void(0);" class="side-menu__item">
+                                <span class=" side-menu__icon">
+                                    <i class='bx bx-desktop'></i>
+                                </span>
+                                <span class="side-menu__label">Sales Management<span class="badge bg-warning-transparent ms-2 d-inline-block">7</span></span>
+                                <i class="fe fe-chevron-right side-menu__angle"></i>
+                            </a>
+                            <ul class="slide-menu child1">
+                                <li class="slide side-menu__label1">
+                                    <a href="javascript:void(0)"></a>
+                                </li>
+                                {% comment %} <li class="slide">
+                                    <a href="{% url 'sale_entry_log_view' %}" class="side-menu__item">Create Purchase Order</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'transaction_history_list' %}" class="side-menu__item">Transaction History</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'sale_entry_log_list' %}" class="side-menu__item">Sale History</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'outstanding_log_list' %}" class="side-menu__item">Outstanding HistoryView</a>
+                                </li>{% endcomment %}
+                                 
+				                <li class="slide">
+                                    <a href="{% url 'staff_issue_orders_list' %}" class="side-menu__item">Orders</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'route_sales_report' %}" class="side-menu__item">Detailed Sales Report</a>
+                                </li> 
+                                <li class="slide">
+                                    <a href="{% url 'collection_report' %}" class="side-menu__item">Collection Report</a>
+                                </li>
+                                 <li class="slide">
+                                    <a href="{% url 'yearmonthsalesreport' %}" class="side-menu__item">Year and Month Report</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'product_route_salesreport' %}" class="side-menu__item">Product Wise Sales Report</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'customerSales_report' %}" class="side-menu__item">Sales Report</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'monthly_sales_report' %}" class="side-menu__item">Monthly Sales Report</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'collection_list' %}" class="side-menu__item">Collection</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'cheque_collections' %}" class="side-menu__item">Cheque Collection</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'coupon_sales_report' %}" class="side-menu__item">Coupon Sales</a>
+                                </li>
+                                {% comment %} <li class="slide">
+                                    <a href="{% url 'suspense_report' %}" class="side-menu__item">Suspense Report</a>
+                                </li> {% endcomment %}
+                            </ul>
+                        </li>
+                        <!-- End::slide -->
+                         
+                        <li class="slide has-sub">
+                            <a href="javascript:void(0);" class="side-menu__item">
+                                <span class=" side-menu__icon">
+                                    <i class='bx bx-desktop'></i>
+                                </span>
+                                <span class="side-menu__label">Daily Sales Reports <span class="badge bg-warning-transparent ms-2 d-inline-block">3</span></span>
+                                <i class="fe fe-chevron-right side-menu__angle"></i>
+                            </a>
+                            <ul class="slide-menu child1">
+                                <li class="slide side-menu__label1">
+                                    <a href="javascript:void(0)"></a>
+                                </li>
+                                
+                                 <li class="slide">
+                                    <a href="{% url 'suspense_report' %}" class="side-menu__item">Suspence</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'dsr_summary' %}" class="side-menu__item">DSR Summary</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'dsr_summary1' %}" class="side-menu__item">DSR Summary 1</a>
+                                </li> 
+                                <li class="slide">
+                                    <a href="{% url 'dsr' %}" class="side-menu__item">DSR </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="slide__category"><span class="category-name">Reports</span></li>
+
+                        <li class="slide has-sub">
+                            <a href="javascript:void(0);" class="side-menu__item">
+                                <span class=" side-menu__icon">
+                                    <i class='bx bx-desktop'></i>
+                                </span>
+                                <span class="side-menu__label">Reports<span class="badge bg-warning-transparent ms-2 d-inline-block">14</span></span>
+                                <i class="fe fe-chevron-right side-menu__angle"></i>
+                            </a>
+                            <ul class="slide-menu child1">
+                                <li class="slide side-menu__label1">
+                                    <a href="javascript:void(0)"></a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{%url 'visitstatistics_report'%}" class="side-menu__item"> Visit statistics</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'dsr_stock_report' %}" class="side-menu__item"> Stock</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'dsr_five_gallon_rates' %}" class="side-menu__item"> 5 Gallon Supplied Retes</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'dsr_credit_outstanding' %}" class="side-menu__item"> Credit Outstanding</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'dsr_coupon_book_sales' %}" class="side-menu__item"> Coupon Book Sales</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'cashsales_report' %}" class="side-menu__item"> Cash Sales</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'creditsales_report' %}" class="side-menu__item"> Credit Sales</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'dsr_coupon_sales' %}" class="side-menu__item"> Coupon Sales</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'outstanding_amount_collected' %}" class="side-menu__item"> Outstanding Amount Collected</a>
+                                </li> 
+                                <li class="slide">
+                                    <a href="{% url 'dsr_foc_customers' %}" class="side-menu__item"> FOC Customers</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'dsr_expense' %}" class="side-menu__item"> Expense</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'offload_list' %}" class="side-menu__item"> offloaded List</a>
+                                </li>
+                                {% comment %} <li class="slide">
+                                    <a href="{% url 'van_damage_stock' %}" class="side-menu__item">Van Sale Damage</a>
+                                </li> {% endcomment %}
+                                <li class="slide">
+                                    <a href="{% url 'van_damage_stock_report' %}" class="side-menu__item">Van Sale Damage</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'production_onload_report' %}" class="side-menu__item">Production Onload Report</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'scrap_clearance_report' %}" class="side-menu__item">Scrap Clearence Report</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'freelance_van_issue_report' %}" class="side-menu__item">Freelance Van Issue Report</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'audit_report' %}" class="side-menu__item">Audit Report</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'customer_outstanding_report' %}" class="side-menu__item">Outstanding Variation Report</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'custody_custom_list' %}" class="side-menu__item">Custody Custom Report</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'route_supply_report' %}" class="side-menu__item">Route Supply Report</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'route_wise_coupon_report' %}" class="side-menu__item">Route Wise Coupon Report</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="slide__category"><span class="category-name">Van Management</span></li>
+                        <!-- End::slide__category -->
+
+                        <!-- Start::slide -->
+                        <li class="slide has-sub">
+                            <a href="javascript:void(0);" class="side-menu__item">
+                                <span class=" side-menu__icon">
+                                    <i class='bx bx-desktop'></i>
+                                </span>
+                                <span class="side-menu__label">Van Management<span class="badge bg-warning-transparent ms-2 d-inline-block">6</span></span>
+                                <i class="fe fe-chevron-right side-menu__angle"></i>
+                            </a>
+                            <ul class="slide-menu child1">
+                                <li class="slide side-menu__label1">
+                                    <a href="javascript:void(0)"></a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'van' %}" class="side-menu__item">Van</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'freelancevan' %}" class="side-menu__item">Freelance Van</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'licence_list' %}" class="side-menu__item">Municipality License</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'schedule_view' %}" class="side-menu__item">Trip Schedule</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'vanstock_product' %}" class="side-menu__item">Van Product Stock</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'van_coupon_stock' %}" class="side-menu__item">Van Coupons Stock</a>
+                                </li> 
+                                <li class="slide">
+                                    <a href="{% url 'offload' %}" class="side-menu__item">Offload</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'order_change' %}" class="side-menu__item">Order Change</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'order_return' %}" class="side-menu__item">Order Return</a>
+                                </li>
+				                <li class="slide">
+                                    <a href="{% url 'expense_list' %}" class="side-menu__item">Expense</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'salesman_requests' %}" class="side-menu__item">Salesman Requests</a>
+                                </li>
+                                 
+                                <li class="slide">
+                                    <a href="{% url 'bottle_allocation' %}" class="side-menu__item">Bottle Allocation</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'order_change_reason' %}" class="side-menu__item">Order Change Reason</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'excess_bottle_count_list' %}" class="side-menu__item">Excess Bottle Count</a>
+                                </li> 
+                                <li class="slide">
+                                    <a href="{% url 'salesman_customer_request_type_list' %}" class="side-menu__item">Salesman Customer Request</a>
+                                </li> 
+                                <li class="slide">
+                                    <a href="{% url 'create_production_damage_reason' %}" class="side-menu__item">Damage Reason</a>
+                                </li>
+                                
+                                  
+                            </ul>
+                        </li>
+                        <li class="slide__category"><span class="category-name">Product Management</span></li>
+
+                        <li class="slide has-sub">
+                            <a href="javascript:void(0);" class="side-menu__item">
+                                <span class=" side-menu__icon">
+                                    <i class='bx bx-desktop'></i>
+                                </span>
+                                <span class="side-menu__label">Product Management<span class="badge bg-warning-transparent ms-2 d-inline-block">8</span></span>
+                                <i class="fe fe-chevron-right side-menu__angle"></i>
+                            </a>
+                            <ul class="slide-menu child1">
+                                <li class="slide side-menu__label1">
+                                    <a href="javascript:void(0)"></a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'category' %}" class="side-menu__item">Products Category</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'product_items' %}" class="side-menu__item">Products</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'products' %}" class="side-menu__item">Product Stock</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'defaultprice' %}" class="side-menu__item">Customer Default Price</a>
+                                </li>
+                                {% comment %} <li class="slide">
+                                    <a href="{% url 'staff_issue_orders_list' %}" class="side-menu__item">Issue Order</a>
+                                </li> {% endcomment %}
+                                <li class="slide">
+                                    <a href="{% url 'product_stock_report' %}" class="side-menu__item">Product Stock Report</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'stocktransfer' %}" class="side-menu__item">Stock Transfer</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'scrap_stock_transfer_view' %}" class="side-menu__item">Scrap Stock</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'five_gallon_stock_report' %}" class="side-menu__item">5 Gallon Stock</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="slide__category"><span class="category-name">Client Management</span></li>
+                        <!-- End::slide__category -->
+
+                        <!-- Start::slide -->
+                        <li class="slide has-sub">
+                            <a href="javascript:void(0);" class="side-menu__item">
+                                <span class=" side-menu__icon">
+                                    <i class='bx bx-desktop'></i>
+                                </span>
+                                <span class="side-menu__label">Client Management<span class="badge bg-warning-transparent ms-2 d-inline-block">7</span></span>
+                                <i class="fe fe-chevron-right side-menu__angle"></i>
+                            </a>
+                            <ul class="slide-menu child1">
+                                <li class="slide side-menu__label1">
+                                    <a href="javascript:void(0)"></a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'customers' %}" class="side-menu__item">Customer</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'latest_customers' %}" class="side-menu__item">New Customer</a>
+                                </li>
+                                {% comment %} <li class="slide">
+                                    <a href="{% url 'non_visited_customers' %}" class="side-menu__item">Non Visited Customer</a>
+                                </li> {% endcomment %}
+                                <li class="slide">
+                                    <a href="{% url 'missing_customers' %}" class="side-menu__item">Missed Customer</a>
+                                </li>
+                                 <li class="slide">
+                                    <a href="{% url 'inactive_customers' %}" class="side-menu__item">Inactive Customer</a>
+                                </li>
+				                <li class="slide">
+                                    <a href="{% url 'customer_count' %}" class="side-menu__item">Customer Count</a>
+                                </li>
+                                
+                                <li class="slide">
+                                    <a href="{% url 'vacation_route_summary' %}" class="side-menu__item">Customers on Vacation</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'customer_custody_list' %}" class="side-menu__item">Custody Issues/Pullout</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'customer_supply_list' %}" class="side-menu__item">Supply</a>
+                                </li>
+                                {% comment %} <li class="slide">
+                                    <a href="{% url 'client_report' %}" class="side-menu__item">Client Report</a>
+                                </li> {% endcomment %}
+                                                                <li class="slide">
+                                    <a href="{% url 'custody_items_list_report' %}" class="side-menu__item">Custody Item Report</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'custody_issue' %}" class="side-menu__item">Periodic Custody Report</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'custody:custody_product_summary' %}" class="side-menu__item">Custody Report</a>
+                                </li>
+                                 <li class="slide">
+                                    <a href="{% url 'custody:customer_wise_custody_summary' %}" class="side-menu__item">Customer Wise Custody</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'customer_outstanding_list' %}" class="side-menu__item">Outstanding</a>
+                                </li>
+                                {% comment %} <li class="slide">
+                                    <a href="{% url 'salesman_outstanding_list' %}" class="side-menu__item">Staff wise Outstanding</a>
+                                </li> {% endcomment %}
+                                {% comment %} <li class="slide">
+                                    <a href="{% url 'outstanding_list' %}" class="side-menu__item">Customer Outstanding</a>
+                                </li> {% endcomment %}
+                                <li class="slide">
+                                    <a href="{% url 'bottle_count' %}" class="side-menu__item">Bottle count</a>
+                                </li>
+                                {% comment %} <li class="slide">
+                                    <a href="{% url 'customer_orders_list' %}" class="side-menu__item">Customer Orders</a>
+                                </li> {% endcomment %}
+                                <li class="slide">
+                                    <a href="{% url 'nonvisitreason_List' %}" class="side-menu__item">Non Visit Reason</a>
+                                </li> 
+                                <li class="slide">
+                                    <a href="{% url 'ageing_report' %}" class="side-menu__item">Ageing Report</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'eligible_customers_conditions' %}" class="side-menu__item">Eligible Customer Conditions</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'eligible_customers' %}" class="side-menu__item">Eligible Customers</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'customer_custody_stock' %}" class="side-menu__item">Custody Stock</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="slide__category"><span class="category-name">Coupon Management</span></li>
+                        <!-- End::slide__category -->
+
+                        <!-- Start::slide -->
+                        <li class="slide has-sub">
+                            <a href="javascript:void(0);" class="side-menu__item">
+                                <span class=" side-menu__icon">
+                                    <i class='bx bx-desktop'></i>
+                                </span>
+                                <span class="side-menu__label">Coupon Management<span class="badge bg-warning-transparent ms-2 d-inline-block">3</span></span>
+                                <i class="fe fe-chevron-right side-menu__angle"></i>
+                            </a>
+                            <ul class="slide-menu child1">
+                                <li class="slide side-menu__label1">
+                                    <a href="javascript:void(0)"></a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'couponType' %}" class="side-menu__item">Coupon Type</a>
+                                </li>                               
+                                <li class="slide">
+                                    <a href="{% url 'new_coupon' %}" class="side-menu__item">Coupons</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'customer_stock' %}" class="side-menu__item">Customer Stock</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'redeemed_historyy' %}" class="side-menu__item">Redeemed History</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'coupon_recharge' %}" class="side-menu__item">Coupon Recharge</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="slide__category"><span class="category-name">Customer Care</span></li>
+
+                        <li class="slide has-sub">
+                            <a href="javascript:void(0);" class="side-menu__item">
+                                <span class=" side-menu__icon">
+                                    <i class='bx bx-desktop'></i>
+                                </span>
+                                <span class="side-menu__label">Customer Care<span class="badge bg-warning-transparent ms-2 d-inline-block">5</span></span>
+                                <i class="fe fe-chevron-right side-menu__angle"></i>
+                            </a>
+                            <ul class="slide-menu child1">
+                                <li class="slide side-menu__label1">
+                                    <a href="javascript:void(0)"></a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'requesttype_list' %}" class="side-menu__item">Request Type</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'requestType' %}" class="side-menu__item">Add Emergency Customer</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'new_customer_request' %}" class="side-menu__item">New Request</a>
+                                </li>
+                                 <li class="slide">
+                                    <a href="{% url 'water_delivery_status' %}" class="side-menu__item">Status</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'new_registered_customers' %}" class="side-menu__item">New Registered Customers</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'customer_request_type_list' %}" class="side-menu__item">Customer Request Type</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'guest_customers' %}" class="side-menu__item">Guest Customer</a>
+                                </li>
+
+                                <!-- <li class="slide">
+                                    <a href="" class="side-menu__item">Assign Van To Route</a>
+                                </li> -->
+                            </ul>
+                        </li>
+
+                        <li class="slide__category"><span class="category-name">Bottle Management</span></li>
+                        <li class="slide has-sub">
+                            <a href="javascript:void(0);" class="side-menu__item">
+                                <span class=" side-menu__icon">
+                                    <i class='bx bx-desktop'></i>
+                                </span>
+                                <span class="side-menu__label">Bottle Management<span class="badge bg-warning-transparent ms-2 d-inline-block">2</span></span>
+                                <i class="fe fe-chevron-right side-menu__angle"></i>
+                            </a>
+                            <ul class="slide-menu child1">
+                                <li class="slide side-menu__label1">
+                                    <a href="javascript:void(0)"></a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'van_route_bottle_count' %}" class="side-menu__item">Bottle Count</a>
+                                </li>                                                           
+                                <li class="slide">
+                                    <a href="{% url 'bottle_management:bottle-generator' %}" class="side-menu__item">Generate Bottle</a>
+                                </li>  
+                                <li class="slide">
+                                    <a href="{% url 'bottle_management:nfc_mapping' %}" class="side-menu__item">NFC Mapping</a>
+                                </li> 
+                                
+                            </ul>
+                        </li>
+
+                        <li class="slide__category"><span class="category-name">Audit Management</span></li>
+                        <li class="slide has-sub">
+                            <a href="javascript:void(0);" class="side-menu__item">
+                                <span class=" side-menu__icon">
+                                    <i class='bx bx-desktop'></i>
+                                </span>
+                                <span class="side-menu__label">Audit Management<span class="badge bg-warning-transparent ms-2 d-inline-block">2</span></span>
+                                <i class="fe fe-chevron-right side-menu__angle"></i>
+                            </a>
+                            <ul class="slide-menu child1">
+                                <li class="slide side-menu__label1">
+                                    <a href="javascript:void(0)"></a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'select_executive' %}" class="side-menu__item">Audit</a>
+                                </li>                                                           
+                                
+                            </ul>
+                        </li>
+
+                        <li class="slide__category"><span class="category-name">Competiter Analysis</span></li>
+
+                        <li class="slide has-sub">
+                            <a href="javascript:void(0);" class="side-menu__item">
+                                <span class=" side-menu__icon">
+                                    <i class='bx bx-desktop'></i>
+                                </span>
+                                <span class="side-menu__label">Competiter Analysis<span class="badge bg-warning-transparent ms-2 d-inline-block">3</span></span>
+                                <i class="fe fe-chevron-right side-menu__angle"></i>
+                            </a>
+                            <ul class="slide-menu child1">
+                                <li class="slide side-menu__label1">
+                                    <a href="javascript:void(0)"></a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'competitor_form' %}" class="side-menu__item">Add Competitor</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'competitor_analysis_form' %}" class="side-menu__item">Add Competiter Log</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'competitor_analysis_list' %}" class="side-menu__item">Competiter List View</a>
+                                </li>
+                            </ul>
+                        </li>
+                        
+                        <!-- End::slide -->
+                        <li class="slide__category"><span class="category-name">Settings</span></li>
+                        <li class="slide has-sub {% if is_tax_pages %}open{% endif %}">
+                            <a href="javascript:void(0);" class="side-menu__item">
+                                <span class=" side-menu__icon">
+                                    <i class='bx bx-desktop'></i>
+                                </span>
+                                <span class="side-menu__label">Tax<span class="badge bg-warning-transparent ms-2 d-inline-block">1</span></span>
+                                <i class="fe fe-chevron-right side-menu__angle"></i>
+                            </a>
+                            <ul class="slide-menu child1">
+                                <li class="slide side-menu__label1">
+                                    <a href="javascript:void(0)"></a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'tax_settings:tax_types' %}" class="side-menu__item">Tax Settings</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="slide has-sub ">
+                            <a href="javascript:void(0);" class="side-menu__item">
+                                <span class=" side-menu__icon">
+                                    <i class='bx bx-desktop'></i>
+                                </span>
+                                <span class="side-menu__label">GPS</span>
+                                <i class="fe fe-chevron-right side-menu__angle"></i>
+                            </a>
+                            <ul class="slide-menu child1">
+                                <li class="slide side-menu__label1">
+                                    <a href="javascript:void(0)"></a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{% url 'gps_settings' %}" class="side-menu__item">GPS Settings</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <!-- End::slide -->
+                    </ul>
+                    <a href="{% url 'receipt_list' %}" class="side-menu__item">
+                        <span class=" side-menu__icon">
+                            <i class='bx bx-desktop'></i>
+                        </span>
+                        <span class="side-menu__label">Receipt</span>
+                    </a>
+                    <a href="{% url 'invoice:invoice_list' %}">
+                        <div class="slide-left" id="slide-left" >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191" width="24" height="24" viewBox="0 0 24 24"> <path d="M13.293 6.293 7.586 12l5.707 5.707 1.414-1.414L10.414 12l4.293-4.293z"></path> </svg>
+                    </div>
+                    </a>
+                    <a href="{% url 'invoice:invoice_list' %}" class="side-menu__item">
+                        <span class=" side-menu__icon">
+                            <i class='bx bx-desktop'></i>
+                        </span>
+                        <span class="side-menu__label">Invoice Management</span>
+                    </a>
+                    <a href="{% url 'invoice:payment_adjust' %}" class="side-menu__item">
+                        <span class=" side-menu__icon">
+                            <i class='bx bx-desktop'></i>
+                        </span>
+                        <span class="side-menu__label">Payment Adjust</span>
+                    </a>
+                    <a href="{% url 'invoice:customerwise_invoice' %}" class="side-menu__item">
+                        <span class="side-menu__icon">
+                            <i class='bx bx-desktop'></i>
+                        </span>
+                        <span class="side-menu__label">Customer Wise Invoice</span>
+                    </a>
+                    <a href="{% url 'credit_note:credit_note_list' %}" class="side-menu__item">
+                        <span class=" side-menu__icon">
+                            <i class='bx bx-desktop'></i>
+                        </span>
+                        <span class="side-menu__label">Credit Note</span>
+                    </a>
+                   
+                    <a href="{% url 'privacy_list' %}" class="side-menu__item">
+                        <span class=" side-menu__icon">
+                            <i class='bx bx-desktop'></i>
+                        </span>
+                        <span class="side-menu__label">Privacy Policy</span>
+                    </a>
+                    {% comment %} <a href="{% url 'permission_management_tab_list' %}" class="side-menu__item">
+                        <span class="side-menu__icon">
+                            <i class='bx bx-lock-alt'></i>  <!-- Lock icon for permissions -->
+                        </span>
+                        <span class="side-menu__label">Permission Management</span>
+                    </a> {% endcomment %}
+                    <a href="{% url 'processing_log' %}" class="side-menu__item">
+                        <span class=" side-menu__icon">
+                            <i class='bx bx-desktop'></i>
+                        </span>
+                        <span class="side-menu__label">Processing Log</span>
+                    </a>
+                    <div class="slide-right" id="slide-right"><svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191" width="24" height="24" viewBox="0 0 24 24"> <path d="M10.707 17.707 16.414 12l-5.707-5.707-1.414 1.414L13.586 12l-4.293 4.293z"></path> </svg></div>
+                </nav>
+                <!-- End::nav -->
+
+            </div>
+            <!-- End::main-sidebar -->
+
+        </aside>
+        {%block content%}
+
+
+        {%endblock%}
+        {% if messages %}
+        <script>
+            console.log("::::",messages);
+        </script>
+        {% for message in messages %}
+        <script>
+            
+            console.log(":::::::::::::::::::::::",{{message}});
+            
+        </script>
+        {% endfor %}
+        {% endif %}
+        <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModal" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                  <div class="modal-body">
+                    <span class="input-group">
+                      <input type="search" class="form-control px-2 " placeholder="Search..." aria-label="Username">
+                      <a href="javascript:void(0);" class="input-group-text bg-primary text-white" id="Search-Grid"><i class="fe fe-search header-link-icon fs-18"></i></a>
+                    </span>
+                    <div class="mt-3">
+                      <div class="">
+                          <p class="fw-semibold text-muted mb-2 fs-13">Recent Searches</p>
+                          <div class="ps-2">
+                              <a  href="javascript:void(0)" class="search-tags"><i class="fe fe-search me-2"></i>People<span></span></a>
+                              <a  href="javascript:void(0)" class="search-tags"><i class="fe fe-search me-2"></i>Pages<span></span></a>
+                              <a  href="javascript:void(0)" class="search-tags"><i class="fe fe-search me-2"></i>Articles<span></span></a>
+                          </div>
+                      </div>
+                      <div class="mt-3">
+                          <p class="fw-semibold text-muted mb-2 fs-13">Apps and pages</p>
+                          <ul class="ps-2">
+                              <li class="p-1 d-flex align-items-center text-muted mb-2 search-app">
+                                  <a href="full-calendar.html"><span><i class='bx bx-calendar me-2 fs-14 bg-primary-transparent p-2 rounded-circle '></i>Calendar</span></a>
+                              </li>
+                              <li class="p-1 d-flex align-items-center text-muted mb-2 search-app">
+                                  <a href="mail.html"><span><i class='bx bx-envelope me-2 fs-14 bg-primary-transparent p-2 rounded-circle'></i>Mail</span></a>
+                              </li>
+                              <li class="p-1 d-flex align-items-center text-muted mb-2 search-app">
+                                  <a href="buttons.html"><span><i class='bx bx-dice-1 me-2 fs-14 bg-primary-transparent p-2 rounded-circle '></i>Buttons</span></a>
+                              </li>
+                          </ul>
+                      </div>
+                      <div class="mt-3">
+                        <p class="fw-semibold text-muted mb-2 fs-13">Links</p>
+                        <ul class="ps-2">
+                            <li class="p-1 align-items-center  mb-1 search-app">
+                                    <a href="javascript:void(0)" class="text-primary"><u>http://spruko/html/spruko.com</u></a>
+                            </li>
+                            <li class="p-1 align-items-center mb-1 search-app">
+                                    <a href="javascript:void(0)"  class="text-primary"><u>http://spruko/demo/spruko.com</u></a>
+                            </li>
+                        </ul>
+                      </div>
+                    </div>
+                </div>
+                <div class="modal-footer d-block">
+                  <div class="text-center">
+                      <a href="javascript:void(0)" class="text-primary text-decoration-underline fs-15">View all results</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+      </div>
+       <!-- Footer Start -->
+       <footer class="footer mt-auto py-3 bg-white text-center">
+           <div class="container">
+               <span class="text-muted"> Copyright © <span id="year"></span> <a
+                       href="javascript:void(0);" class="text-dark fSanamibold">Sana Waters</a>.
+                   powered by <a href="https://www.mobiztechnologies.com/">
+                       <span class="fw-semibold text-primary text-decoration-underline">Mobiz Technologies</span>
+                   </a> All
+                   rights
+                   reserved
+               </span>
+           </div>
+       </footer>
+       <!-- Footer End -->
+      <!-- Sidebar-right -->
+      <div class="sidebar offcanvas offcanvas-end" tabindex="-1" id="sidebar-right">
+          <div class="offcanvas-body position-relative">
+              <div>
+                  <ul class="nav nav-tabs tab-style-1 d-sm-flex d-block" role="tablist">
+                      <li class="nav-item">
+                          <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#orders-1" aria-current="page" ><i class="bx bx-user-plus me-1 fs-16 align-middle"></i>Team</button>
+                      </li>
+                      <li class="nav-item">
+                          <button class="nav-link" data-bs-toggle="tab" data-bs-target="#accepted-1"><i
+                                  class="bx bx-pulse me-1 fs-16 align-middle"></i>Timeline</button>
+                      </li>
+                      <li class="nav-item">
+                          <button class="nav-link" data-bs-toggle="tab" data-bs-target="#declined-1"><i
+                                  class="bx bx-message-square-dots me-1 fs-16 align-middle"></i>Chat</button>
+                      </li>
+                  </ul>
+                  <div class="ms-auto my-auto">
+                      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"> <i
+                              class="bx bx-x sidebar-btn-close"></i></button>
+                  </div>
+              </div>
+              <div class="tab-content">
+                  <div class="tab-pane active" id="orders-1" role="tabpanel">
+                      <div class="card-body p-0">
+                          <input type="text" class="form-control" id="inlinecalendar" placeholder="Choose date">
+                      </div>
+                      <div class="d-flex pt-4 mt-3 pb-3 align-items-center">
+                          <div>
+                              <h6 class="fw-semibold mb-0">Team Members</h6>
+                          </div>
+                          <div class="ms-auto">
+                              <div class="dropdown">
+                                  <a href="javascript:void(0);" class="btn-outline-light btn btn-sm text-muted"
+                                      data-bs-toggle="dropdown" aria-expanded="false">
+                                      View All<i class="ri-arrow-down-s-line align-middle ms-1"></i>
+                                  </a>
+                                  <ul class="dropdown-menu" role="menu">
+                                      <li class="border-bottom"><a class="dropdown-item" href="javascript:void(0);">Today</a>
+                                      </li>
+                                      <li class="border-bottom"><a class="dropdown-item" href="javascript:void(0);">This
+                                              Week</a></li>
+                                      <li><a class="dropdown-item" href="javascript:void(0);">Last Week</a></li>
+                                  </ul>
+                              </div>
+                          </div>
+                      </div>
+                      <ul class="ps-0 vertical-scroll">
+                          <li class="item">
+                              <div class="rounded-2 p-3 border mb-2">
+                                  <div class="d-flex">
+                                      <a href="profile.html"><img src="{% static 'images/faces/16.jpg' %}" alt="img"
+                                              class="avatar avatar-md rounded-2 me-3"></a>
+                                      <div class="me-3">
+                                          <a href="profile.html">
+                                              <h6 class="mb-0 fw-semibold text-default">Vanessa James</h6>
+                                          </a>
+                                          <span class="clearfix"></span>
+                                          <span class="fs-12 text-muted">Front-end Developer</span>
+                                      </div>
+                                      <a aria-label="anchor" href="javascript:void(0);" class="ms-auto my-auto"> <i
+                                              class="ri-arrow-right-s-line text-muted fs-20"></i></a>
+                                  </div>
+                              </div>
+                          </li>
+                          <li class="item">
+                              <div class="rounded-2 p-3 border mb-2">
+                                  <div class="d-flex">
+                                      <a href="profile.html"><span
+                                              class="avatar avatar-md rounded-2 bg-primary-transparent text-primary me-3">KH</span></a>
+                                      <div class="me-3">
+                                          <a href="profile.html">
+                                              <h6 class="mb-0 fw-semibold text-default">Kriti Harris</h6>
+                                          </a>
+                                          <span class="clearfix"></span>
+                                          <span class="fs-12 text-muted">Back-end Developer</span>
+                                      </div>
+                                      <a aria-label="anchor" href="javascript:void(0);" class="ms-auto my-auto"> <i
+                                              class="ri-arrow-right-s-line text-muted fs-20"></i></a>
+                                  </div>
+                              </div>
+                          </li>
+                          <li class="item">
+                              <div class="rounded-2 p-3 border mb-2">
+                                  <div class="d-flex">
+                                      <a href="profile.html"><img src="{% static 'images/faces/6.jpg' %}" alt="img"
+                                              class="avatar avatar-md rounded-2 me-3"></a>
+                                      <div class="me-3">
+                                          <a href="profile.html">
+                                              <h6 class="mb-0 fw-semibold text-default">Mira Henry</h6>
+                                          </a>
+                                          <span class="clearfix"></span>
+                                          <span class="fs-12 text-muted">UI / UX Designer</span>
+                                      </div>
+                                      <a aria-label="anchor" href="javascript:void(0);" class="ms-auto my-auto"> <i
+                                              class="ri-arrow-right-s-line text-muted fs-20"></i></a>
+                                  </div>
+                              </div>
+                          </li>
+                          <li class="item">
+                              <div class="rounded-2 p-3 border mb-2">
+                                  <div class="d-flex">
+                                      <a href="profile.html"><span
+                                              class="avatar avatar-md rounded-2 bg-secondary-transparent text-secondary me-3">JK</span></a>
+                                      <div class="me-3">
+                                          <a href="profile.html">
+                                              <h6 class="mb-0 fw-semibold text-default">James Kimberly</h6>
+                                          </a>
+                                          <span class="clearfix"></span>
+                                          <span class="fs-12 text-muted">Angular Developer</span>
+                                      </div>
+                                      <a aria-label="anchor" href="javascript:void(0);" class="ms-auto my-auto"> <i
+                                              class="ri-arrow-right-s-line text-muted fs-20"></i></a>
+                                  </div>
+                              </div>
+                          </li>
+                          <li class="item">
+                              <div class="rounded-2 p-3 border mb-2">
+                                  <div class="d-flex">
+                                      <a href="profile.html"><img src="{% static 'images/faces/9.jpg' %}" alt="img"
+                                              class="avatar avatar-md rounded-2 me-3"></a>
+                                      <div class="me-3">
+                                          <a href="profile.html">
+                                              <h6 class="mb-0 fw-semibold text-default">Marley Paul</h6>
+                                          </a>
+                                          <span class="clearfix"></span>
+                                          <span class="fs-12 text-muted">Front-end Developer</span>
+                                      </div>
+                                      <a aria-label="anchor" href="javascript:void(0);" class="ms-auto my-auto"> <i
+                                              class="ri-arrow-right-s-line text-muted fs-20"></i></a>
+                                  </div>
+                              </div>
+                          </li>
+                          <li class="item">
+                              <div class="rounded-2 p-3 border mb-2">
+                                  <div class="d-flex">
+                                      <a href="profile.html"><span
+                                              class="avatar avatar-md rounded-2 bg-success-transparent text-success me-3">MA</span></a>
+                                      <div class="me-3">
+                                          <a href="profile.html">
+                                              <h6 class="mb-0 fw-semibold text-default">Mitrona Anna</h6>
+                                          </a>
+                                          <span class="clearfix"></span>
+                                          <span class="fs-12 text-muted">UI / UX Designer</span>
+                                      </div>
+                                      <a aria-label="anchor" href="javascript:void(0);" class="ms-auto my-auto"> <i
+                                              class="ri-arrow-right-s-line text-muted fs-20"></i></a>
+                                  </div>
+                              </div>
+                          </li>
+                      </ul>
+                  </div>
+                  <div class="tab-pane" id="accepted-1" role="tabpanel">
+                      <ul class="activity-list">
+                          <li class="d-flex mt-4">
+                              <div>
+                                  <i class="activity-icon">
+                                      <a href="profile.html"><img src="{% static 'images/faces/14.jpg' %}" alt="img"
+                                              class="avatar avatar-xs rounded-2 me-3"></a>
+                                  </i>
+                                  <a href="profile.html">
+                                      <h6 class="text-default">Elmer Barnes
+                                          <span class="text-muted fs-11 mx-2 fw-normal">Today 02:41 PM</span>
+                                      </h6>
+                                  </a>
+                                  <p class="text-muted fs-12 mb-0">Added 1 attachment <strong>docfile.doc</strong></p>
+                                  <div class="btn-group file-attach mt-3" role="group" aria-label="Basic example">
+                                      <button type="button" class="btn btn-sm btn-primary-light">
+                                          <span class="ri-file-line me-2"></span> Image_file.jpg
+                                      </button>
+                                      <button type="button" class="btn btn-sm btn-primary-light" aria-label="Close">
+                                          <span class="ri-download-2-line"></span>
+                                      </button>
+                                  </div>
+                              </div>
+                          </li>
+                          <li class="d-flex mt-4">
+                              <div>
+                                  <i class="activity-icon">
+                                      <span class="avatar avatar-xs brround bg-success">RN</span>
+                                  </i>
+                                  <a href="profile.html">
+                                      <h6 class="text-default">Roxanne Nunez
+                                          <span class="text-muted fs-11 mx-2 fw-normal">Today 11:40 AM</span>
+                                      </h6>
+                                  </a>
+                                  <p class="text-muted fs-12 mb-0">Commented on <strong>Task Management</strong></p>
+                                  <div class="activity-comment mt-3">
+                                      <p>There are many variations of passages of Lorem Ipsum available.</p>
+                                  </div>
+                              </div>
+                          </li>
+                          <li class="d-flex mt-4">
+                              <div>
+                                  <i class="activity-icon">
+                                      <span class="avatar avatar-xs brround bg-primary"><i
+                                              class="ri-shield-line text-white"></i></span>
+                                  </i>
+                                  <a href="profile.html">
+                                      <h6 class="text-default">Shirley Vega
+                                          <span class="text-muted fs-11 mx-2 fw-normal">Today 08:43 AM</span>
+                                      </h6>
+                                  </a>
+                                  <p class="text-muted fs-12 mb-0">Task Closed by <strong> Today</strong></p>
+                              </div>
+                          </li>
+                          <li class="d-flex mt-4">
+                              <div>
+                                  <i class="activity-icon">
+                                      <a href="profile.html"><img src="{% static 'images/faces/11.jpg' %}" alt="img"
+                                              class="avatar avatar-xs rounded-2 me-3"></a>
+                                  </i>
+                                  <a href="profile.html">
+                                      <h6 class="text-default">Vivian Herrera
+                                          <span class="text-muted fs-11 mx-2 fw-normal">Today 08:00 AM</span>
+                                      </h6>
+                                  </a>
+                                  <p class="text-muted fs-12 mb-0">Assigned a new Task on <strong> UI Design</strong></p>
+                              </div>
+                          </li>
+                          <li class="d-flex mt-4">
+                              <div>
+                                  <i class="activity-icon">
+                                      <span class="avatar avatar-xs brround bg-success">TJ</span>
+                                  </i>
+                                  <a href="profile.html">
+                                      <h6 class="text-default">Tony Jarvis
+                                          <span class="text-muted fs-11 mx-2 fw-normal">Yesterday 05:40 PM</span>
+                                      </h6>
+                                  </a>
+                                  <p class="text-muted fs-12 mb-0">Added 3 attachments <strong>Project</strong></p>
+                                  <div class="activity-images mt-3">
+                                      <a href="gallery.html"><img src="{% static 'images/media/media-34.jpg' %}" alt="thumb1"></a>
+                                      <a href="gallery.html"><img src="{% static 'images/media/media-35.jpg' %}" alt="thumb1"></a>
+                                      <a href="gallery.html"><img src="{% static 'images/media/media-36.jpg' %}" alt="thumb1"></a>
+                                  </div>
+                              </div>
+                          </li>
+                          <li class="d-flex mt-4">
+                              <div>
+                                  <i class="activity-icon">
+                                      <a href="profile.html"><img src="{% static 'images/faces/16.jpg' %}" alt="img"
+                                              class="avatar avatar-xs rounded-2 me-3"></a>
+                                  </i>
+                                  <a href="profile.html">
+                                      <h6 class="text-default">Russell Kim
+                                          <span class="text-muted fs-11 mx-2 fw-normal">17 May 2022</span>
+                                      </h6>
+                                  </a>
+                                  <p class="text-muted fs-12 mb-0">Created a group <strong> Team Unity</strong></p>
+                              </div>
+                          </li>
+                      </ul>
+                  </div>
+                  <div class="tab-pane" id="declined-1" role="tabpanel">
+                      <div class="list-group list-group-flush">
+                          <div class="pt-3 fw-semibold ps-2 text-muted">Today</div>
+                          <div class="list-group-item d-flex align-items-center">
+                              <div class="me-2">
+                                  <a href="profile.html"><img src="{% static 'images/faces/16.jpg' %}" alt="img"
+                                          class="avatar avatar-md rounded-2"></a>
+                              </div>
+                              <div class="">
+                                  <a href="chat.html">
+                                      <h6 class="fw-semibold mb-0">Leon Ray</h6>
+                                      <p class="mb-0 fs-12 text-muted"> 2 mins ago </p>
+                                  </a>
+                              </div>
+                              <div class="ms-auto">
+                                  <a aria-label="anchor" href="javascript:void(0);"
+                                      class="btn btn-sm btn-outline-light  me-1"><i
+                                          class="ri-phone-line text-success"></i></a>
+                                  <a aria-label="anchor" href="javascript:void(0);" class="btn btn-sm btn-outline-light"><i
+                                          class="ri-chat-3-line text-primary"></i></a>
+                              </div>
+                          </div>
+                          <div class="list-group-item d-flex align-items-center">
+                              <div class="me-2">
+                                  <span class="avatar avatar-md rounded-2 bg-danger-transparent text-danger">DT
+                                      <span class="avatar-status bg-success"></span>
+                                  </span>
+                              </div>
+                              <div class="">
+                                  <a href="chat.html">
+                                      <h6 class="fw-semibold mb-0">Dane Tillery</h6>
+                                      <p class="mb-0 fs-12 text-muted"> 10 mins ago </p>
+                                  </a>
+                              </div>
+                              <div class="ms-auto">
+                                  <a aria-label="anchor" href="javascript:void(0);"
+                                      class="btn btn-sm btn-outline-light  me-1"><i
+                                          class="ri-phone-line text-success"></i></a>
+                                  <a aria-label="anchor" href="javascript:void(0);" class="btn btn-sm btn-outline-light"><i
+                                          class="ri-chat-3-line text-primary"></i></a>
+                              </div>
+                          </div>
+                          <div class="list-group-item d-flex align-items-center">
+                              <div class="me-2">
+                                  <a href="profile.html"><img src="{% static 'images/faces/16.jpg' %}" alt="img"
+                                          class="avatar avatar-md rounded-2"></a>
+                              </div>
+                              <div class="">
+                                  <a href="chat.html">
+                                      <h6 class="fw-semibold mb-0">Zelda Perkins</h6>
+                                      <p class="mb-0 fs-12 text-muted"> 3 hours ago </p>
+                                  </a>
+                              </div>
+                              <div class="ms-auto">
+                                  <a aria-label="anchor" href="javascript:void(0);"
+                                      class="btn btn-sm btn-outline-light  me-1"><i
+                                          class="ri-phone-line text-success"></i></a>
+                                  <a aria-label="anchor" href="javascript:void(0);" class="btn btn-sm btn-outline-light"><i
+                                          class="ri-chat-3-line text-primary"></i></a>
+                              </div>
+                          </div>
+                          <div class="py-3 fw-semibold ps-2 text-muted">Yesterday</div>
+                          <div class="list-group-item d-flex align-items-center">
+                              <div class="me-2">
+                                  <span class="avatar avatar-md rounded-2 bg-primary-transparent text-primary">GB
+                                      <span class="avatar-status bg-success"></span>
+                                  </span>
+                              </div>
+                              <div class="">
+                                  <a href="chat.html">
+                                      <h6 class="fw-semibold mb-0">Gaylord Barrett</h6>
+                                      <p class="mb-0 fs-12 text-muted"> 12:40 pm </p>
+                                  </a>
+                              </div>
+                              <div class="ms-auto">
+                                  <a aria-label="anchor" href="javascript:void(0);"
+                                      class="btn btn-sm btn-outline-light  me-1"><i
+                                          class="ri-phone-line text-success"></i></a>
+                                  <a aria-label="anchor" href="javascript:void(0);" class="btn btn-sm btn-outline-light"><i
+                                          class="ri-chat-3-line text-primary"></i></a>
+                              </div>
+                          </div>
+                          <div class="list-group-item d-flex align-items-center">
+                              <div class="me-2">
+                                  <a href="profile.html"><img src="{% static 'images/faces/16.jpg' %}" alt="img"
+                                          class="avatar avatar-md rounded-2"></a>
+                              </div>
+                              <div class="">
+                                  <a href="chat.html">
+                                      <h6 class="fw-semibold mb-0">Roger Bradley</h6>
+                                      <p class="mb-0 fs-12 text-muted"> 01:00 pm </p>
+                                  </a>
+                              </div>
+                              <div class="ms-auto">
+                                  <a aria-label="anchor" href="javascript:void(0);"
+                                      class="btn btn-sm btn-outline-light  me-1"><i
+                                          class="ri-phone-line text-success"></i></a>
+                                  <a aria-label="anchor" href="javascript:void(0);" class="btn btn-sm btn-outline-light"><i
+                                          class="ri-chat-3-line text-primary"></i></a>
+                              </div>
+                          </div>
+                          <div class="list-group-item d-flex align-items-center">
+                              <div class="me-2">
+                                  <a href="profile.html"><img src="{% static 'images/faces/16.jpg' %}" alt="img"
+                                          class="avatar avatar-md rounded-2"></a>
+                              </div>
+                              <div class="">
+                                  <a href="chat.html">
+                                      <h6 class="fw-semibold mb-0">Magnus Haynes</h6>
+                                      <p class="mb-0 fs-12 text-muted"> 03:53 pm </p>
+                                  </a>
+                              </div>
+                              <div class="ms-auto">
+                                  <a aria-label="anchor" href="javascript:void(0);"
+                                      class="btn btn-sm btn-outline-light  me-1"><i
+                                          class="ri-phone-line text-success"></i></a>
+                                  <a aria-label="anchor" href="javascript:void(0);" class="btn btn-sm btn-outline-light"><i
+                                          class="ri-chat-3-line text-primary"></i></a>
+                              </div>
+                          </div>
+                          <div class="list-group-item d-flex align-items-center">
+                              <div class="me-2">
+                                  <span class="avatar avatar-md rounded-2 bg-secondary-transparent text-secondary">DC
+                                      <span class="avatar-status bg-gray"></span>
+                                  </span>
+                              </div>
+                              <div class="">
+                                  <a href="chat.html">
+                                      <h6 class="fw-semibold mb-0">Doran Chasey</h6>
+                                      <p class="mb-0 fs-12 text-muted"> 06:00 pm </p>
+                                  </a>
+                              </div>
+                              <div class="ms-auto">
+                                  <a aria-label="anchor" href="javascript:void(0);"
+                                      class="btn btn-sm btn-outline-light  me-1"><i
+                                          class="ri-phone-line text-success"></i></a>
+                                  <a aria-label="anchor" href="javascript:void(0);" class="btn btn-sm btn-outline-light"><i
+                                          class="ri-chat-3-line text-primary"></i></a>
+                              </div>
+                          </div>
+                          <div class="list-group-item d-flex align-items-center">
+                              <div class="me-2">
+                                  <span class="avatar avatar-md rounded-2 bg-warning-transparent text-warning">EW
+                                      <span class="avatar-status bg-danger"></span>
+                                  </span>
+                              </div>
+                              <div class="">
+                                  <a href="chat.html">
+                                      <h6 class="fw-semibold mb-0">Ellery Wolfe</h6>
+                                      <p class="mb-0 fs-12 text-muted"> 08:46 pm </p>
+                                  </a>
+                              </div>
+                              <div class="ms-auto">
+                                  <a aria-label="anchor" href="javascript:void(0);"
+                                      class="btn btn-sm btn-outline-light  me-1"><i
+                                          class="ri-phone-line text-success"></i></a>
+                                  <a aria-label="anchor" href="javascript:void(0);" class="btn btn-sm btn-outline-light"><i
+                                          class="ri-chat-3-line text-primary"></i></a>
+                              </div>
+                          </div>
+                          <div class="text-center">
+                              <a href="javascript:void(0)" class="btn btn-sm text-primary text-decoration-underline">View
+                                  all</a>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <!--/Sidebar-right-->
+
+      <!-- Date & Time Picker JS -->
+      <script src="{%static 'libs/flatpickr/flatpickr.min.js'%}"></script>
+      <script src="{%static 'js/date&time_pickers.js'%}"></script>
+  </div>
+  <div class="scrollToTop">
+      <span class="arrow"><i class="ri-arrow-up-circle-fill fs-20"></i></span>
+  </div>
+  <div id="responsive-overlay"></div>
+  <script src="{%static 'js/jquery.min.js'%}"></script>
+  <!-- Popper JS -->
+  <script src="{%static 'libs/@popperjs/core/umd/popper.min.js'%}"></script>
+
+  <!-- Bootstrap JS -->
+  <script src="{%static 'libs/bootstrap/js/bootstrap.bundle.min.js'%}"></script>
+
+  <!-- Defaultmenu JS -->
+  <script src="{%static 'js/defaultmenu.min.js'%}"></script>
+
+  <!-- Sticky JS -->
+  <script src="{%static 'js/sticky.js'%}"></script>
+
+  <!-- Simplebar JS -->
+  <script src="{%static 'libs/simplebar/simplebar.min.js'%}"></script>
+  <script src="{%static 'js/simplebar.js'%}"></script>
+
+  <!-- Color Picker JS -->
+  <script src="{%static 'libs/@simonwep/pickr/pickr.es5.min.js'%}"></script>
+
+  <!-- JSVector Maps JS -->
+  <script src="{%static 'js/jsvectormap.js'%}"></script>
+
+  <!-- CRM-Dashboard -->
+  <script src="{%static 'js/hrm-dashboard.js' %}"></script>
+
+  
+  <!-- Custom-Switcher JS -->
+  <script src="{%static 'js/custom-switcher.min.js'%}"></script>
+
+  <!-- Datatables Cdn -->
+  <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.min.js"></script>
+  <script src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.6/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+  <!-- Internal Datatables JS -->
+  <script src="{%static 'js/datatables.js'%}"></script>
+
+  <!-- Custom JS -->
+  <script src="{%static 'js/custom.js' %}"></script>
+  <script src="{%static 'js/el-pagination.js' %}"></script>
+  <script src="{%static 'js/jquery.formset.js' %}"></script>
+  <script src="{%static 'sweet/actions.js' %}"></script>
+  <script src="{%static 'sweet/sweetalert2.js' %}"></script>
+
+  <script src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
+  <script src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+  <script src="{% static 'js/Chart.js' %}"></script>
+
+  {% block static %}
+    {% endblock %}
+
+</body>
+
+</html>

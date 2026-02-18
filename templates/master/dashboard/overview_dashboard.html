@@ -1,0 +1,324 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+{% load static %}
+{% load bottle_customer_stock %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Dashboard</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+    </ol>
+</div>
+
+<!-- Main Content Area -->
+<div class="main-content app-content" style={{"background:white"}}>
+    <div class="container-fluid">
+        <!-- Tab Buttons -->
+        <div class="tab mt-5 mb-3" style="border-bottom: 2px solid #bfbfbf;max-height: 40px;">
+            <button class="tablinks btn rounded-0" onclick="openOverview()">Overview</button>
+            <button class="tablinks btn rounded-0" onclick="openSales()">Sales</button>
+            <button class="tablinks btn rounded-0" onclick="openBottle()">Bottle</button>
+            <button class="tablinks btn rounded-0" onclick="openCoupons()">Coupons</button>
+            <button class="tablinks btn rounded-0" onclick="openCustomerStatistics()">Customer Statistics</button>
+            <button class="tablinks btn rounded-0" onclick="openOthers()">Others</button>
+        </div>
+        <!-- Tab Content for overview tab -->
+        <div class="tabcontent" id="Overview">
+            <div class="row">
+                <!-- Overview Cards -->
+                <div class="col-md-3">
+                    <div class="card" title='{% url 'todays_cash_sales' %}'
+                    style="border-radius:12px; border:2px solid rgba(245, 45, 204, 0.2); padding: 15px; cursor: pointer;">
+                    <a href="{% url 'todays_cash_sales' %}">
+                        <div class="card-body p-0 d-flex justify-content-between align-items-start">
+                            <div>
+                                <!-- Left side: Heading and value -->
+                                <h6 class="m-0" style="color:#6c757d;">Cash Sale</h6>
+                                <p class="fs-3 fw-bold mt-2 mb-0">{{ cash_sales }}</p>
+                            </div>
+                            <!-- Right side: Icon with background -->
+                            <div style="background-color: #ffe4f0;padding: 7px 17px;border-radius: 50%;">
+                                <i class="bi bi-cash" style="font-size: 35px;color:#f52dcc;"></i>
+                            </div>
+                        </div>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="card" title='{% url 'todays_credit_sales' %}'
+                    style="border-radius:12px; border:2px solid rgba(245, 45, 204, 0.2); padding: 15px; cursor: pointer;">
+                    <a href="{% url 'todays_credit_sales' %}">
+                        <div class="card-body p-0 d-flex justify-content-between align-items-start">
+                            <div>
+                                <!-- Left side: Heading and value -->
+                                <h6 class="m-0" style="color:#6c757d;">Credit Sale</h6>
+                                <p class="fs-3 fw-bold mt-2 mb-0">{{ credit_sales }}</p>
+                            </div>
+                            <!-- Right side: Icon with background -->
+                            <div style="background-color: #ffe4f0;padding: 7px 17px;border-radius: 50%;">
+                                <i class="bi bi-credit-card" style="font-size: 35px;color:#f52dcc;"></i>
+                            </div>
+                        </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card" title='{% url 'customerSales_report' %}'
+                    style="border-radius:12px; border:2px solid rgba(245, 45, 204, 0.2); padding: 15px; cursor: pointer;">
+                    <a href="{% url 'customerSales_report' %}">
+                        <div class="card-body p-0 d-flex justify-content-between align-items-start">
+                            <div>
+                                <!-- Left side: Heading and value -->
+                                <h6 class="m-0" style="color:#6c757d;">Total Sale</h6>
+                                <p class="fs-3 fw-bold mt-2 mb-0">{{ total_sales_count }}</p>
+                            </div>
+                            <!-- Right side: Icon with background -->
+                            <div style="background-color: #ffe4f0;padding: 7px 17px;border-radius: 50%;">
+                                <i class="bi bi-currency-dollar" style="font-size: 35px;color:#f52dcc;"></i>
+                            </div>
+                        </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card" title='{% url 'expense_list' %}'
+                    style="border-radius:12px; border:2px solid rgba(245, 45, 204, 0.2); padding: 15px; cursor: pointer;">
+                    <a href="{% url 'expense_list' %}">
+                        <div class="card-body p-0 d-flex justify-content-between align-items-start">
+                            <div>
+                                <!-- Left side: Heading and value -->
+                                <h6 class="m-0" style="color:#6c757d;">Expense</h6>
+                                <p class="fs-3 fw-bold mt-2 mb-0">{{ today_expenses }}</p>
+                            </div>
+                            <!-- Right side: Icon with background -->
+                            <div style="background-color: #ffe4f0;padding: 7px 17px;border-radius: 50%;">
+                                <i class="bi bi-wallet" style="font-size: 35px;color:#f52dcc;"></i>
+                            </div>
+                        </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card" title='{% url 'customerSales_report' %}'
+                    style="border-radius:12px; border:2px solid rgba(245, 45, 204, 0.2); padding: 15px; cursor: pointer;">
+                    <a href="{% url 'customerSales_report' %}">
+                        <div class="card-body p-0 d-flex justify-content-between align-items-start">
+                            <div>
+                                <!-- Left side: Heading and value -->
+                                <h6 class="m-0" style="color:#6c757d;">Today Collection</h6>
+                                <p class="fs-3 fw-bold mt-2 mb-0">{{ total_today_collections }}</p>
+                            </div>
+                            <!-- Right side: Icon with background -->
+                            <div style="background-color: #ffe4f0;padding: 7px 17px;border-radius: 50%;">
+                                <i class="bi bi-collection" style="font-size: 35px;color:#f52dcc;"></i>
+                            </div>
+                        </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card" title='{% url 'customerSales_report' %}'
+                    style="border-radius:12px; border:2px solid rgba(245, 45, 204, 0.2); padding: 15px; cursor: pointer;">
+                    <a href="{% url 'customerSales_report' %}">
+                        <div class="card-body p-0 d-flex justify-content-between align-items-start">
+                            <div>
+                                <!-- Left side: Heading and value -->
+                                <h6 class="m-0" style="color:#6c757d;">Old Payments</h6>
+                                <p class="fs-3 fw-bold mt-2 mb-0">{{ total_old_payment_collections }}</p>
+                            </div>
+                            <!-- Right side: Icon with background -->
+                            <div style="background-color: #ffe4f0;padding: 7px 17px;border-radius: 50%;">
+                                <i class="bi bi-clock-history" style="font-size: 35px;color:#f52dcc;"></i>
+                            </div>
+                        </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card" title='{% url 'customerSales_report' %}'
+                    style="border-radius:12px; border:2px solid rgba(245, 45, 204, 0.2); padding: 15px; cursor: pointer;">
+                    <a href="{% url 'customerSales_report' %}">
+                        <div class="card-body p-0 d-flex justify-content-between align-items-start">
+                            <div>
+                                <!-- Left side: Heading and value -->
+                                <h6 class="m-0" style="color:#6c757d;">Total Collection</h6>
+                                <p class="fs-3 fw-bold mt-2 mb-0">{{ total_collection }}</p>
+                            </div>
+                            <!-- Right side: Icon with background -->
+                            <div style="background-color: #ffe4f0;padding: 7px 17px;border-radius: 50%;">
+                                <i class="bi bi-archive" style="font-size: 35px;color:#f52dcc;"></i>
+                            </div>
+                        </div>
+                    </a>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card" title='{% url 'dsr_summary' %}'
+                    style="border-radius:12px; border:2px solid rgba(245, 45, 204, 0.2); padding: 15px; cursor: pointer;">
+                    <a href="{% url 'dsr_summary' %}">
+                        <div class="card-body p-0 d-flex justify-content-between align-items-start">
+                            <div>
+                                <!-- Left side: Heading and value -->
+                                <h6 class="m-0" style="color:#6c757d;">Total Cash In Hand</h6>
+                                <p class="fs-3 fw-bold mt-2 mb-0">{{ total_cash_in_hand }}</p>
+                            </div>
+                            <!-- Right side: Icon with background -->
+                            <div style="background-color: #ffe4f0;padding: 7px 17px;border-radius: 50%;">
+                                <i class="bi-wallet-fill" style="font-size: 35px;color:#f52dcc;"></i>
+                            </div>
+                        </div>
+                    </div>
+                    </a>
+                </div>
+            </div>
+            <!-- Category Table and Pie Chart -->
+            <div class="row mt-4">
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header text-left text-white" style="background-color: #4776e6 !important;">
+                            <h5 class="card-title">Category</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr style="cursor: pointer; ">
+                                        <td> <a href="{% url 'van' %}" title="{% url 'van' %}">Active Vans</a></td>
+                                        <td> <a href="{% url 'van' %}" title="{% url 'van' %}">{{ active_van_count }}</a></td>
+                                    </tr>
+
+
+                                    <tr style="cursor: pointer; ">
+                                        <td> <a href="{% url 'customer_supply_list' %}" title="{% url 'customer_supply_list' %}">Delivery progress</a></td>
+                                        <td> <a href="{% url 'customer_supply_list' %}" title="{% url 'customer_supply_list' %}">{{delivery_progress}}<a></td>
+                                    </tr>
+                                    <tr style="cursor: pointer; ">
+                                        <td> <a href="{% url 'missing_customers' %}" title="{% url 'missing_customers' %}"> Yesterday missed</a></td>
+                                        <td> <a href="{% url 'missing_customers' %}" title="{% url 'missing_customers' %}">{{ yesterday_missed_customers_count }}</a></td>
+                                    </tr>
+                                    <tr style="cursor: pointer; ">
+                                        <td> <a href="{% url 'customers' %}" title="{% url 'customers' %}">Total customers</a></td>
+                                        <td> <a href="{% url 'customers' %}" title="{% url 'customers' %}">{{ total_customers_count }}</a></td>
+                                    </tr>
+                                    <tr style="cursor: pointer; ">
+                                        <td> <a href="{% url 'latest_customers' %}" title="{% url 'latest_customers' %}"> New customers </a></td>
+                                        <td> <a href="{% url 'latest_customers' %}" title="{% url 'latest_customers' %}">{{ new_customers_count }}</a></td>
+                                    </tr>
+                                    <tr style="cursor: pointer; ">
+                                        <td> <a href="{% url 'customers' %} " title="{% url 'customers' %}"> Door lock</a></td>
+                                        <td> <a href="{% url 'customers' %} " title="{% url 'customers' %}">{{ door_lock_count }}</a></td>
+                                    </tr>
+                                    <tr style="cursor: pointer; ">
+                                        <td> <a href="{% url 'salesman_requests' %} " title="{% url 'salesman_requests' %} "> Emergency </a></td>
+                                        <td> <a href="{% url 'salesman_requests' %}" title="{% url 'salesman_requests' %}">{{ emergency_customers_count }}</a></td>
+                                    </tr>
+                                    <tr style="cursor: pointer; ">
+                                        <td> <a href="{% url 'customers' %} " title="{% url 'customers' %} ">In vacation mode</a></td>
+                                        <td> <a href="{% url 'customers' %} " title=" ">{{ total_vocation_customers_count }}</a></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4" <a href="{% url 'latest_customers' %}" title="{% url 'latest_customers' %}"  style="cursor: pointer; "></a>
+                    <div class="card h-100">
+                        <div class="card-header text-left text-white" style="background-color: #4776e6 !important;">
+                            <h5 class="card-title">New Customers</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="newCustomerChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% comment %} <!-- New Customers and 5 Gallon Supply Charts -->
+            <div class="row mt-4">
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header text-left text-white" style="background-color: #4776e6 !important;">
+                            <h5 class="card-title">Missed Customers</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="missedCustomersChart" style="height: 300px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div> {% endcomment %}
+        </div>
+        
+    </div>
+</div>
+{% endblock %}
+{% block static %}
+{% load static %}
+
+<script>
+    function openOverview() {
+        window.location.href = '{% url 'overview' %}';
+    }
+    
+    function openSales() {
+        window.location.href = '{% url 'sales' %}';
+    }
+    
+    function openBottle() {
+        window.location.href = '{% url 'bottles' %}';
+    }
+    
+    function openCoupons() {
+        window.location.href = '{% url 'coupons' %}';
+    }
+    
+    function openCustomerStatistics() {
+        window.location.href = '{% url 'customer-statistics' %}';
+    }
+    
+    function openOthers() {
+        window.location.href = '{% url 'others' %}';
+    }
+    
+</script>
+
+
+<script>
+    // Use Django template variable in JavaScript
+    const newCustomersData = {{ new_customers_count_with_salesman|safe }};
+
+    // Extract sales staff names and customer counts for the chart
+    const xValues = newCustomersData.map(item => item.salesman_names);
+    const yValues = newCustomersData.map(item => item.customer_count);
+    const barColors = ["red", "green", "blue", "orange", "brown"];
+
+    // Initialize the chart
+    new Chart("newCustomerChart", {
+        type: "bar",
+        data: {
+            labels: xValues,
+            datasets: [{
+                backgroundColor: barColors,
+                data: yValues
+            }]
+        },
+        options: {
+            legend: { display: false },
+            title: {
+                display: true,
+                text: "New Customers per Salesman"
+            }
+        }
+    });
+</script>
+
+{% endblock static %}
+ 

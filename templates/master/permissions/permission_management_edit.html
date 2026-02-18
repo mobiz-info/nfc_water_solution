@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Edit Permission Management Tab</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Permission Management</li>
+    </ol>
+</div>
+
+<!-- Start::app-content -->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-1 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title mx-auto">
+                            Edit Permission Management Tab
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form enctype="multipart/form-data" role="form" method="post" class="row g-3 needs-validation">
+                            {% csrf_token %}
+                            
+                            <!-- Tab Name -->
+                            <div class="col-md-12">
+                                <div class="form-group required">
+                                    <label class="control-label">Tab Name</label>
+                                    {{ form.tab_name }}
+                                    <span style="color: red;">{{ form.tab_name.errors }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Department -->
+                            <div class="col-md-12">
+                                <div class="form-group required">
+                                    <label class="control-label">Department</label>
+                                    {{ form.department }}
+                                    <span style="color: red;">{{ form.department.errors }}</span>
+                                </div>
+                            </div>
+
+                            <div class="col-12 text-end mt-5">
+                                <input type="submit" class="btn btn-primary me-2 mb-2" value="Update">
+                                <button class="btn btn-success me-md-2 mb-2" type="button" onClick="javascript:history.go(-1);">
+                                    <i class="bi bi-backspace-fill pe-1"></i>Back
+                                </button>
+                                <a class="btn btn-success me-md-2 mb-2" href="{% url 'permission_management_tab_list' %}">
+                                    <i class="bi bi-backspace-fill pe-1"></i>Back to Dashboard
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End:: row-1 -->
+    </div>
+</div>
+<!-- End::app-content -->
+
+{% endblock %}

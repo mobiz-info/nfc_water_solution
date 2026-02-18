@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% block title %}Scrap Clearance Report{% endblock %}
+{% block content %}
+{% load static %}
+{% load el_pagination_tags %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Scrap Clearance Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Reports</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Scrap Clearance Report</li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+        
+        <!-- Filter Section -->
+        <div class="card custom-card">
+            <div class="card-header">
+                <div class="card-title">Scrap Clearance Report</div>
+            </div>
+            <div class="card-body">
+                <form method="GET" action="{% url 'scrap_clearance_report' %}">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <label for="start_date">From Date:</label>
+                            <input type="date" class="form-control" id="start_date" name="start_date" value="{{ filter_data.filter_date_from }}">
+                        </div>
+                        <div class="col">
+                            <label for="end_date">To Date:</label>
+                            <input type="date" class="form-control" id="end_date" name="end_date" value="{{ filter_data.filter_date_to }}">
+                        </div>
+                        <div class="col d-flex align-items-end justify-content-end">
+                            <button type="submit" class="btn btn-primary btn-sm mx-1">Apply Filter</button>
+                            <button type="button" class="btn btn-secondary btn-sm mx-1" onclick="resetFilters()">Reset</button>
+                            <a href="{% url 'scrap_clearance_print' %}?start_date={{ filter_data.filter_date_from }}&end_date={{ filter_data.filter_date_to }}" class="btn btn-outline-success btn-sm mx-1" target="_blank">
+                                <i class="fas fa-file-print"></i> Print
+                            </a>
+                            <a href="{% url 'scrap_clearance_to_excel' %}?start_date={{ filter_data.filter_date_from }}&end_date={{ filter_data.filter_date_to }}" class="btn btn-outline-success btn-sm mx-1" target="_blank">
+                                <i class="fas fa-file-excel"></i> Excel
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Table Section -->
+        <div class="card custom-card mt-4">
+            <div class="card-body">
+                <table class="table table-bordered text-wrap w-100">
+                    <thead>
+                        <tr>
+                            <th>Sl.No</th>
+                            <th>Product Name</th>
+                            <th>Cleared Date</th>
+                            <th>Cleared Quantity</th>
+                            <th>Cleared By</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% paginate 50 scrap_clearance_records %}
+                        {% for record in scrap_clearance_records %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ record.product.product_name }}</td>
+                            <td>{{ record.created_date|date:"Y-m-d" }}</td>
+                            <td>{{ record.quantity }}</td>
+                            <td>{{ record.created_by }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">No scrap clearance records found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+                <!-- Pagination -->
+                {% get_pages %}
+                <div class="clearfix"></div>
+                <div class="row my-3">
+                    <div class="col-sm-6 text-start">
+                        Showing {{ title }}
+                        <span class="current_page_index">{{ pages.current_start_index }}</span> - 
+                        <span class="current_end_status">{{ pages.current_end_index }}</span> of 
+                        <span class="total_count">{{ pages.total_count }}</span>
+                    </div>
+                    <div class="col-sm-6 text-end">{% show_pages %}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+    function resetFilters() {
+        location.href = "{% url 'scrap_clearance_report' %}";
+    }
+</script>
+{% endblock %}

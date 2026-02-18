@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %} All Transactions {% endblock %}
+{% block content %}
+{% load static %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Outstanding Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Client Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">All Transactions</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Transactions - Amount
+                        </div>
+                        <div class="ms-auto">
+                            <a href="{% url 'export_customer_outstanding' customer_id=customer_id %}" target="_blank" class="btn btn-success">Excel</a>
+                            <a href="{% url 'print_customer_outstandings' customer_id=customer_id %}" target="_blank" class="btn btn-primary">Print</a>
+                        </div>
+                    </div>
+                    
+                    <div id="table-container">
+                        <div class="card-body">
+                            <table id="datatable-basic" class="table table-bordered text-wrap" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th>Sl No</th>
+                                        <th>Created Date</th>
+                                        <th>Invoice No</th>
+                                        <th>Customer</th>
+                                        <th>Building No</th>
+                                        <th>Route</th>
+                                        <th>Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in instances %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ item.created_date }}</td>
+                                        <td>{{ item.invoice_no }}</td>
+                                        <td>{{ item.customer.customer_name }}</td>
+                                        <td>{{ item.customer.building_name }}</td>
+                                        <td>{{ item.customer.routes.route_name}}</td>
+                                        <td>{{ item.get_outstanding_count }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

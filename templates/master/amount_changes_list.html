@@ -1,0 +1,613 @@
+{% extends 'base.html' %}
+{% block title %} Branch List {% endblock %}
+{% block content %}
+{% load static %}
+{% load bottle_customer_stock %}
+{% load accumulation_tags %}
+<!-- End::app-sidebar -->
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Amount changes</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboards</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+    </ol>
+</div>
+<!-- Page Header Close -->
+
+<!-- Start::app-content -->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row-2 -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">List</div>
+                        <div class="ms-auto d-flex">
+                            {% if request.user.is_superuser %}
+                            <button type="button" class="btn btn-success btn-wave text-end d-flex me-4 my-auto" data-toggle="modal" data-target="#invoiceCreateModal" onclick="handleButtonClick(this)">Create Invoice</button>
+                            <button type="button" class="btn btn-secondary btn-wave text-end d-flex me-4 my-auto" data-toggle="modal" data-target="#invoiceUpdateModal" onclick="handleButtonClick(this)">Update Invoice</button>
+                            <button type="button" class="btn btn-success btn-wave text-end d-flex me-4 my-auto" data-toggle="modal" data-target="#outstandingCreateModal" onclick="handleButtonClick(this)">Create Outstanding</button>
+                            <button type="button" class="btn btn-secondary btn-wave text-end d-flex me-4 my-auto" data-toggle="modal" data-target="#outstandingUpdateModal" onclick="handleButtonClick(this)">Update Outstanding</button>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% load accumulation_tags %}
+                    {% if request.user.is_superuser %}
+                    <form action="{% url 'customer_outstanding_variation_clearing' %}" role="form" method="post" enctype="multipart/form-data"  class="row g-3 ajax redirect" autocomplete="off" novalidate>
+                        {% csrf_token %}
+                    {% endif %}
+
+                    <div class="card-body">
+                        <table class="table table-bordered text-nowrap">
+                            <thead>
+                                <tr class="bg-light">
+                                    <th rowspan="2">Sl.No</th>
+                                    <th rowspan="2">Date</th>
+                                    <th colspan="4">Supply Details</th>
+                                    <th colspan="4">Coupon Details</th>
+                                    <th colspan="2">Outstanding Details</th>
+                                    <th colspan="5">Invoice Details</th>
+                                    <th rowspan="2">Collection</th>
+                                </tr>
+                                {% comment %} <tr>
+                                    <!-- Supply subcolumns -->
+                                    <th>Rate</th>
+                                    <th>Invoice No</th>
+                                    <th>Received</th>
+                                    <th>Balance</th>
+                                    <th>Status</th>
+                                    <!-- Coupon subcolumns -->
+                                    <th>Rate</th>
+                                    <th>Invoice No</th>
+                                    <th>Received</th>
+                                    <th>Balance</th>
+                                    <th>Status</th>
+                                    <!-- Outstanding subcolumns -->
+                                    <th>Rate</th>
+                                    <th>Invoice No</th>
+                                    <!-- Invoice subcolumns -->
+                                    <th>Check</th>
+                                    <th>Rate</th>
+                                    <th>Invoice No</th>
+                                    <th>Received</th>
+                                    <th>Balance</th>
+                                    <th>Status</th>
+                                </tr> {% endcomment %}
+                            </thead>
+                            <tbody>
+                                {% reset_totals %}
+                                {% for instance in instances %}
+                                {% get_supply customer instance as supplys %}
+                                {% get_coupon customer instance as coupons %}
+                                {% get_outstanding customer instance as outstanding %}
+                                {% get_invoice customer instance as invoice %}
+                                {% get_collected customer instance as collection %}
+                                <tr>
+                                    <td style="text-align:right;">{{ forloop.counter }}</td>
+                                    <td style="text-align:left;">{{ instance }}</td>
+                                    {% comment %} supplys {% endcomment %}
+                                    <td colspan="4">
+                                        <table class="table table-sm mb-0">
+                                        <tbody>
+                                            {% if supplys %}
+                                            {% for s in supplys %}
+                                            {% if forloop.parentloop.counter == 1 %}
+                                            <tr>
+                                                <th>Rate</th>
+                                                <th>Invoice No</th>
+                                                <th>Received</th>
+                                                <th>Status</th>
+                                            </tr>
+                                            {% endif %}
+                                            <tr>
+                                                <td>AED {{ s.subtotal }}</td>
+                                                <td>{{ s.invoice_no }}</td>
+                                                <td>AED {{ s.amount_recieved }}</td>
+                                                <td>
+                                                {% if s.subtotal == s.amount_recieved %}
+                                                    <span class="badge bg-success">Paid</span>
+                                                {% else %}
+                                                    <span class="badge bg-warning text-dark">Pending</span>
+                                                {% endif %}
+                                                </td>
+                                            </tr>
+                                            {% add_to_total 'supply' s.subtotal %}
+                                            {% endfor %}
+                                            {% else %}
+                                            <tr><td colspan="5" class="text-muted">No supply records</td></tr>
+                                            {% endif %}
+                                        </tbody>
+                                        </table>
+                                    </td>
+
+                                    {% comment %} coupons {% endcomment %}
+                                    <td colspan="4">
+                                        <table class="table table-sm mb-0">
+                                            <tbody>
+                                                {% if coupons %}
+                                                    {% for c in coupons %}
+                                                    {% if forloop.parentloop.counter == 1 %}
+                                                    <tr>
+                                                        <th>Rate</th>
+                                                        <th>Invoice No</th>
+                                                        <th>Received</th>
+                                                        <th>Status</th>
+                                                    </tr>
+                                                    {% endif %}
+                                                    <tr>
+                                                        <td>{{c.total_payeble}}</td>
+                                                        <td>{{c.invoice_no}}</td>
+                                                        <td>{{c.amount_recieved}}</td>
+                                                        <td>
+                                                            {% if c.total_payeble == c.amount_recieved %} Paid {% else %} Non Paid {% endif %}
+                                                            {% add_to_total 'coupon' c.total_payeble %}
+                                                        </td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                {% else %}
+                                                <td colspan="5">-</td>
+                                                {% endif %}
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                    
+                                    {% comment %} outstanding {% endcomment %}
+                                    <td colspan="2">
+                                        <table class="table table-sm mb-0">
+                                            <tbody>
+                                                {% if outstanding %}
+                                                    {% for o in outstanding %}
+                                                    {% if forloop.parentloop.counter == 1 %}
+                                                    <tr>
+                                                        <th>Rate</th>
+                                                        <th>Invoice No</th>
+                                                    </tr>
+                                                    {% endif %}
+                                                    <tr>
+                                                        <td>{{ o.get_outstanding_count }}</td>
+                                                        <td>{{ o.invoice_no }}</td>
+                                                        {% add_to_total 'outstanding' o.get_outstanding_count %}
+                                                    </tr>
+                                                    {% endfor %}
+                                                {% else %}
+                                                <td colspan="2">-</td>
+                                                {% endif %}
+                                            </tbody>
+                                        </table>
+                                    </td>
+
+                                    {% comment %} invoices {% endcomment %}
+                                    <td colspan="5">
+                                        <table class="table table-sm mb-0">
+                                            <tbody>
+                                                {% if invoice %}
+                                                    {% for i in invoice %}
+                                                    {% if forloop.parentloop.counter == 1 %}
+                                                    <tr>
+                                                        <th>Check</th>
+                                                        <th>Rate</th>
+                                                        <th>Invoice No</th>
+                                                        <th>Received</th>
+                                                        <th>Status</th>
+                                                    </tr>
+                                                    {% endif %}
+                                                    <tr>
+                                                        <td>
+                                                            {% if request.user.is_superuser %}
+                                                            <input type="checkbox" value="{{i.pk}}" name="invoice_ids" checked>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>{{ i.amout_total }}</td>
+                                                        <td>{{ i.invoice_no }}</td>
+                                                        <td>{{ i.amout_recieved }}</td>
+                                                        <td>
+                                                            {% if i.amout_total == i.amout_recieved %} Paid {% else %} Non Paid {% endif %}
+                                                        </td>
+                                                        {% add_to_total 'invoice_total' i.amout_total %}
+                                                        {% add_to_total 'invoice_received' i.amout_recieved %}
+                                                    </tr>
+                                                    {% endfor %}
+                                                {% else %}
+                                                <td colspan="6">-</td>
+                                                {% endif %}
+                                            </tbody>                                    
+                                        </table>
+                                    </td>
+
+                                    {% comment %} collection {% endcomment %}
+                                    <td>
+                                        <table class="table table-sm mb-0">
+                                            <tbody>
+                                                {% if collection %}
+                                                    {% for i in collection %}
+                                                    <tr>
+                                                        <td>{{ i.amount_received }}</td>
+                                                    </tr>
+                                                    {% add_to_total 'collection' i.amount_received %}
+                                                    {% endfor %}
+                                                {% else %}
+                                                <td>-</td>
+                                                {% endif %}
+                                            </tbody>                                    
+                                        </table>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="6" style="text-align:right;">Grand Total</th>
+                                    <th colspan="4" style="text-align:left;">{% get_total 'coupon' %}</th>
+                                    <th colspan="2" style="text-align:left;">{% get_total 'outstanding' %}</th>
+                                    <th colspan="5" style="text-align:left;">
+                                        Total: {% get_total 'invoice_total' %} - - - Received: {% get_total 'invoice_received' %}
+                                    </th>
+                                    <th style="text-align:left;">{% get_total 'collection' %}</th>
+                                    <input type="hidden" value="{{ customer }}" name="customer_id">
+                                    <input type="hidden" value="{% get_total 'outstanding' %}" name="outstanding_total">
+                                    <input type="hidden" value="{% get_total 'collection' %}" name="collection_total">
+                                </tr>
+                            </tfoot>
+                        </table> 
+                        </table>
+                        {% comment %} <table class="table table-bordered text-nowrap" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center !important;" scope="col">Sl.No</th>
+                                    <th style="text-align:center !important;" scope="col">Date</th>
+                                    <th style="text-align:center !important;" scope="col">Supply</th>
+                                    <th style="text-align:center !important;" scope="col">Coupon</th>
+                                    <th style="text-align:center !important;" scope="col">Outstanding</th>
+                                    <th style="text-align:center !important;" scope="col">Invoice</th>
+                                    <th style="text-align:center !important;" scope="col">Collection</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% reset_totals %}
+                                {% for instance in instances %}
+                                <tr>
+                                    <td style="text-align:right;">{{ forloop.counter }}</td>
+                                    <td style="text-align:left;">{{ instance }}</td>
+                    
+                                    {% get_supply customer instance as supplys %}
+                                    <td style="text-align:left;">
+                                        {% if supplys %}
+                                            {% for s in supplys %}
+                                                {{ s.subtotal }} - {{ s.invoice_no }} - recive: {{ s.amount_recieved }} - status :
+                                                {% if s.subtotal == s.amount_recieved %} Paid {% else %} Non Paid {% endif %}
+                                                {% add_to_total 'supply' s.subtotal %}
+                                                <br>
+                                            {% endfor %}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                    
+                                    {% get_coupon customer instance as coupons %}
+                                    <td style="text-align:left;">
+                                        {% if coupons %}
+                                            {% for c in coupons %}
+                                                {{ c.total_payeble }} - {{ c.invoice_no }}
+                                                {% add_to_total 'coupon' c.total_payeble %}
+                                                <br>
+                                            {% endfor %}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                    
+                                    {% get_outstanding customer instance as outstanding %}
+                                    <td style="text-align:left;">
+                                        {% if outstanding %}
+                                            {% for o in outstanding %}
+                                                {{ o.get_outstanding_count }} - {{ o.invoice_no }}
+                                                {% add_to_total 'outstanding' o.get_outstanding_count %}
+                                                <br>
+                                            {% endfor %}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                    
+                                    {% get_invoice customer instance as invoice %}
+                                    <td style="text-align:left;">
+                                        {% if invoice %}
+                                            {% for i in invoice %}
+                                                {% if request.user.is_superuser %}
+                                                <input type="checkbox" value="{{i.pk}}" name="invoice_ids" checked>
+                                                {% endif %}
+                                                total: {{ i.amout_total }} - Receive: {{ i.amout_recieved }} - {{ i.invoice_no }}
+                                                {% add_to_total 'invoice_total' i.amout_total %}
+                                                {% add_to_total 'invoice_received' i.amout_recieved %}
+                                                <br>
+                                            {% endfor %}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                    
+                                    {% get_collected customer instance as collection %}
+                                    <td style="text-align:left;">
+                                        {% if collection %}
+                                            {% for i in collection %}
+                                                Receive: {{ i.amount_received }}
+                                                {% add_to_total 'collection' i.amount_received %}
+                                                <br>
+                                            {% endfor %}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="2" style="text-align:right;">Grand Total</th>
+                                    <th style="text-align:left;"></th>
+                                    <th style="text-align:left;">{% get_total 'coupon' %}</th>
+                                    <th style="text-align:left;">{% get_total 'outstanding' %}</th>
+                                    <th style="text-align:left;">
+                                        Total: {% get_total 'invoice_total' %} - - - Received: {% get_total 'invoice_received' %}
+                                    </th>
+                                    <th style="text-align:left;">{% get_total 'collection' %}</th>
+                                    <input type="hidden" value="{{ customer }}" name="customer_id">
+                                    <input type="hidden" value="{% get_total 'outstanding' %}" name="outstanding_total">
+                                    <input type="hidden" value="{% get_total 'collection' %}" name="collection_total">
+                                </tr>
+                            </tfoot>
+                        </table> {% endcomment %}
+                        {% if request.user.is_superuser %}
+                        <input type="submit">
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End:: row-2 -->
+    </div>
+</div>
+<!-- End::app-content -->
+
+<!-- Modal -->
+<div class="modal fade" id="invoiceCreateModal" tabindex="-1" role="dialog" aria-labelledby="invoiceCreateModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="invoiceCreateModalLongTitle">Create Invoice</h5>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'create_outstanding_variation_invoice' %}" role="form" method="post" enctype="multipart/form-data"  class="row g-3 ajax redirect" autocomplete="off" novalidate>
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <input type="hidden" class="form-control" name="customer_id" value="{{customer}}">
+                                <div class="form-group required">
+                                    <label class='control-label'>Date</label>
+                                    <input type="date" class="form-control" name="date">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Time</label>
+                                    <input type="time" class="form-control" name="time">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Invoice No</label>
+                                    <input type="text" class="form-control" name="invoice_no">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Invoice Status</label>
+                                    <select class="form-control" name="invoice_status">
+                                        <option value="paid">Paid</option>
+                                        <option value="non_paid">Non Paid</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Amount</label>
+                                    <input type="text" class="form-control" name="amount">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Received Amount</label>
+                                    <input type="text" class="form-control" name="received_amount">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn bg-gradient-secondary" data-dismiss="modal" data-target="#invoiceCreateModal" onclick="clearForm()">Close</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="outstandingCreateModal" tabindex="-1" role="dialog" aria-labelledby="outstandingCreateModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="outstandingCreateModalLongTitle">Create Outstanding</h5>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'create_outstanding_variation_outstanding' %}" role="form" method="post" enctype="multipart/form-data"  class="row g-3 ajax redirect" autocomplete="off" novalidate>
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="row justify-content-center">
+                            <input type="hide" class="form-control" name="customer_id" value="{{customer}}">
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Date</label>
+                                    <input type="date" class="form-control" name="date">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Time</label>
+                                    <input type="time" class="form-control" name="time">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Invoice No</label>
+                                    <input type="text" class="form-control" name="invoice_no">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Amount</label>
+                                    <input type="text" class="form-control" name="amount">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn bg-gradient-secondary" data-dismiss="modal" data-target="#outstandingCreateModal" onclick="clearForm(this)">Close</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="invoiceUpdateModal" tabindex="-1" role="dialog" aria-labelledby="invoiceUpdateModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="invoiceUpdateModalLongTitle">Create Invoice</h5>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'update_outstanding_variation_invoice' %}" role="form" method="post" enctype="multipart/form-data"  class="row g-3 ajax redirect" autocomplete="off" novalidate>
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <input type="hidden" class="form-control" name="customer_id" value="{{customer}}">
+                                <div class="form-group required">
+                                    <label class='control-label'>Date</label>
+                                    <input type="date" class="form-control" name="date">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Time</label>
+                                    <input type="time" class="form-control" name="time">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Invoice No</label>
+                                    <input type="text" class="form-control" name="invoice_no">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Invoice Status</label>
+                                    <select class="form-control" name="invoice_status">
+                                        <option value="paid">Paid</option>
+                                        <option value="non_paid">Non Paid</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Amount</label>
+                                    <input type="text" class="form-control" name="amount">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Received Amount</label>
+                                    <input type="text" class="form-control" name="received_amount">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn bg-gradient-secondary" data-dismiss="modal" data-target="#invoiceUpdateModal" onclick="clearForm()">Close</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="outstandingUpdateModal" tabindex="-1" role="dialog" aria-labelledby="outstandingUpdateModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="outstandingUpdateModalLongTitle">Create Outstanding</h5>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'update_outstanding_variation_outstanding' %}" role="form" method="post" enctype="multipart/form-data"  class="row g-3 ajax redirect" autocomplete="off" novalidate>
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="row justify-content-center">
+                            <input type="hide" class="form-control" name="customer_id" value="{{customer}}">
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Date</label>
+                                    <input type="date" class="form-control" name="date">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Time</label>
+                                    <input type="time" class="form-control" name="time">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Invoice No</label>
+                                    <input type="text" class="form-control" name="invoice_no">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class='control-label'>Amount</label>
+                                    <input type="text" class="form-control" name="amount">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn bg-gradient-secondary" data-dismiss="modal" data-target="#outstandingUpdateModal" onclick="clearForm(this)">Close</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block static %}
+{% load static %}
+<script>
+    function handleButtonClick(button) {
+        var modalName = $(button).data("target");
+        $(modalName).modal('show');
+    }
+    function clearForm(button) {
+        var modalName = $(button).data("target");
+        $(modalName).modal('hide');
+    }
+</script>
+
+{% endblock static %}

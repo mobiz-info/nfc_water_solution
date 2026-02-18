@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="page-header-breadcrumb d-md-flex align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Add Custody Pull Out Details</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="javascript:void(0);" class="text-white-50">Client Management</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Custody Pull Out</li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header text-center">
+                        <h5 class="card-title">Add Custody Pull Out Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <form action="{% url 'custody_item_return_pull' custody_stock_instance.id %}" enctype="multipart/form-data" method="post" class="row g-3 needs-validation">
+                            {% csrf_token %}
+                            <div class="col-12">
+                                {{ form.as_p }}
+                            </div>
+                            <div class="col-12 text-end mt-4">
+                                <input type="submit" class="btn btn-primary me-2" value="Submit">
+                                <button type="button" class="btn btn-success me-2" onClick="history.go(-1);">
+                                    <i class="bi bi-backspace-fill pe-1"></i>Back
+                                </button>
+                                <a href="{% url 'customer_custody_stock' %}" class="btn btn-success">
+                                    <i class="bi bi-backspace-fill pe-1"></i> Back to Dashboard
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block title %} Guest Customers {% endblock %}
+{% block content %}
+{% load accounts_templatetags %}
+{% load static %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Guest Customers</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Client Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Guest Customers</li>
+    </ol>
+</div>
+<!-- Page Header Close -->
+
+<!-- Start::app-content -->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start:: row -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">Guest Customers</div>
+                        
+                    </div>
+                    <div class="card-body">
+
+                        <!-- Table -->
+                        <div class="w-100 overflow-auto">
+                            <table class="table table-bordered text-nowrap">
+                                <thead>
+                                    <tr>
+                                        <th>Sl.No</th>
+                                        <th>Order Date</th>
+                                        <th>Product</th>
+                                        <th>No. of Bottles</th>
+                                        <th>Delivery Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% load el_pagination_tags %}
+                                    {% paginate 50 orders %}
+                                    {% for order in orders %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ order.created_date|date:"d-m-Y" }}</td>
+                                        <td>{{ order.product.product_name }}</td>
+                                        <td>{{ order.no_bottles_required }}</td>
+                                        <td>
+                                            {% if order.delivery_date %}
+                                                {{ order.delivery_date|date:"d-m-Y" }}
+                                            {% else %}
+                                                Not Scheduled
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ order.status|default:"Pending" }}</td>
+                                        <td>
+                                            <a href="{% url 'approve_guest_order' order.id %}" 
+                                               class="btn btn-success btn-sm">
+                                               <i class="bi bi-check-circle"></i> Approve
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="6" class="text-center">No orders found for this guest customer.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination -->
+                        {% get_pages %}
+                        <div class="clearfix"></div>
+                        <div class="row pagi my-3">
+                            <div class="col-sm-6 text-start">
+                                Showing <span class="current_page_index">{{ pages.current_start_index }}</span> - <span class="current_end_status">{{ pages.current_end_index }}</span> of <span class="total_count">{{ pages.total_count }}</span>
+                            </div>
+                            <div class="col-sm-6 text-end pagination-btn-div">{% show_pages %}</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End:: row -->
+    </div>
+</div>
+<!-- End::app-content -->
+
+{% endblock %}

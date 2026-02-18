@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load purchase_template_tags %}
+{% block content %}
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">Edit Product</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Product</li>
+    </ol>
+</div>
+<div class="main-content app-content">
+    <div class="container-fluid">
+             <!-- Start:: row-1 -->
+             <div class="row">
+                <div class="col-xl-12">
+                    <div class="card custom-card">
+                        <div class="card-header">
+                            <div class="card-title mx-auto">
+                            Edit Product</div>
+                        </div>
+                        <div class="card-body">
+                            <form enctype="multipart/form-data" role="form" method="post"
+                                class="row g-3 needs-validation">
+                                {% csrf_token %}
+                                <!--row 1-->
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Product Category</label>
+                                        <select class="form-control" id="productCategory">
+                                            <option value="">Select Category</option>
+                                            {% get_categories as product_categories %}
+                                            {% for c in product_categories %}
+                                            <option value="{{c.pk}}" {% if form.instance.product_name.category.pk == c.pk %}selected{% endif %}>{{c.category_name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class='control-label'>Product Item</label>
+                                        {{ form.product_name }}
+                                        <span style="color: red;">{{ form.product_name.errors }}</span>
+                                        <!--                                <small class="form-text text-muted">Select Category.</small>-->
+                                    </div>
+                                </div>
+                                <div class="col-12 text-end mt-5">
+                                    <input type="submit" class="btn btn-primary me-2 mb-2" value="Submit">
+                                    <button class="btn btn-success   me-md-2  mb-2" type="button" onClick="javascript:history.go(-1);">
+                                        <i class="bi bi-backspace-fill pe-1"></i>Back</button>
+                                    <a class="btn btn-success me-md-2  mb-2" href="{% url 'dashboard' %}">
+                                        <i class="bi bi-backspace-fill pe-1"></i> Back to Dashboard
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+{% endblock %}
+{% block static %}
+{% load static %}
+<script>
+    $(document).ready(function () {
+        $('#productCategory').change(function () {
+            var categoryId = $(this).val();
+            var url = "{% url 'get_product_items' %}";
+            $.ajax({
+                url: url,
+                data: {'category_id': categoryId},
+                dataType: 'json',
+                success: function (data) {
+                    var options = '<option value="">Select Item</option>';
+                    $.each(data, function (index, item) {
+                        options += '<option value="' + item.id + '">' + item.name + '</option>';
+                    });
+                    $('#id_product_name').html(options);
+                }
+            });
+        });
+    });
+</script>
+{% endblock static %}

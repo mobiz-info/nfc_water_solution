@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Printable Monthly Sales Report</title>
+    <style>
+        /* Add print-specific styling here */
+        @media print {
+            .no-print { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h2>Monthly Sales Report - {{ month }}</h2>
+        <table border="1" cellpadding="5" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th>Salesman</th>
+                    <th>Grand Total</th>
+                    <th>Discount</th>
+                    <th>Net Payable</th>
+                    <th>VAT</th>
+                    <th>Subtotal</th>
+                    <th>Amount Received</th>
+                    <th>Supply Quantity</th>
+                    <th>Coupons Received</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sale in sales_data %}
+                    <tr>
+                        <td>{{ sale.salesman__username }}</td>
+                        <td>{{ sale.total_grand_total }}</td>
+                        <td>{{ sale.total_discount }}</td>
+                        <td>{{ sale.total_net_payable }}</td>
+                        <td>{{ sale.total_vat }}</td>
+                        <td>{{ sale.total_subtotal }}</td>
+                        <td>{{ sale.total_amount_received }}</td>
+                        <td>{{ sale.total_supply_qty }}</td>
+                        <td>Manual: {{ sale.total_coupon_received.manual_coupon }}, Digital: {{ sale.total_coupon_received.digital_coupon }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script>
+        window.onload = function() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

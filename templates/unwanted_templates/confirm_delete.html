@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %} van {% endblock %}
+{% block content %}
+{% load static %}
+
+<html>
+<head>
+    <title>Confirm Delete</title>
+
+</head>
+<body>
+    <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+        <h4 class="fw-medium mb-0">Deleting Van</h4>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-30">Dashboards</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+        </ol>
+    </div>
+
+    <div class="main-content app-content">
+        <div class="container-fluid">
+    
+            
+                     <!-- Start:: row-2 -->
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card custom-card">
+                        <div class="card-header">
+<body>   
+   
+    
+    <div class="container">
+       <!---- <div class="text-center bg-light p-4 rounded shadow">!-->
+            <h3>Confirm Delete</h3>
+            <p>Are you sure you want to delete the van "{{ van.plate }}"?</p>
+            <div class="row justify-content-center">
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Yes, I'm sure</button>
+                
+                <a href="{% url 'van' %}" class="btn btn-success">No, cancel</a>
+            </form>
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>
+
+{% endblock%}
