@@ -477,11 +477,13 @@ def bottle_stock_report(request):
     routes = RouteMaster.objects.all()
     selected_date = request.GET.get('date', datetime.now().strftime('%Y-%m-%d'))
     selected_route_id = request.GET.get('route')
+    selected_status = request.GET.get('status')
     
     context = {
         'routes': routes,
         'selected_date': selected_date,
         'selected_route_id': selected_route_id,
+        'selected_status': selected_status,
         'report_data': None
     }
 
@@ -491,6 +493,22 @@ def bottle_stock_report(request):
             route = RouteMaster.objects.get(route_id=selected_route_id)
             
             ledger_qs = BottleLedger.objects.filter(route=route)
+            
+            if selected_status:
+                if selected_status == "FRESH":
+                    ledger_qs = ledger_qs.filter(bottle__is_filled=True)
+
+                elif selected_status == "USED":
+                    ledger_qs = ledger_qs.filter(bottle__is_filled=False)
+
+                elif selected_status == "DAMAGED":
+                    ledger_qs = ledger_qs.filter(action="DAMAGE")
+
+                elif selected_status == "SERVICE":
+                    ledger_qs = ledger_qs.filter(action="REFILL")
+
+                elif selected_status == "TRANSFER":
+                    ledger_qs = ledger_qs.filter(action="LOAD_TO_VAN")
             
             # OPENING
             opening_qs = ledger_qs.filter(created_at__date__lt=target_date)

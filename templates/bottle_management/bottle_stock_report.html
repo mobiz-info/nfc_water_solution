@@ -40,6 +40,17 @@
                                     {% endfor %}
                                 </select>
                             </div>
+                            <div class="col-md-3">
+                                <label for="status" class="form-label">Bottle Type</label>
+                                <select class="form-select" id="status" name="status">
+                                    <option value="">All</option>
+                                    <option value="FRESH" {% if selected_status == "FRESH" %}selected{% endif %}>Fresh</option>
+                                    <option value="USED" {% if selected_status == "USED" %}selected{% endif %}>Used</option>
+                                    <option value="DAMAGED" {% if selected_status == "DAMAGED" %}selected{% endif %}>Damaged</option>
+                                    <option value="SERVICE" {% if selected_status == "SERVICE" %}selected{% endif %}>Service</option>
+                                    <option value="TRANSFER" {% if selected_status == "TRANSFER" %}selected{% endif %}>Transferred To Van</option>
+                                </select>
+                            </div>
                             <div class="col-md-2">
                                 <button type="submit" class="btn btn-primary w-100">Generate</button>
                             </div>
