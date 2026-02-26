@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Bottle Stock Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="javascript:void(0);">Bottle Management</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+            Stock Report
+        </li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header justify-content-between">
+                        <div class="card-title">Bottle Stock Report</div>
+                    </div>
+                    <div class="card-body">
+                        <form method="get" class="row g-3 mb-4 align-items-end">
+                            <div class="col-md-3">
+                                <label for="date" class="form-label">Date</label>
+                                <input type="date" class="form-control" id="date" name="date" value="{{ selected_date }}" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="route" class="form-label">Route</label>
+                                <select class="form-select" id="route" name="route" required>
+                                    <option value="">Select Route</option>
+                                    {% for route in routes %}
+                                    <option value="{{ route.route_id }}" {% if selected_route_id == route.route_id|stringformat:"s" %}selected{% endif %}>
+                                        {{ route.route_name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-primary w-100">Generate</button>
+                            </div>
+                        </form>
+
+                        {% if report_data %}
+                        <div class="table-responsive">
+                            <table class="table table-bordered text-nowrap w-100">
+                                <thead>
+                                    <tr>
+                                        <th>Opening Stock</th>
+                                        <th>In</th>
+                                        <th>Out</th>
+                                        <th>Closing Stock</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{{ report_data.opening_stock }}</td>
+                                        <td>{{ report_data.in_stock }}</td>
+                                        <td>{{ report_data.out_stock }}</td>
+                                        <td>{{ report_data.closing_stock }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        {% elif selected_route_id %}
+                        <div class="alert alert-info">
+                            No data found for the selected route and date.
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

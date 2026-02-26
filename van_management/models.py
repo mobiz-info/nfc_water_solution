@@ -73,6 +73,12 @@ class Van(models.Model):
             return Van_Routes.objects.filter(van=self).first().routes.route_name
         except:
             return "No Route Assigned"
+
+    def get_van_route_obj(self):
+        try:
+            return Van_Routes.objects.filter(van=self).first().routes
+        except:
+            return None
     
     def get_vans_routes(self):
         van_route = Van_Routes.objects.filter(van=self).first()

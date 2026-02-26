@@ -52,9 +52,22 @@ class Bottle(models.Model):
         on_delete=models.SET_NULL,
         related_name="bottles"
     )
+    
+    is_filled = models.BooleanField(default=False)
+
+    current_route = models.ForeignKey(
+        "master.RouteMaster",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="bottles"
+    )
+
+    bottle_cycle = models.IntegerField(default=0)
 
     def __str__(self):
         return self.serial_number
+
     
 
 class BottleLedger(models.Model):
@@ -70,6 +83,8 @@ class BottleLedger(models.Model):
         ("UNLOAD_FROM_VAN", "Unload From Van"),
         ("FOC", "Free Of Cost"),
         ("OFFLOAD", "Offload"),
+        ("REFILL", "Refilled"),
+        ("CREATE_WITH_NFC", "Created with NFC"),
     ]
 
     bottle = models.ForeignKey(Bottle, on_delete=models.CASCADE)
@@ -92,3 +107,11 @@ class BottleLedger(models.Model):
     reference = models.CharField(max_length=100, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.CharField(max_length=30, blank=True)
+    
+    route = models.ForeignKey(
+        "master.RouteMaster",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="bottle_ledgers"
+    )

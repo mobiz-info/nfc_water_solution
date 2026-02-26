@@ -10,6 +10,7 @@ class BottleLedgerAdmin(admin.ModelAdmin):
         "bottle",
         "action",
         "van",
+        "route",
         "customer",
         "reference",
         "created_at",
@@ -19,6 +20,7 @@ class BottleLedgerAdmin(admin.ModelAdmin):
         "action",
         "created_at",
         "van",
+        "route",
     )
 
     search_fields = (
@@ -30,6 +32,7 @@ class BottleLedgerAdmin(admin.ModelAdmin):
         "bottle",
         "action",
         "van",
+        "route",
         "customer",
         "reference",
         "created_at",
@@ -46,12 +49,14 @@ class BottleAdmin(admin.ModelAdmin):
         "qr_code",
         "product",
         "status",
+        "is_filled",
         "created_at",
         "nfc_uid",
     )
 
     list_filter = (
         "status",
+        "is_filled",
         "product",
         "created_at",
     )

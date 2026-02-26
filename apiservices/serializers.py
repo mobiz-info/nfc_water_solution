@@ -1047,10 +1047,11 @@ class CustomerCustodyStockProductsSerializer(serializers.ModelSerializer):
     product_name = serializers.SerializerMethodField() 
     deposit_form_number = serializers.SerializerMethodField() 
     amount = serializers.SerializerMethodField() 
+    bottle_ids = serializers.SerializerMethodField()
 
     class Meta:
         model = CustomerCustodyStock
-        fields = ['id','agreement_no','deposit_type','product','product_name','quantity','serialnumber','amount','deposit_form_number']
+        fields = ['id','agreement_no','deposit_type','product','product_name','quantity','serialnumber','amount','deposit_form_number', 'bottle_ids']
         
     def get_product_name(self,obj):
         return obj.product.product_name
@@ -1060,6 +1061,13 @@ class CustomerCustodyStockProductsSerializer(serializers.ModelSerializer):
     
     def get_amount(self,obj):
         return int(obj.amount)
+        
+    def get_bottle_ids(self, obj):
+        if obj.product.product_name == "5 Gallon":
+            from bottle_management.models import Bottle
+            bottles = Bottle.objects.filter(current_customer=obj.customer, product=obj.product, status="CUSTOMER").values_list('nfc_uid', flat=True)
+            return list(filter(None, bottles))  # Return only non-null UIDs
+        return []
 
 class CustomerCustodyStockSerializer(serializers.ModelSerializer):
     products = serializers.SerializerMethodField() 

@@ -18,10 +18,12 @@ from django.contrib.auth import authenticate
 
 # Create your views here.
 
-def get_last_number(date_str, prefix):
-    regex = rf"^{date_str}-{prefix}(\d+)$"
+def get_last_number(prefix):
+    # Regex to match ANY date pattern with the prefix and a number
+    # Matches: dd-mm-PREFIX123
+    regex = rf"^\d{{2}}-\d{{2}}-{prefix}(\d+)$"
     
-    # Fetch all matching serial numbers
+    # Fetch all matching serial numbers regardless of date
     serials = Bottle.objects.filter(serial_number__regex=regex).values_list('serial_number', flat=True)
     
     max_number = 0
@@ -50,7 +52,7 @@ def generate_bottles(
     today = datetime.now()
     date_str = today.strftime("%d-%m")
 
-    last_number = get_last_number(prefix, date_str)
+    last_number = get_last_number(prefix)
 
     bottles = []
     ledgers = []
@@ -72,7 +74,7 @@ def generate_bottles(
             BottleLedger(
                 bottle=bottle,
                 action="CREATE",
-                reference=f"initial_stock_{date_str}"
+                reference=f"Initial Stock ({date_str})"
             )
         )
 
@@ -88,7 +90,7 @@ def preview_bottles(request):
     prefix = data.get("prefix", "BTL")
 
     today = datetime.now().strftime("%d-%m")
-    last_no = get_last_number(today, prefix)
+    last_no = get_last_number(prefix)
 
     serials = [
         f"{today}-{prefix}{last_no + i}"
@@ -96,6 +98,50 @@ def preview_bottles(request):
     ]
 
     return JsonResponse({"serials": serials})
+
+
+@csrf_exempt
+def refill_bottles(request):
+    try:
+        data = json.loads(request.body)
+        nfc_uids = data.get("nfc_uids", [])
+        
+        if not nfc_uids:
+             return JsonResponse({"error": "No bottles scanned"}, status=400)
+             
+        success_count = 0
+        failed_bottles = []
+        
+        for nfc in nfc_uids:
+            try:
+                bottle = Bottle.objects.get(nfc_uid=nfc)
+                bottle.is_filled = True
+                bottle.bottle_cycle += 1
+                bottle.save()
+                
+                BottleLedger.objects.create(
+                    bottle=bottle,
+                    action="REFILL",
+                    reference="Refilled at Plant",
+                    created_by="App User" # Or authenticated user
+                )
+                success_count += 1
+            except Bottle.DoesNotExist:
+                failed_bottles.append({"nfc": nfc, "reason": "Not found"})
+            except Exception as e:
+                failed_bottles.append({"nfc": nfc, "reason": str(e)})
+                
+        return JsonResponse({
+            "message": f"Refilled {success_count} bottles",
+            "success_count": success_count,
+            "failed_count": len(failed_bottles),
+            "failed_bottles": failed_bottles
+        }, status=200)
+
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
 
 
 def bottle_generator_page(request):
@@ -290,7 +336,7 @@ def generate_bottles_with_nfc(
     today = datetime.now()
     date_str = today.strftime("%d-%m")
 
-    last_number = get_last_number(date_str, prefix)
+    last_number = get_last_number(prefix)
 
     bottles = []
     ledgers = []
@@ -317,7 +363,7 @@ def generate_bottles_with_nfc(
             BottleLedger(
                 bottle=bottle,
                 action="CREATE_WITH_NFC",
-                reference=f"initial_stock_{date_str}",
+                reference=f"Initial NFC Stock ({date_str})",
                 created_by=created_by
             )
         )
@@ -398,7 +444,16 @@ def get_bottle_details_by_nfc(request):
             "status": bottle.status,
             "product_name": bottle.product.product_name if bottle.product else "Unknown",
             "nfc_uid": bottle.nfc_uid,
-            "created_at": bottle.created_at.strftime("%Y-%m-%d %H:%M:%S")
+            "created_at": bottle.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+            "is_filled": bottle.is_filled,
+            "current_van": {
+                "id": bottle.current_van.van_id,
+                "name": bottle.current_van.get_van_route()
+             } if bottle.current_van else None,
+            "current_customer": {
+                "id": bottle.current_customer.customer_id,
+                "name": bottle.current_customer.customer_name
+            } if bottle.current_customer else None
         }, status=200)
 
     except Bottle.DoesNotExist:
@@ -407,6 +462,62 @@ def get_bottle_details_by_nfc(request):
         return JsonResponse({"error": "Invalid JSON"}, status=400)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
+
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def bottle_stock_report(request):
+    """
+    Report showing Opening, In, Out, Closing stock for a selected Date and Route.
+    """
+    from datetime import datetime, timedelta
+    from django.db.models import Sum, Case, When, IntegerField, F
+    from master.models import RouteMaster
+    
+    routes = RouteMaster.objects.all()
+    selected_date = request.GET.get('date', datetime.now().strftime('%Y-%m-%d'))
+    selected_route_id = request.GET.get('route')
+    
+    context = {
+        'routes': routes,
+        'selected_date': selected_date,
+        'selected_route_id': selected_route_id,
+        'report_data': None
+    }
+
+    if selected_route_id and selected_date:
+        try:
+            target_date = datetime.strptime(selected_date, '%Y-%m-%d').date()
+            route = RouteMaster.objects.get(route_id=selected_route_id)
+            
+            ledger_qs = BottleLedger.objects.filter(route=route)
+            
+            # OPENING
+            opening_qs = ledger_qs.filter(created_at__date__lt=target_date)
+            
+            opening_plus = opening_qs.filter(action__in=["LOAD_TO_VAN", "RETURN"]).count()
+            opening_minus = opening_qs.filter(action__in=["SUPPLY", "OFFLOAD"]).count()
+            opening_stock = opening_plus - opening_minus
+            
+            # TODAY IN/OUT
+            today_qs = ledger_qs.filter(created_at__date=target_date)
+            
+            today_in = today_qs.filter(action__in=["LOAD_TO_VAN", "RETURN"]).count()
+            today_out = today_qs.filter(action__in=["SUPPLY", "OFFLOAD"]).count()
+            
+            closing_stock = opening_stock + today_in - today_out
+            
+            context['report_data'] = {
+                'opening_stock': opening_stock,
+                'in_stock': today_in,
+                'out_stock': today_out,
+                'closing_stock': closing_stock,
+            }
+
+        except Exception as e:
+            print(e)
+            
+    return render(request, 'bottle_management/bottle_stock_report.html', context)
 
 @csrf_exempt
 def get_van_by_route(request):
@@ -445,6 +556,7 @@ def transfer_bottles_to_van(request):
         data = json.loads(request.body)
         van_id = data.get("van_id")
         nfc_uids = data.get("nfc_uids", [])
+        route_id = data.get("route_id")
         
         if not van_id:
             return JsonResponse({"error": "Van ID is required"}, status=400)
@@ -453,10 +565,23 @@ def transfer_bottles_to_van(request):
              return JsonResponse({"error": "No bottles scanned"}, status=400)
             
         from van_management.models import Van
+        from master.models import RouteMaster
+
         try:
             van = Van.objects.get(van_id=van_id)
         except Van.DoesNotExist:
             return JsonResponse({"error": "Van not found"}, status=404)
+            
+        # Resolved Route
+        route_obj = None
+        if route_id:
+            try:
+                route_obj = RouteMaster.objects.get(route_id=route_id)
+            except RouteMaster.DoesNotExist:
+                pass
+        
+        if not route_obj:
+            route_obj = van.get_van_route_obj()
             
         success_count = 0
         failed_bottles = []
@@ -484,7 +609,8 @@ def transfer_bottles_to_van(request):
                     action="LOAD_TO_VAN",
                     van=van,
                     reference=f"Transfer to {van.van_make} (was {old_status})",
-                    created_by="App User"
+                    created_by="App User",
+                    route=route_obj
                 )
                 success_count += 1
                 
@@ -502,5 +628,57 @@ def transfer_bottles_to_van(request):
 
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON"}, status=400)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+
+def periodic_bottle_movement_report(request):
+    try:
+        from_date = request.GET.get('from_date')
+        to_date = request.GET.get('to_date')
+        action = request.GET.get('action')
+
+        movements = BottleLedger.objects.all().order_by('-created_at')
+
+        if from_date:
+            movements = movements.filter(created_at__date__gte=from_date)
+        
+        if to_date:
+            movements = movements.filter(created_at__date__lte=to_date)
+
+        if action:
+            movements = movements.filter(action=action)
+
+        context = {
+            'movements': movements,
+            'from_date': from_date,
+            'to_date': to_date,
+            'selected_action': action,
+            'action_choices': BottleLedger.ACTION_CHOICES,
+        }
+        return render(request, 'bottle_management/movement_report.html', context)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+
+def bottle_cycle_report(request):
+    try:
+        q = request.GET.get('q', '').strip()
+        bottle = None
+        movements = None
+
+        if q:
+            # Search by serial number or nfc_uid
+            from django.db.models import Q
+            bottle = Bottle.objects.filter(Q(serial_number=q) | Q(nfc_uid=q)).first()
+            if bottle:
+                movements = BottleLedger.objects.filter(bottle=bottle).order_by('-created_at')
+
+        context = {
+            'q': q,
+            'bottle': bottle,
+            'movements': movements,
+        }
+        return render(request, 'bottle_management/bottle_cycle_report.html', context)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
