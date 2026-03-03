@@ -64,6 +64,7 @@ class Bottle(models.Model):
     )
 
     bottle_cycle = models.IntegerField(default=0)
+    visited_customer_in_current_cycle = models.BooleanField(default=False)
 
     def __str__(self):
         return self.serial_number

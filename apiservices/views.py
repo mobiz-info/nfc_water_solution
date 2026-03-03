@@ -2654,6 +2654,7 @@ class Add_Customer_Custody_Item_API(APIView):
                             bottle.current_van = None
                             bottle.current_route = route_obj
                             bottle.is_filled = False
+                            bottle.visited_customer_in_current_cycle = True
                             bottle.save()
                             BottleLedger.objects.create(
                                 bottle=bottle,
@@ -4378,6 +4379,7 @@ class CustodyCustomAPIView(APIView):
                             bottle.current_van = None
                             bottle.current_route = route_obj
                             bottle.is_filled = False
+                            bottle.visited_customer_in_current_cycle = True
                             bottle.save()
                             BottleLedger.objects.create(
                                 bottle=bottle,
@@ -6140,17 +6142,42 @@ class VanStockAPI(APIView):
             
         coupon_serialized_data = VanCouponStockSerializer(van_coupon_stock, many=True).data
 
+        from bottle_management.models import Bottle
+
         product_serialized_data = []
         for stock in van_product_stock:
             product_name = stock.product.product_name.lower()
             if product_name == "5 gallon":
+                filled_bottles_qs = Bottle.objects.filter(
+                    current_van=stock.van, 
+                    status="VAN", 
+                    is_filled=True, 
+                    product=stock.product
+                )
+                filled_bottles = [
+                    f"{b.serial_number} - {b.nfc_uid}" if b.nfc_uid else str(b.serial_number)
+                    for b in filled_bottles_qs
+                ]
+                
+                empty_bottles_qs = Bottle.objects.filter(
+                    current_van=stock.van, 
+                    status="VAN", 
+                    is_filled=False, 
+                    product=stock.product
+                )
+                empty_bottles = [
+                    f"{b.serial_number} - {b.nfc_uid}" if b.nfc_uid else str(b.serial_number)
+                    for b in empty_bottles_qs
+                ]
+
                 product_serialized_data.append({
                     'id': stock.pk,
                     'product_name': stock.product.product_name,
                     'stock_type': 'stock',
                     'count': stock.stock,
                     'product': stock.product.pk,
-                    'van': stock.van.pk
+                    'van': stock.van.pk,
+                    'bottle_ids': [b for b in filled_bottles if b] # Filter out None
                 })
                 product_serialized_data.append({
                     'id': stock.pk,
@@ -6158,7 +6185,8 @@ class VanStockAPI(APIView):
                     'stock_type': 'empty_bottle',
                     'count': stock.empty_can_count,
                     'product': stock.product.pk,
-                    'van': stock.van.pk
+                    'van': stock.van.pk,
+                    'bottle_ids': [b for b in empty_bottles if b] # Filter out None
                 })
             else:
                 product_serialized_data.append({
@@ -14904,6 +14932,7 @@ def create_customer_supply_latest(request):
                         bottle.current_van = None
                         bottle.current_route = route_obj
                         bottle.is_filled = True
+                        bottle.visited_customer_in_current_cycle = True
                         bottle.save()
                         BottleLedger.objects.create(
                             bottle=bottle,
@@ -14929,6 +14958,7 @@ def create_customer_supply_latest(request):
                         bottle.current_van = None
                         bottle.current_route = route_obj
                         bottle.is_filled = True
+                        bottle.visited_customer_in_current_cycle = True
                         bottle.save()
                         BottleLedger.objects.create(
                             bottle=bottle,

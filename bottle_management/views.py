@@ -116,7 +116,9 @@ def refill_bottles(request):
             try:
                 bottle = Bottle.objects.get(nfc_uid=nfc)
                 bottle.is_filled = True
-                bottle.bottle_cycle += 1
+                if bottle.visited_customer_in_current_cycle:
+                    bottle.bottle_cycle += 1
+                    bottle.visited_customer_in_current_cycle = False
                 bottle.save()
                 
                 BottleLedger.objects.create(

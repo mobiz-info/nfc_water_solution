@@ -139,7 +139,11 @@
                                     <td class="text-center" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>{{instance.customer.customer_name}}</td>
                                     <td class="text-center" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>{{instance.customer.get_sales_type_display}}</td>
                                      <td class="text-center" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>{{instance.salesman.get_fullname}}</td>
-                                    <td class="text-center" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>{{instance.get_total_supply_qty}}</td>
+                                    <td class="text-center" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>
+                                        <a href="{% url 'customer_supply_bottles_list' supply_id=instance.pk %}" class="text-primary text-decoration-underline fw-bold" data-bs-toggle="tooltip" title="View Supplied Bottles">
+                                            {{instance.get_total_supply_qty}}
+                                        </a>
+                                    </td>
                                     <td class="text-center" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>{{instance.allocate_bottle_to_free}}</td>
                                     <td class="text-center" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>{{instance.collected_empty_bottle}}</td>
                                     <td class="text-center" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>{% if instance.subtotal == instance.amount_recieved %} Paid {% else %} Non Paid {% endif %}</td>

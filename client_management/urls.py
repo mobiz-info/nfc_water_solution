@@ -39,6 +39,7 @@ urlpatterns = [
         re_path(r'^info-customer-suppply/(?P<pk>.*)/$', customer_supply_info, name='customer_supply_info'),
         re_path(r'^edit-customer-suppply/(?P<pk>.*)/$', edit_customer_supply, name='edit_customer_supply'),
         re_path(r'^delete-customer-suppply/(?P<pk>.*)/$', delete_customer_supply, name='delete_customer_supply'),
+        path('customer-supply-bottles/<str:supply_id>/', customer_supply_bottles_list, name='customer_supply_bottles_list'),
 
 #------------------------------Report-------------------------
 
