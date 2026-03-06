@@ -465,6 +465,47 @@ def get_bottle_details_by_nfc(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
 
+
+@csrf_exempt
+def get_bottle_by_qr(request):
+    """Look up a bottle by its QR code value. Returns the same structure as get_bottle_details_by_nfc."""
+    try:
+        data = json.loads(request.body)
+        qr_code = data.get("qr_code")
+
+        if not qr_code:
+            return JsonResponse({"error": "QR code is required"}, status=400)
+
+        bottle = Bottle.objects.get(qr_code=qr_code)
+
+        return JsonResponse({
+            "id": bottle.id,
+            "serial_number": bottle.serial_number,
+            "qr_code": bottle.qr_code,
+            "nfc_uid": bottle.nfc_uid,
+            "status": bottle.status,
+            "product_name": bottle.product.product_name if bottle.product else "Unknown",
+            "created_at": bottle.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+            "is_filled": bottle.is_filled,
+            "current_van": {
+                "id": bottle.current_van.van_id,
+                "name": bottle.current_van.get_van_route()
+            } if bottle.current_van else None,
+            "current_customer": {
+                "id": bottle.current_customer.customer_id,
+                "name": bottle.current_customer.customer_name
+            } if bottle.current_customer else None,
+        }, status=200)
+
+    except Bottle.DoesNotExist:
+        return JsonResponse({"error": "Bottle not found for this QR code"}, status=404)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+
+
 from django.contrib.auth.decorators import login_required
 
 @login_required
@@ -702,3 +743,59 @@ def bottle_cycle_report(request):
         return render(request, 'bottle_management/bottle_cycle_report.html', context)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
+
+
+@login_required
+def bottles_report(request):
+    """
+    Report listing all bottles with their details:
+    Created Date, Current Status, Bottle Cycle, Route, QR Code (server-side generated).
+    Supports filtering by status and searching by serial number / QR code.
+    """
+    import qrcode
+    import io
+    import base64
+    from django.db.models import Q
+
+    status_filter = request.GET.get('status', '').strip()
+    search_q = request.GET.get('q', '').strip()
+
+    qs = Bottle.objects.select_related('product', 'current_van', 'current_customer', 'current_route').order_by('-created_at')
+
+    if status_filter:
+        qs = qs.filter(status=status_filter)
+
+    if search_q:
+        qs = qs.filter(
+            Q(serial_number__icontains=search_q) | Q(qr_code__icontains=search_q)
+        )
+
+    def make_qr_b64(text):
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_H,
+            box_size=6,
+            border=2,
+        )
+        qr.add_data(text)
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="black", back_color="white")
+        buf = io.BytesIO()
+        img.save(buf, format="PNG")
+        return base64.b64encode(buf.getvalue()).decode()
+
+    bottles_data = []
+    for bottle in qs:
+        bottles_data.append({
+            'bottle': bottle,
+            'qr_b64': make_qr_b64(bottle.serial_number),
+        })
+
+    context = {
+        'bottles_data': bottles_data,
+        'status_choices': Bottle.STATUS_CHOICES,
+        'selected_status': status_filter,
+        'search_q': search_q,
+        'total_count': qs.count(),
+    }
+    return render(request, 'bottle_management/bottles_report.html', context)
