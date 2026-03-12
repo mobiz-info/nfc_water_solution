@@ -18,24 +18,44 @@ from django.contrib.auth import authenticate
 
 # Create your views here.
 
+# def get_last_number(prefix):
+#     # Regex to match ANY date pattern with the prefix and a number
+#     # Matches: dd-mm-PREFIX123
+#     regex = rf"^\d{{2}}-\d{{2}}-{prefix}(\d+)$"
+    
+#     # Fetch all matching serial numbers regardless of date
+#     serials = Bottle.objects.filter(serial_number__regex=regex).values_list('serial_number', flat=True)
+    
+#     max_number = 0
+    
+#     for serial in serials:
+#         match = re.search(r"(\d+)$", serial)
+#         if match:
+#             number = int(match.group(1))
+#             if number > max_number:
+#                 max_number = number
+                
+#     return max_number
+
 def get_last_number(prefix):
-    # Regex to match ANY date pattern with the prefix and a number
-    # Matches: dd-mm-PREFIX123
-    regex = rf"^\d{{2}}-\d{{2}}-{prefix}(\d+)$"
-    
-    # Fetch all matching serial numbers regardless of date
-    serials = Bottle.objects.filter(serial_number__regex=regex).values_list('serial_number', flat=True)
-    
+    # Match pattern like A1-03/26
+    regex = rf"^{prefix}(\d+)-\d{{2}}/\d{{2}}$"
+
+    serials = Bottle.objects.filter(
+        serial_number__regex=regex
+    ).values_list("serial_number", flat=True)
+
     max_number = 0
-    
+
     for serial in serials:
-        match = re.search(r"(\d+)$", serial)
+        match = re.search(rf"{prefix}(\d+)", serial)
         if match:
             number = int(match.group(1))
             if number > max_number:
                 max_number = number
-                
+
     return max_number
+
 
 @transaction.atomic
 def generate_bottles(
@@ -83,22 +103,36 @@ def generate_bottles(
     return bottles
 
 
+# @csrf_exempt
+# def preview_bottles(request):
+#     data = json.loads(request.body)
+#     qty = int(data["qty"])
+#     prefix = data.get("prefix", "BTL")
+
+#     today = datetime.now().strftime("%d-%m")
+#     last_no = get_last_number(prefix)
+
+#     serials = [
+#         f"{today}-{prefix}{last_no + i}"
+#         for i in range(1, qty + 1)
+#     ]
+
+#     return JsonResponse({"serials": serials})
 @csrf_exempt
 def preview_bottles(request):
     data = json.loads(request.body)
     qty = int(data["qty"])
-    prefix = data.get("prefix", "BTL")
+    prefix = data.get("prefix", "A")
 
-    today = datetime.now().strftime("%d-%m")
+    today = datetime.now().strftime("%m/%y")   # 03/26
     last_no = get_last_number(prefix)
 
     serials = [
-        f"{today}-{prefix}{last_no + i}"
+        f"{prefix}{last_no + i}-{today}"
         for i in range(1, qty + 1)
     ]
 
     return JsonResponse({"serials": serials})
-
 
 @csrf_exempt
 def refill_bottles(request):
