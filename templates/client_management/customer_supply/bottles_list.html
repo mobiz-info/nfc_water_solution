@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between ">
+    <h4 class="fw-medium mb-0">{{ page_title }}</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50">Customer Supply</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ page_name }}</li>
+    </ol>
+</div>
+<!-- Page Header Close -->
+<!-- Start::app-content -->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Supplied Bottles List ({{ customer_supply.customer.customer_name }} - {{ customer_supply.created_date|date:'Y-m-d' }})
+                        </div>
+                        <div class="ms-auto">
+                            <a href="{% url 'customer_supply_list' %}" class="btn btn-secondary btn-sm">
+                                <i class="bi bi-arrow-left me-1"></i> Back to Supply List
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table text-nowrap table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="text-center">Sl.No</th>
+                                        <th scope="col" class="text-center">Bottle ID</th>
+                                        <th scope="col" class="text-center">Bottle Status</th>
+                                        <th scope="col" class="text-center">Bottle Cycle</th>
+                                        <th scope="col" class="text-center">Purchase Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in bottles %}
+                                    <tr>
+                                        <td class="text-center">{{ forloop.counter }}</td>
+                                        <td class="text-center fw-bold">{{ item.bottle.serial_number }}</td>
+                                        <td class="text-center">
+                                            <span class="badge 
+                                                {% if item.bottle.status == 'GODOWN' %}bg-primary
+                                                {% elif item.bottle.status == 'VAN' %}bg-info
+                                                {% elif item.bottle.status == 'CUSTOMER' %}bg-success
+                                                {% elif item.bottle.status == 'DAMAGED' or item.bottle.status == 'LOST' %}bg-danger
+                                                {% else %}bg-secondary{% endif %}">
+                                                {{ item.bottle.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td class="text-center">{{ item.bottle.bottle_cycle }}</td>
+                                        <td class="text-center">{{ item.bottle.created_at|date:'Y-m-d H:i' }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-center">No bottles found for this supply.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -64,6 +64,7 @@ class Bottle(models.Model):
     )
 
     bottle_cycle = models.IntegerField(default=0)
+    visited_customer_in_current_cycle = models.BooleanField(default=False)
 
     def __str__(self):
         return self.serial_number
@@ -78,11 +79,12 @@ class BottleLedger(models.Model):
         ("RETURN", "Returned From Customer"),
         ("OFFLOAD", "Offloaded To Godown"),
         ("DAMAGE", "Damaged"),
+        ("LEAK", "Leaked"),
+        ("SERVICE", "Sent For Service"),
         ("CUSTODY_ADD", "Custody Add"),
         ("CUSTODY_PULLOUT", "Custody Pullout"),
         ("UNLOAD_FROM_VAN", "Unload From Van"),
         ("FOC", "Free Of Cost"),
-        ("OFFLOAD", "Offload"),
         ("REFILL", "Refilled"),
         ("CREATE_WITH_NFC", "Created with NFC"),
     ]

@@ -3858,6 +3858,7 @@ class CustomerSupplyNFCSerializer(serializers.ModelSerializer):
                 bottle.status = "CUSTOMER"
                 bottle.current_customer = customer_supply.customer
                 bottle.current_van = None
+                bottle.visited_customer_in_current_cycle = True
                 bottle.save()
                 
         return customer_supply

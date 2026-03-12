@@ -2654,6 +2654,7 @@ class Add_Customer_Custody_Item_API(APIView):
                             bottle.current_van = None
                             bottle.current_route = route_obj
                             bottle.is_filled = False
+                            bottle.visited_customer_in_current_cycle = True
                             bottle.save()
                             BottleLedger.objects.create(
                                 bottle=bottle,
@@ -4378,6 +4379,7 @@ class CustodyCustomAPIView(APIView):
                             bottle.current_van = None
                             bottle.current_route = route_obj
                             bottle.is_filled = False
+                            bottle.visited_customer_in_current_cycle = True
                             bottle.save()
                             BottleLedger.objects.create(
                                 bottle=bottle,
@@ -6140,17 +6142,42 @@ class VanStockAPI(APIView):
             
         coupon_serialized_data = VanCouponStockSerializer(van_coupon_stock, many=True).data
 
+        from bottle_management.models import Bottle
+
         product_serialized_data = []
         for stock in van_product_stock:
             product_name = stock.product.product_name.lower()
             if product_name == "5 gallon":
+                filled_bottles_qs = Bottle.objects.filter(
+                    current_van=stock.van, 
+                    status="VAN", 
+                    is_filled=True, 
+                    product=stock.product
+                )
+                filled_bottles = [
+                    f"{b.serial_number} - {b.nfc_uid}" if b.nfc_uid else str(b.serial_number)
+                    for b in filled_bottles_qs
+                ]
+                
+                empty_bottles_qs = Bottle.objects.filter(
+                    current_van=stock.van, 
+                    status="VAN", 
+                    is_filled=False, 
+                    product=stock.product
+                )
+                empty_bottles = [
+                    f"{b.serial_number} - {b.nfc_uid}" if b.nfc_uid else str(b.serial_number)
+                    for b in empty_bottles_qs
+                ]
+
                 product_serialized_data.append({
                     'id': stock.pk,
                     'product_name': stock.product.product_name,
                     'stock_type': 'stock',
                     'count': stock.stock,
                     'product': stock.product.pk,
-                    'van': stock.van.pk
+                    'van': stock.van.pk,
+                    'bottle_ids': [b for b in filled_bottles if b] # Filter out None
                 })
                 product_serialized_data.append({
                     'id': stock.pk,
@@ -6158,7 +6185,8 @@ class VanStockAPI(APIView):
                     'stock_type': 'empty_bottle',
                     'count': stock.empty_can_count,
                     'product': stock.product.pk,
-                    'van': stock.van.pk
+                    'van': stock.van.pk,
+                    'bottle_ids': [b for b in empty_bottles if b] # Filter out None
                 })
             else:
                 product_serialized_data.append({
@@ -11933,7 +11961,29 @@ class CustomerProductReturnAPIView(APIView):
                             
                     description = f"Customer product return recorded for customer: {return_instance.customer.customer_name}, product: {return_instance.product.product_name}, quantity: {return_instance.quantity}."
                     log_activity(created_by=request.user.id, description=description)
-        
+
+                    # Update Bottle ledger for scanned NFC UIDs
+                    nfc_uids = data.get('nfc_uids', [])
+                    salesman_name = request.user.get_full_name() or request.user.username
+                    for nfc_uid in nfc_uids:
+                        try:
+                            bottle = Bottle.objects.get(nfc_uid=nfc_uid)
+                            bottle.status = "VAN"
+                            bottle.current_customer = None
+                            bottle.current_van = van_instance
+                            bottle.save()
+                            BottleLedger.objects.create(
+                                bottle=bottle,
+                                action="RETURN",
+                                customer=return_instance.customer,
+                                van=van_instance,
+                                reference=f"Return by {return_instance.customer.customer_name}",
+                                created_by=salesman_name,
+                            )
+                        except Bottle.DoesNotExist:
+                            print(f"Bottle not found for NFC UID: {nfc_uid}")
+                        except Exception as e:
+                            print(f"Error updating return bottle {nfc_uid}: {e}")
 
                     status_code = status.HTTP_201_CREATED
                     response_data = {
@@ -12025,6 +12075,29 @@ class CustomerProductReplaceAPIView(APIView):
                         stock.save()
                         
                         log_activity(request.user, f"Adjusted customer coupon stock count for customer {replace_instance.customer.customer_name} by {replace_instance.quantity}")
+
+                    # Update Bottle ledger for scanned NFC UIDs (old bottles returned by customer)
+                    nfc_uids = data.get('nfc_uids', [])
+                    salesman_name = request.user.get_full_name() or request.user.username
+                    for nfc_uid in nfc_uids:
+                        try:
+                            bottle = Bottle.objects.get(nfc_uid=nfc_uid)
+                            bottle.status = "VAN"
+                            bottle.current_customer = None
+                            bottle.current_van = van_instance
+                            bottle.save()
+                            BottleLedger.objects.create(
+                                bottle=bottle,
+                                action="RETURN",
+                                customer=replace_instance.customer,
+                                van=van_instance,
+                                reference=f"Replace return by {replace_instance.customer.customer_name}",
+                                created_by=salesman_name,
+                            )
+                        except Bottle.DoesNotExist:
+                            print(f"Bottle not found for NFC UID: {nfc_uid}")
+                        except Exception as e:
+                            print(f"Error updating replace bottle {nfc_uid}: {e}")
 
                     status_code = status.HTTP_201_CREATED
                     response_data = {
@@ -14904,6 +14977,7 @@ def create_customer_supply_latest(request):
                         bottle.current_van = None
                         bottle.current_route = route_obj
                         bottle.is_filled = True
+                        bottle.visited_customer_in_current_cycle = True
                         bottle.save()
                         BottleLedger.objects.create(
                             bottle=bottle,
@@ -14929,6 +15003,7 @@ def create_customer_supply_latest(request):
                         bottle.current_van = None
                         bottle.current_route = route_obj
                         bottle.is_filled = True
+                        bottle.visited_customer_in_current_cycle = True
                         bottle.save()
                         BottleLedger.objects.create(
                             bottle=bottle,
@@ -15275,15 +15350,15 @@ class StaffIssueOrdersNFCAPIView(APIView):
                 return Response({'error': f'No Van found for salesman (user id={order.created_by}). Please assign a Van to the salesman in admin.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+            # Get route from the van
+            van_route = None
+            from van_management.models import Van_Routes
+            van_route_obj = Van_Routes.objects.filter(van=van).first()
+            if van_route_obj:
+                van_route = van_route_obj.routes
+
             success_count = 0
             failed_bottles = []
-            
-            # Get main stock to decrement
-            # Based on StaffIssueOrdersAPIView
-            # main_stock = ProductStock.objects.filter(product_name=product).first()
-            # if not main_stock:
-            #      # It might be possible there is no stock entry yet, handle gracefully or error?
-            #      pass
 
             for nfc in nfc_uids:
                 try:
@@ -15296,16 +15371,17 @@ class StaffIssueOrdersNFCAPIView(APIView):
                     bottle.status = "VAN"
                     bottle.current_van = van
                     bottle.current_customer = None
+                    bottle.current_route = van_route
                     bottle.save()
-                    
+
                     # Create Bottle Ledger
                     BottleLedger.objects.create(
                         bottle=bottle,
-                        action="LOAD_TO_VAN", 
+                        action="LOAD_TO_VAN",
                         van=van,
+                        route=van_route,
                         reference=f"Order #{order.order_number}",
-                        created_by=request.user.username, 
-                        route=None 
+                        created_by=request.user.username,
                     )
                     
                     # Create Staff_IssueOrders entry (Individual tracking)
@@ -15389,6 +15465,103 @@ class StaffIssueOrdersNFCAPIView(APIView):
                 "message": f"Successfully issued {success_count} bottles",
                 "success_count": success_count,
                 "failed_bottles": failed_bottles
+            }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class OrderDamageNFCAPIView(APIView):
+    """
+    Accepts NFC-scanned bottle UIDs for three categories:
+      damage_nfc_uids  -> BottleLedger action=DAMAGE, bottle status=DAMAGED
+      leak_nfc_uids    -> BottleLedger action=LEAK,   bottle status=DAMAGED
+      service_nfc_uids -> BottleLedger action=SERVICE, bottle status=VAN (bottle goes for service/refill)
+
+    POST body:
+    {
+        "order_id": "<staff_order_id>",
+        "damage_nfc_uids":  ["uid1", ...],
+        "leak_nfc_uids":    ["uid2", ...],
+        "service_nfc_uids": ["uid3", ...]
+    }
+    """
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    @transaction.atomic
+    def post(self, request):
+        try:
+            from bottle_management.models import Bottle, BottleLedger
+
+            data = request.data
+            order_id = data.get('order_id')
+            damage_uids = data.get('damage_nfc_uids', [])
+            leak_uids = data.get('leak_nfc_uids', [])
+            service_uids = data.get('service_nfc_uids', [])
+
+            if not (damage_uids or leak_uids or service_uids):
+                return Response({'error': 'No NFC UIDs provided for any category'}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Optionally resolve the van from the authenticated user
+            van = Van.objects.filter(salesman=request.user).first()
+
+            results = {
+                'damage': {'success': 0, 'failed': []},
+                'leak':   {'success': 0, 'failed': []},
+                'service':{'success': 0, 'failed': []},
+            }
+
+            # Get route from the van
+            van_route = None
+            if van:
+                from van_management.models import Van_Routes
+                van_route_obj = Van_Routes.objects.filter(van=van).first()
+                if van_route_obj:
+                    van_route = van_route_obj.routes
+
+            def _process(uids, action, new_status, category_key):
+                for nfc in uids:
+                    try:
+                        bottle = Bottle.objects.get(nfc_uid=nfc)
+
+                        # Bottles must be currently on the van
+                        if bottle.status != 'VAN':
+                            results[category_key]['failed'].append({
+                                'nfc': nfc,
+                                'reason': f'Bottle is not on van (current status: {bottle.status})'
+                            })
+                            continue
+
+                        bottle.status = new_status
+                        if new_status == 'DAMAGED':
+                            bottle.current_van      = None
+                            bottle.current_customer = None
+                            bottle.current_route    = None
+                        bottle.save()
+
+                        BottleLedger.objects.create(
+                            bottle=bottle,
+                            action=action,
+                            van=van,          # van from authenticated salesman
+                            route=van_route,  # route assigned to that van
+                            reference=f"Order #{order_id}" if order_id else "Damage Control",
+                            created_by=request.user.username,
+                        )
+                        results[category_key]['success'] += 1
+                    except Bottle.DoesNotExist:
+                        results[category_key]['failed'].append({'nfc': nfc, 'reason': 'Bottle not found'})
+                    except Exception as e:
+                        results[category_key]['failed'].append({'nfc': nfc, 'reason': str(e)})
+
+            _process(damage_uids,  'DAMAGE',  'DAMAGED', 'damage')
+            _process(leak_uids,    'LEAK',    'DAMAGED', 'leak')
+            _process(service_uids, 'SERVICE', 'VAN',     'service')
+
+            total_success = sum(v['success'] for v in results.values())
+            return Response({
+                'message': f"Recorded {total_success} bottles across damage/leak/service",
+                'results': results,
             }, status=status.HTTP_200_OK)
 
         except Exception as e:

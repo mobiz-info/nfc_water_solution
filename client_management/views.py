@@ -4803,6 +4803,30 @@ def customer_outstanding_detail(request,customer_id):
 
     return render(request, 'client_management/customer_outstanding/customer_outstanding_list.html', context)
 
+
+@login_required
+def customer_supply_bottles_list(request, supply_id):
+    """
+    Displays a list of specific bottles supplied in a customer supply via NFC.
+    """
+    from bottle_management.models import BottleLedger
+    customer_supply = get_object_or_404(CustomerSupply, pk=supply_id)
+    
+    # Query BottleLedger instead of SupplyItemBottle, since the app's NFC supply API logs it there
+    bottles = BottleLedger.objects.filter(
+        reference=customer_supply.invoice_no, 
+        action__in=["SUPPLY", "FOC"]
+    ).select_related('bottle')
+    
+    context = {
+        'customer_supply': customer_supply,
+        'bottles': bottles,
+        'page_name': 'Supplied Bottles',
+        'page_title': f'Bottles - {customer_supply.customer.customer_name}',
+    }
+    
+    return render(request, 'client_management/customer_supply/bottles_list.html', context)
+
 def export_customer_outstanding_to_excel(request):
     instances = CustomerOutstanding.objects.filter(product_type='amount')
     
