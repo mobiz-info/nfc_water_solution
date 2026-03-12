@@ -136,8 +136,8 @@ def send_interactive_whatsapp(to_number, lang="EN", customer_name=None):
 
     MENU_TRANSLATIONS = {
         "EN": {
-            "message": f"Dear {customer_name or ''}, Welcome to Sana Pure Drinking Water.\nChoose Options.",
-            "header": "Welcome to Sana Water",
+            "message": f"Dear {customer_name or ''}, Welcome to Demo Pure Drinking Water.\nChoose Options.",
+            "header": "Welcome to Demo Water",
             "footer": "Select an option",
             "list_title": "Choose Service",
             "choices": {
@@ -305,12 +305,12 @@ def water_order_handler(request):
     except Customers.DoesNotExist:
         # Guest user not found → send registration instructions
         reply = (
-            "💧 Welcome to SANA WATER!\n"
-            "🙏 Thank you for choosing SANA WATER\n\n" 
+            "💧 Welcome to Demo WATER!\n"
+            "🙏 Thank you for choosing Demo WATER\n\n" 
             "We couldn’t find your number in our customer records.\n\n"
             "✅ If you are an existing customer, please reply with your registered mobile number.\n"
             "🆕 If you are a new customer, please reply with: New Customer"
-            # "👋 Welcome to Sana Pure Drinking Water!\n\n"
+            # "👋 Welcome to Demo Pure Drinking Water!\n\n"
             # "You are not registered in our system. Please share your details in this format:\n\n"
             # "NEW <Name>, <Building>, <House No>, <Floor>, <Location>, <Emirate>\n\n"
             # "Example:\nNEW John, Palm Tower, A-102, 10th, Marina, Dubai"
@@ -349,12 +349,12 @@ def water_order_handler(request):
         else:
             print("else")
             reply = (
-                "💧 Welcome to SANA WATER!\n"
-                "🙏 Thank you for choosing SANA WATER\n\n"
+                "💧 Welcome to Demo WATER!\n"
+                "🙏 Thank you for choosing Demo WATER\n\n"
                 "We couldn’t find your number in our customer records.\n\n"
                 "✅ If you are an existing customer, please reply with your registered mobile number.\n"
                 "🆕 If you are a new customer, please reply with: New Customer"
-                # "👋 Welcome to Sana Pure Drinking Water!\n\n"
+                # "👋 Welcome to Demo Pure Drinking Water!\n\n"
                 # "You are not registered in our system. Please share your details in this format:\n\n"
                 # "NEW <Name>, <Building>, <House No>, <Floor>, <Location>, <Emirate>\n\n"
                 # "Example:\nNEW John, Palm Tower, A-102, 10th, Marina, Dubai"
@@ -439,7 +439,7 @@ def water_order_handler(request):
     elif not customer and clean_message.startswith("NEW CUSTOMER"):
         # Ask for details in new format
         reply = (
-            "🎉 Thank you for choosing SANA WATER!\n"
+            "🎉 Thank you for choosing Demo WATER!\n"
             "We’re excited to serve you 💙 Please share your details below:\n\n"
             "👤 Name -\n"
             "📱 Mobile Number -\n"

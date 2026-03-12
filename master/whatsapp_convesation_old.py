@@ -96,8 +96,8 @@ def send_interactive_whatsapp(to_number, lang="EN", customer_name=None):
 
     MENU_TRANSLATIONS = {
         "EN": {
-            "message": f"Dear {customer_name or ''}, Welcome to Sana Pure Drinking Water.\nChoose Options.",
-            "header": "Welcome to Sana Water",
+            "message": f"Dear {customer_name or ''}, Welcome to Demo Pure Drinking Water.\nChoose Options.",
+            "header": "Welcome to Demo Water",
             "footer": "Select an option",
             "list_title": "Choose Service",
             "choices": {
@@ -427,7 +427,7 @@ def water_order_handler(request):
         #     custom_id=get_custom_id(Customers)
         # )
         reply = (
-                "👋 Welcome to Sana Pure Drinking Water!\n\n"
+                "👋 Welcome to Demo Pure Drinking Water!\n\n"
                 "You are not registered in our system. Please share your details in this format:\n\n"
                 "NEW <Name>, <Building>, <House No>, <Floor>, <Location>, <Emirate>\n\n"
                 "Example:\nNEW John, Palm Tower, A-102, 10th, Marina, Dubai"
@@ -476,7 +476,7 @@ def water_order_handler(request):
         else:
             # ✅ Guest → ask for details
             reply = (
-                "👋 Welcome to Sana Pure Drinking Water!\n\n"
+                "👋 Welcome to Demo Pure Drinking Water!\n\n"
                 "You are not registered in our system. Please share your details in this format:\n\n"
                 "NEW <Name>, <Building>, <House No>, <Floor>, <Location>, <Emirate>\n\n"
                 "Example:\nNEW John, Palm Tower, A-102, 10th, Marina, Dubai"

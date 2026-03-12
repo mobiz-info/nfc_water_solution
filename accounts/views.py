@@ -1161,7 +1161,7 @@ def customer_list_excel(request):
                                      {'type': 'cell', 'criteria': '>', 'value': 0, 'format': table_border_format})
         
         merge_format = workbook.add_format({'align': 'center', 'bold': True, 'font_size': 16, 'border': 1})
-        worksheet.merge_range('A1:L2', f'Sana Water', merge_format)
+        worksheet.merge_range('A1:L2', f'Demo Water', merge_format)
         merge_format = workbook.add_format({'align': 'center', 'bold': True, 'border': 1})
         worksheet.merge_range('A3:L3', f'    Customer List   ', merge_format)
         worksheet.merge_range('A4:L4', '', merge_format)

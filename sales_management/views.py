@@ -1276,7 +1276,7 @@ def download_salesreport_excel(request):
 #         table_border_format = workbook.add_format({'border':1})
 #         worksheet.conditional_format(4, 0, len(df.index)+4, len(df.columns) - 1, {'type':'cell', 'criteria': '>', 'value':0, 'format':table_border_format})
 #         merge_format = workbook.add_format({'align': 'center', 'bold': True, 'font_size': 16, 'border': 1})
-#         worksheet.merge_range('A1:J2'SanaSana Water', merge_format)
+#         worksheet.merge_range('A1:J2'SanaDemo Water', merge_format)
 #         merge_format = workbook.add_format({'align': 'center', 'bold': True, 'border': 1})
 #         worksheet.merge_range('A3:J3', f'    Daily Collection Report   ', merge_format)
 #         # worksheet.merge_range('E3:H3', f'Date: {def_date}', merge_format)

@@ -5895,7 +5895,7 @@ def customer_outstanding_report(request):
         "total_collection_upto": total_collection_upto,
         "total_balance_amount": total_opening_amount - total_collection_upto,
         
-        "page_title": "Sana - Customer Outstanding Report"
+        "page_title": "Demo - Customer Outstanding Report"
         }
     
     if request.GET.get('print'):
