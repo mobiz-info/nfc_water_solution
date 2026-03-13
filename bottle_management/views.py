@@ -354,7 +354,7 @@ def generate_bottles_with_nfc(
     *,
     product,
     nfc_uids,
-    prefix="BTL",
+    prefix="A",
     created_by=None
 ):
     """
@@ -370,7 +370,7 @@ def generate_bottles_with_nfc(
         raise ValidationError(f"NFC UIDs already mapped: {', '.join(existing_nfcs)}")
 
     today = datetime.now()
-    date_str = today.strftime("%d-%m")
+    date_str = today.strftime("%m/%y")
 
     last_number = get_last_number(prefix)
 
@@ -378,7 +378,7 @@ def generate_bottles_with_nfc(
     ledgers = []
 
     for i, nfc_uid in enumerate(nfc_uids):
-        serial = f"{date_str}-{prefix}{last_number + i + 1}"
+        serial = f"{prefix}{last_number + i + 1}-{date_str}"
 
         bottle = Bottle(
             serial_number=serial,

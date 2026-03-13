@@ -9856,6 +9856,29 @@ class OffloadRequestVanListAPIView(APIView):
 class OffloadRequestListAPIView(APIView):
     authentication_classes = [BasicAuthentication]
     permission_classes = [IsAuthenticated]
+
+    def _get_allowed_bottles(self, van, product, stock_type):
+        from bottle_management.models import Bottle
+
+        queryset = Bottle.objects.filter(
+            current_van=van,
+            product=product,
+        )
+
+        if stock_type == "stock":
+            queryset = queryset.filter(status="VAN", is_filled=True)
+        elif stock_type in {"emptycan", "return"}:
+            queryset = queryset.filter(status="VAN", is_filled=False)
+        elif stock_type == "damage":
+            queryset = queryset.filter(current_van=van).filter(status__in=["VAN", "DAMAGED"])
+        else:
+            queryset = queryset.none()
+
+        return list(
+            queryset.exclude(nfc_uid__isnull=True)
+            .exclude(nfc_uid__exact="")
+            .values("serial_number", "nfc_uid")
+        )
  
     def get(self, request,van_id):
         date_str = request.GET.get("date_str", str(datetime.today().date()))
@@ -9891,6 +9914,11 @@ class OffloadRequestListAPIView(APIView):
                     "quantity": item.quantity,
                     "stock_type": item.stock_type,
                 }
+
+                if product.product_name == "5 Gallon":
+                    allowed_bottles = self._get_allowed_bottles(offload_request.van, product, item.stock_type)
+                    product_data["bottle_ids"] = [b["serial_number"] for b in allowed_bottles]
+                    product_data["allowed_nfc_uids"] = [b["nfc_uid"] for b in allowed_bottles]
 
                 if item.stock_type == 'return':
                     return_stocks = OffloadRequestReturnStocks.objects.filter(offload_request_item=item).first()
@@ -9968,6 +9996,19 @@ class OffloadRequestListAPIView(APIView):
                     if count > 0:
                         if product_item_instance.category.category_name != "Coupons":
                             if product_item_instance.product_name == "5 Gallon" and stock_type == "stock":
+                                allowed_nfc_uids = {
+                                    b["nfc_uid"] for b in self._get_allowed_bottles(van_instance, product_item_instance, stock_type)
+                                }
+                                nfc_uids = product_data.get('nfc_uids', [])
+                                invalid_nfc_uids = [uid for uid in nfc_uids if uid not in allowed_nfc_uids]
+                                if invalid_nfc_uids:
+                                    return Response(
+                                        {
+                                            "status": "false",
+                                            "message": f"Invalid bottle selection for offload: {', '.join(invalid_nfc_uids)}"
+                                        },
+                                        status=status.HTTP_400_BAD_REQUEST
+                                    )
                                 # print("stock")
                                 van_product_stock_instance.stock -= int(count)
                                 van_product_stock_instance.save()
@@ -9984,7 +10025,6 @@ class OffloadRequestListAPIView(APIView):
                                     )
                                 
                                 # NFC Tracking for FILLED 5 Gallon Bottles (Offloading stock)
-                                nfc_uids = product_data.get('nfc_uids', [])
                                 from bottle_management.models import Bottle, BottleLedger
                                 for uid in nfc_uids:
                                     try:
@@ -10006,6 +10046,19 @@ class OffloadRequestListAPIView(APIView):
                                     except Bottle.DoesNotExist:
                                         print(f"Bottle with NFC UID {uid} not found during stock offload.")
                             elif product_item_instance.product_name == "5 Gallon" and stock_type == "emptycan":
+                                allowed_nfc_uids = {
+                                    b["nfc_uid"] for b in self._get_allowed_bottles(van_instance, product_item_instance, stock_type)
+                                }
+                                nfc_uids = product_data.get('nfc_uids', [])
+                                invalid_nfc_uids = [uid for uid in nfc_uids if uid not in allowed_nfc_uids]
+                                if invalid_nfc_uids:
+                                    return Response(
+                                        {
+                                            "status": "false",
+                                            "message": f"Invalid bottle selection for offload: {', '.join(invalid_nfc_uids)}"
+                                        },
+                                        status=status.HTTP_400_BAD_REQUEST
+                                    )
                                 # print("empty")
                                 van_product_stock_instance.empty_can_count -= int(count)
                                 van_product_stock_instance.save()
@@ -10017,7 +10070,6 @@ class OffloadRequestListAPIView(APIView):
                                 emptycan.save()
                                 
                                 # NFC Tracking for EMPTY 5 Gallon Bottles
-                                nfc_uids = product_data.get('nfc_uids', [])
                                 from bottle_management.models import Bottle, BottleLedger
                                 for uid in nfc_uids:
                                     try:
@@ -10039,6 +10091,19 @@ class OffloadRequestListAPIView(APIView):
                                         print(f"Bottle with NFC UID {uid} not found during empty can offload.")
                                 
                             elif product_item_instance.product_name == "5 Gallon" and stock_type == "damage":
+                                allowed_nfc_uids = {
+                                    b["nfc_uid"] for b in self._get_allowed_bottles(van_instance, product_item_instance, stock_type)
+                                }
+                                nfc_uids = product_data.get('nfc_uids', [])
+                                invalid_nfc_uids = [uid for uid in nfc_uids if uid not in allowed_nfc_uids]
+                                if invalid_nfc_uids:
+                                    return Response(
+                                        {
+                                            "status": "false",
+                                            "message": f"Invalid bottle selection for offload: {', '.join(invalid_nfc_uids)}"
+                                        },
+                                        status=status.HTTP_400_BAD_REQUEST
+                                    )
                                 van_product_stock_instance.damage_count -= int(count)
                                 van_product_stock_instance.save()
                                 
@@ -10058,7 +10123,6 @@ class OffloadRequestListAPIView(APIView):
                                     scrap_stock.save()
                                 
                                 # NFC Tracking for DAMAGED 5 Gallon Bottles
-                                nfc_uids = product_data.get('nfc_uids', [])
                                 from bottle_management.models import Bottle, BottleLedger
                                 for uid in nfc_uids:
                                     try:
@@ -10080,6 +10144,19 @@ class OffloadRequestListAPIView(APIView):
                                         print(f"Bottle with NFC UID {uid} not found during damage offload.")
                                 
                             elif product_item_instance.product_name == "5 Gallon" and stock_type == "return":
+                                allowed_nfc_uids = {
+                                    b["nfc_uid"] for b in self._get_allowed_bottles(van_instance, product_item_instance, stock_type)
+                                }
+                                nfc_uids = product_data.get('nfc_uids', [])
+                                invalid_nfc_uids = [uid for uid in nfc_uids if uid not in allowed_nfc_uids]
+                                if invalid_nfc_uids:
+                                    return Response(
+                                        {
+                                            "status": "false",
+                                            "message": f"Invalid bottle selection for offload: {', '.join(invalid_nfc_uids)}"
+                                        },
+                                        status=status.HTTP_400_BAD_REQUEST
+                                    )
                                 # print("return")
                                 scrap_count = int(product_data.get('scrap_count'))
                                 washing_count = int(product_data.get('washing_count'))
@@ -10133,7 +10210,6 @@ class OffloadRequestListAPIView(APIView):
                                 van_product_stock_instance.save()
                                 
                                 # NFC Tracking for RETURNED 5 Gallon Bottles
-                                nfc_uids = product_data.get('nfc_uids', [])
                                 from bottle_management.models import Bottle, BottleLedger
                                 for uid in nfc_uids:
                                     try:
@@ -10298,6 +10374,7 @@ class StaffIssueOrdersAPIView(APIView):
     def get(self, request, staff_order_id):
         order = get_object_or_404(Staff_Orders, pk=staff_order_id)
         staff_orders_details = Staff_Orders_details.objects.filter(staff_order_id=order)
+        van = Van.objects.filter(salesman_id__id=order.created_by).first()
         
         if request.user.user_type == "Production":
             staff_orders_details = staff_orders_details.filter(product_id__product_name='5 Gallon')
@@ -10306,7 +10383,8 @@ class StaffIssueOrdersAPIView(APIView):
         response_data = {
             'staff_orders_details': serialized_data,
             'order_date': order.order_date,
-            'order_number': order.order_number
+            'order_number': order.order_number,
+            'allocated_qty': van.bottle_count if van else 0,
         }
         
         return Response(response_data, status=status.HTTP_200_OK)
@@ -15372,6 +15450,7 @@ class StaffIssueOrdersNFCAPIView(APIView):
                     bottle.current_van = van
                     bottle.current_customer = None
                     bottle.current_route = van_route
+                    bottle.is_filled = True
                     bottle.save()
 
                     # Create Bottle Ledger
@@ -15438,6 +15517,8 @@ class StaffIssueOrdersNFCAPIView(APIView):
                 if van_product_stock_qs.exists():
                     van_p_stock = van_product_stock_qs.first()
                     van_p_stock.stock += success_count
+                    if product.product_name == "5 Gallon":
+                        van_p_stock.empty_can_count = max(0, (van_p_stock.empty_can_count or 0) - success_count)
                     van_p_stock.save()
                 else:
                     VanProductStock.objects.create(
@@ -15445,6 +15526,7 @@ class StaffIssueOrdersNFCAPIView(APIView):
                         product=product,
                         van=van,
                         stock=success_count,
+                        empty_can_count=0 if product.product_name == "5 Gallon" else 0,
                     )
 
                 # 5. Update BottleCount (for 5 Gallon specifically)
@@ -15562,6 +15644,134 @@ class OrderDamageNFCAPIView(APIView):
             return Response({
                 'message': f"Recorded {total_success} bottles across damage/leak/service",
                 'results': results,
+            }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class EmptyBottleAllocationNFCAPIView(APIView):
+    """
+    Accepts NFC-scanned empty bottle UIDs that are gathered during the Store Allocation process.
+    Updates the bottle status to VAN, adds a BottleLedger entry, and increments van empty stock.
+    
+    POST body:
+    {
+        "nfc_uids": ["uid1", "uid2", ...]
+    }
+    """
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    @transaction.atomic
+    def post(self, request):
+        try:
+            from bottle_management.models import Bottle, BottleLedger
+            from product.models import Staff_Orders_details
+
+            data = request.data
+            nfc_uids = data.get('nfc_uids', [])
+            staff_order_details_id = data.get('staff_order_details_id', None)
+
+            if not nfc_uids:
+                return Response({'error': 'No NFC tags provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+            if not staff_order_details_id:
+                return Response({'error': 'Order Details ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+            try:
+                issue = Staff_Orders_details.objects.select_related('staff_order_id').get(staff_order_details_id=staff_order_details_id)
+                order = issue.staff_order_id
+            except Staff_Orders_details.DoesNotExist:
+                return Response({'error': 'Order detail not found'}, status=status.HTTP_404_NOT_FOUND)
+
+            # Resolve the van from the salesman of the order
+            van = None
+            van = Van.objects.filter(salesman__id=order.created_by).first()
+            if van is None:
+                try:
+                    van = Van.objects.filter(salesman__id=int(order.created_by)).first()
+                except (ValueError, TypeError):
+                    pass
+            if van is None:
+                van = Van.objects.filter(salesman=request.user).first()
+
+            if not van:
+                return Response({'error': f'No Van associated with salesman (user id={order.created_by}).'}, status=status.HTTP_400_BAD_REQUEST)
+
+            van_route = None
+            from van_management.models import Van_Routes
+            van_route_obj = Van_Routes.objects.filter(van=van).first()
+            if van_route_obj:
+                van_route = van_route_obj.routes
+
+            success_count = 0
+            failed_bottles = []
+
+            for nfc in nfc_uids:
+                try:
+                    bottle = Bottle.objects.get(nfc_uid=nfc)
+                    
+                    if bottle.is_filled:
+                        failed_bottles.append({'nfc': nfc, 'reason': 'Bottle is marked as filled.'})
+                        continue
+
+                    # Update Bottle to be in VAN
+                    bottle.status = "VAN"
+                    bottle.current_van = van
+                    bottle.current_customer = None
+                    bottle.current_route = van_route
+                    bottle.save()
+
+                    # Create Bottle Ledger
+                    BottleLedger.objects.create(
+                        bottle=bottle,
+                        action="ALLOCATED_EMPTY_TO_VAN",
+                        van=van,
+                        route=van_route,
+                        reference="Store Empty Bottle Allocation",
+                        created_by=request.user.username,
+                    )
+                    success_count += 1
+                except Bottle.DoesNotExist:
+                    failed_bottles.append({'nfc': nfc, 'reason': 'Bottle not found'})
+                except Exception as e:
+                    failed_bottles.append({'nfc': nfc, 'reason': str(e)})
+
+            # Update Van Product Stock (Empty Can Count)
+            if success_count > 0:
+                # Mirror issued-qty behavior for the selected order line.
+                # For empty bottle allocation, the scanned quantity should be reflected
+                # against the "5 Gallon Empty Bottle" order item's issued_qty.
+                issue.issued_qty += success_count
+                issue.save(update_fields=['issued_qty'])
+
+                try:
+                    product = ProdutItemMaster.objects.get(product_name="5 Gallon")
+                    van_product_stock_qs = VanProductStock.objects.filter(
+                        created_date=datetime.today().date(), 
+                        van=van,
+                        product=product
+                    )
+                    if van_product_stock_qs.exists():
+                        van_p_stock = van_product_stock_qs.first()
+                        van_p_stock.empty_can_count += success_count
+                        van_p_stock.save()
+                    else:
+                        VanProductStock.objects.create(
+                            created_date=datetime.today().date(),
+                            product=product,
+                            van=van,
+                            empty_can_count=success_count,
+                            stock=0
+                        )
+                except Exception as e:
+                    pass
+
+            return Response({
+                'message': f"Successfully allocated {success_count} empty bottles",
+                'success_count': success_count,
+                'failed_bottles': failed_bottles
             }, status=status.HTTP_200_OK)
 
         except Exception as e:
