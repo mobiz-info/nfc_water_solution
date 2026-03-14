@@ -6148,15 +6148,20 @@ class VanStockAPI(APIView):
         for stock in van_product_stock:
             product_name = stock.product.product_name.lower()
             if product_name == "5 gallon":
+                van_route = Van_Routes.objects.filter(van=stock.van).first()
+                route_obj = van_route.routes if van_route else None
+
                 filled_bottles_qs = Bottle.objects.filter(
                     current_van=stock.van, 
                     status="VAN", 
                     is_filled=True, 
                     product=stock.product
                 )
+                if route_obj:
+                    filled_bottles_qs = filled_bottles_qs.filter(current_route=route_obj)
                 filled_bottles = [
                     f"{b.serial_number} - {b.nfc_uid}" if b.nfc_uid else str(b.serial_number)
-                    for b in filled_bottles_qs
+                    for b in filled_bottles_qs.order_by('serial_number')[:stock.stock]
                 ]
                 
                 empty_bottles_qs = Bottle.objects.filter(
@@ -6165,9 +6170,11 @@ class VanStockAPI(APIView):
                     is_filled=False, 
                     product=stock.product
                 )
+                if route_obj:
+                    empty_bottles_qs = empty_bottles_qs.filter(current_route=route_obj)
                 empty_bottles = [
                     f"{b.serial_number} - {b.nfc_uid}" if b.nfc_uid else str(b.serial_number)
-                    for b in empty_bottles_qs
+                    for b in empty_bottles_qs.order_by('serial_number')[:stock.empty_can_count]
                 ]
 
                 product_serialized_data.append({
