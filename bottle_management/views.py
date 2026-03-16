@@ -794,7 +794,7 @@ def bottles_report(request):
     status_filter = request.GET.get('status', '').strip()
     search_q = request.GET.get('q', '').strip()
 
-    qs = Bottle.objects.select_related('product', 'current_van', 'current_customer', 'current_route').order_by('-created_at')
+    qs = Bottle.objects.filter(is_deleted=False).select_related('product', 'current_van', 'current_customer', 'current_route').order_by('-created_at')
 
     if status_filter:
         qs = qs.filter(status=status_filter)
@@ -833,3 +833,24 @@ def bottles_report(request):
         'total_count': qs.count(),
     }
     return render(request, 'bottle_management/bottles_report.html', context)
+
+
+@login_required
+def bottle_delete(request, pk):
+
+    try:
+        bottle = Bottle.objects.get(pk=pk, is_deleted=False)
+
+        bottle.is_deleted = True
+        bottle.save()
+
+        return JsonResponse({
+            "status": "success",
+            "message": "Bottle deleted successfully"
+        })
+
+    except Bottle.DoesNotExist:
+        return JsonResponse({
+            "status": "error",
+            "message": "Bottle not found"
+        })
