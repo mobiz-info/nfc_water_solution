@@ -2,9 +2,12 @@ from django.conf import settings
 from django.urls import path,re_path
 from django.conf.urls.static import static
 
-from client_management.views import CustomerCreditAPI
-from bottle_management import views as bottle_views
+from .views import *
+from .views import StaffIssueOrdersNFCAPIView, OrderDamageNFCAPIView, EmptyBottleAllocationNFCAPIView
+import bottle_management.views as bottle_views
 from master.views import privacy, terms_and_conditions
+from client_management.views import CustomerCreditAPI
+
 
 from . views import *
 from . import views
@@ -397,5 +400,6 @@ urlpatterns = [
     path('refill_bottles/', bottle_views.refill_bottles, name='refill_bottles'),
     path('api_staffIssueOrdersCreateNFC/', StaffIssueOrdersNFCAPIView.as_view(), name='api_staffIssueOrdersCreateNFC'),
     path('order-damage-nfc/', OrderDamageNFCAPIView.as_view(), name='order_damage_nfc'),
+    path('empty-bottle-allocation-nfc/', EmptyBottleAllocationNFCAPIView.as_view(), name='empty_bottle_allocation_nfc'),
 
 ]
