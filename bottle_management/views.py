@@ -189,28 +189,64 @@ def bottle_generator_page(request):
 
 @csrf_exempt
 def save_bottles(request):
-    data = json.loads(request.body)
+    try:
+        data = json.loads(request.body)
 
-    product_id = data["product_id"]
-    serials = data["serials"]
+        product_id = data["product_id"]
+        bottle_entries = data.get("bottles")
+        serials = data.get("serials", [])
 
-    product = ProdutItemMaster.objects.get(id=product_id)
+        product = ProdutItemMaster.objects.get(id=product_id)
 
-    result = save_generated_bottles(
-        product=product,
-        serials=serials
-    )
+        result = save_generated_bottles(
+            product=product,
+            serials=serials,
+            bottle_entries=bottle_entries,
+        )
 
-    return JsonResponse(result, status=201)
+        return JsonResponse(result, status=201)
+    except ValidationError as exc:
+        return JsonResponse({"error": str(exc)}, status=400)
+    except ProdutItemMaster.DoesNotExist:
+        return JsonResponse({"error": "Invalid product selected"}, status=400)
+    except Exception as exc:
+        return JsonResponse({"error": str(exc)}, status=500)
 
 @transaction.atomic
-def save_generated_bottles(*, product, serials, created_by=None):
+def save_generated_bottles(*, product, serials=None, bottle_entries=None, created_by=None):
     """
     Save generated bottle serial numbers into DB
     """
 
-    if not serials:
-        raise ValidationError("No serial numbers provided")
+    bottle_entries = bottle_entries or []
+    if bottle_entries:
+        normalized_entries = []
+        for entry in bottle_entries:
+            serial = (entry.get("serial_number") or "").strip()
+            qr_code = (entry.get("qr_code") or "").strip()
+            if not serial:
+                raise ValidationError("Serial number is required for every bottle")
+            if not qr_code:
+                raise ValidationError(f"QR code is required for bottle {serial}")
+            normalized_entries.append({
+                "serial_number": serial,
+                "qr_code": qr_code,
+            })
+    else:
+        serials = serials or []
+        normalized_entries = [
+            {
+                "serial_number": serial,
+                "qr_code": None,
+            }
+            for serial in serials
+        ]
+
+    if not normalized_entries:
+        raise ValidationError("No bottles provided")
+
+    serials = [entry["serial_number"] for entry in normalized_entries]
+    qr_codes = [entry["qr_code"] for entry in normalized_entries if entry["qr_code"]]
 
     # 1️⃣ Prevent duplicates
     existing = set(
@@ -224,14 +260,31 @@ def save_generated_bottles(*, product, serials, created_by=None):
             f"Serials already exist: {', '.join(existing)}"
         )
 
+    duplicate_qr_in_payload = {qr for qr in qr_codes if qr_codes.count(qr) > 1}
+    if duplicate_qr_in_payload:
+        raise ValidationError(
+            f"QR codes repeated in request: {', '.join(sorted(duplicate_qr_in_payload))}"
+        )
+
+    existing_qr_codes = set(
+        Bottle.objects.filter(
+            qr_code__in=qr_codes
+        ).values_list("qr_code", flat=True)
+    )
+    if existing_qr_codes:
+        raise ValidationError(
+            f"QR codes already exist: {', '.join(sorted(existing_qr_codes))}"
+        )
+
     # 2️⃣ Bulk create bottles (NO FK usage yet)
     Bottle.objects.bulk_create([
         Bottle(
-            serial_number=serial,
+            serial_number=entry["serial_number"],
             product=product,
-            status="GODOWN"
+            status="GODOWN",
+            qr_code=entry["qr_code"],
         )
-        for serial in serials
+        for entry in normalized_entries
     ])
 
     # 3️⃣ Re-fetch bottles WITH IDs
@@ -354,6 +407,7 @@ def generate_bottles_with_nfc(
     *,
     product,
     nfc_uids,
+    qr_codes=None,
     prefix="A",
     created_by=None
 ):
@@ -364,10 +418,25 @@ def generate_bottles_with_nfc(
     if not nfc_uids:
         raise ValidationError("No NFC UIDs provided")
     
+    qr_codes = qr_codes or {}
+
     # Check for duplicate NFCs
     existing_nfcs = Bottle.objects.filter(nfc_uid__in=nfc_uids).values_list('nfc_uid', flat=True)
     if existing_nfcs:
         raise ValidationError(f"NFC UIDs already mapped: {', '.join(existing_nfcs)}")
+
+    missing_qr_nfc = [nfc for nfc in nfc_uids if not (qr_codes.get(nfc) or "").strip()]
+    if missing_qr_nfc:
+        raise ValidationError("QR code is required for all scanned bottles")
+
+    qr_values = [(qr_codes.get(nfc) or "").strip() for nfc in nfc_uids]
+    duplicate_qr_codes = {qr for qr in qr_values if qr and qr_values.count(qr) > 1}
+    if duplicate_qr_codes:
+        raise ValidationError(f"QR codes repeated in request: {', '.join(sorted(duplicate_qr_codes))}")
+
+    existing_qr_codes = Bottle.objects.filter(qr_code__in=qr_values).values_list('qr_code', flat=True)
+    if existing_qr_codes:
+        raise ValidationError(f"QR codes already mapped: {', '.join(sorted(existing_qr_codes))}")
 
     today = datetime.now()
     date_str = today.strftime("%m/%y")
@@ -385,7 +454,7 @@ def generate_bottles_with_nfc(
             product=product,
             status="GODOWN",
             nfc_uid=nfc_uid,
-            qr_code=serial  # Use serial number as QR code
+            qr_code=(qr_codes.get(nfc_uid) or "").strip(),
         )
         bottles.append(bottle)
 
@@ -415,12 +484,21 @@ def generate_bottles_with_nfc_api(request):
         data = json.loads(request.body)
         product_id = data.get("product_id")
         nfc_uids = data.get("nfc_uids")
+        bottles_data = data.get("bottles", [])
 
         if not product_id:
             return JsonResponse({"error": "Product ID is required"}, status=400)
         
         if not nfc_uids or not isinstance(nfc_uids, list):
             return JsonResponse({"error": "List of NFC UIDs is required"}, status=400)
+
+        qr_codes = {}
+        if bottles_data and isinstance(bottles_data, list):
+            for item in bottles_data:
+                nfc_uid = item.get("nfc_uid")
+                qr_code = item.get("qr_code")
+                if nfc_uid:
+                    qr_codes[nfc_uid] = qr_code
 
         user = request.user
         if not user.is_authenticated:
@@ -438,6 +516,7 @@ def generate_bottles_with_nfc_api(request):
         created_bottles = generate_bottles_with_nfc(
             product=product,
             nfc_uids=nfc_uids,
+            qr_codes=qr_codes,
             created_by=user if user and user.is_authenticated else None
         )
 
@@ -833,24 +912,3 @@ def bottles_report(request):
         'total_count': qs.count(),
     }
     return render(request, 'bottle_management/bottles_report.html', context)
-
-
-@login_required
-def bottle_delete(request, pk):
-
-    try:
-        bottle = Bottle.objects.get(pk=pk, is_deleted=False)
-
-        bottle.is_deleted = True
-        bottle.save()
-
-        return JsonResponse({
-            "status": "success",
-            "message": "Bottle deleted successfully"
-        })
-
-    except Bottle.DoesNotExist:
-        return JsonResponse({
-            "status": "error",
-            "message": "Bottle not found"
-        })

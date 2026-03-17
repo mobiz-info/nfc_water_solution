@@ -15458,6 +15458,11 @@ class StaffIssueOrdersNFCAPIView(APIView):
                     bottle.current_customer = None
                     bottle.current_route = van_route
                     bottle.is_filled = True
+                    
+                    if bottle.visited_customer_in_current_cycle:
+                        bottle.bottle_cycle += 1
+                        bottle.visited_customer_in_current_cycle = False
+                        
                     bottle.save()
 
                     # Create Bottle Ledger

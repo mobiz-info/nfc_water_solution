@@ -180,8 +180,16 @@
                                                     data-id="{{data.pk}}" data-text="{{confirm_delete_message}}" data-title="Are you sure?" href="{% url 'delete_customer' pk=data.pk %}">
                                                         <span class="bi bi-trash3 fs-14"></span> <!-- Icon updated for 'Delete' -->
                                                     </a>
+                                                    {% make_qr_b64_tag data.custom_id as qr_b64 %}
+                                                    <button type="button" class="btn btn-outline-primary btn-sm ms-2"
+                                                        onclick="showCustomerQR('{{ data.custom_id }}', '{{ qr_b64 }}')"
+                                                        data-bs-toggle="modal" data-bs-target="#qrCustomerModal"
+                                                        data-bs-original-title="View QR Code">
+                                                        <span class="bi bi-qr-code fs-14"></span>
+                                                    </button>
                                                 </div>
                                             </td>
+
                                         </tr>
                                     {%endfor%}
                                     </tbody>
@@ -209,6 +217,33 @@
     </div>
 </div>
 <!-- End::app-content -->
+
+<!-- QR Code Modal -->
+<div class="modal fade" id="qrCustomerModal" tabindex="-1" aria-labelledby="qrCustomerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="qrCustomerModalLabel">
+                    <i class="bi bi-qr-code me-2 text-primary"></i>Customer QR Code
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <p class="text-muted mb-1">Customer ID</p>
+                <h5 class="fw-semibold text-primary mb-3" id="qrCustomerSerialLabel">—</h5>
+                <img id="qrCustomerImage" src="" alt="QR Code"
+                    style="width:200px;height:200px;display:block;margin:0 auto 12px;">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="printCustomerQR()">
+                    <i class="bi bi-printer me-1"></i> Print
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 {% block static %}
 <script>
@@ -217,6 +252,26 @@
         checkboxes.forEach(checkbox => {
             checkbox.checked = source.checked;
         });
+    }
+
+    function showCustomerQR(serial, b64) {
+        document.getElementById('qrCustomerSerialLabel').textContent = serial;
+        document.getElementById('qrCustomerImage').src = 'data:image/png;base64,' + b64;
+    }
+
+    function printCustomerQR() {
+        const serial = document.getElementById('qrCustomerSerialLabel').textContent;
+        const imgSrc = document.getElementById('qrCustomerImage').src;
+        const win = window.open('', '_blank');
+        win.document.write(`
+            <html><head><title>QR - ${serial}</title></head>
+            <body style="text-align:center;font-family:sans-serif;padding:30px;">
+                <h3>${serial}</h3>
+                <img src="${imgSrc}" width="200" height="200" />
+            </body></html>
+        `);
+        win.document.close();
+        win.print();
     }
 </script>
 {% endblock static %}
