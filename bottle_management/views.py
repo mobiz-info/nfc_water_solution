@@ -854,3 +854,129 @@ def bottle_delete(request, pk):
             "status": "error",
             "message": "Bottle not found"
         })
+        
+        
+@login_required
+def bottle_stock_transfer_summary(request):
+
+    from datetime import datetime
+    from master.models import RouteMaster
+
+    from_date_str = request.GET.get("from_date")
+    to_date_str = request.GET.get("to_date")
+    report_type = request.GET.get("report_type", "summary")
+
+    summary_rows = []
+    route_rows = []
+
+    if from_date_str and to_date_str:
+
+        from_date = datetime.strptime(from_date_str, "%Y-%m-%d").date()
+        to_date = datetime.strptime(to_date_str, "%Y-%m-%d").date()
+
+        ledger = BottleLedger.objects.all()
+
+        # SUMMARY REPORT
+        if report_type == "summary":
+
+            types = [
+                ("Fresh", {"bottle__is_filled": True}),
+                ("Used", {"bottle__is_filled": False}),
+                ("Service", {"action": "SERVICE"}),
+                ("Scrap", {"action": "DAMAGE"}),
+            ]
+
+            for label, condition in types:
+
+                qs = ledger.filter(**condition)
+
+                opening_qs = qs.filter(created_at__date__lt=from_date)
+
+                opening_plus = opening_qs.filter(
+                    action__in=["LOAD_TO_VAN", "RETURN"]
+                ).count()
+
+                opening_minus = opening_qs.filter(
+                    action__in=["SUPPLY", "OFFLOAD"]
+                ).count()
+
+                opening = opening_plus - opening_minus
+
+                period_qs = qs.filter(
+                    created_at__date__range=[from_date, to_date]
+                )
+
+                in_count = period_qs.filter(
+                    action__in=["LOAD_TO_VAN", "RETURN"]
+                ).count()
+
+                out_count = period_qs.filter(
+                    action__in=["SUPPLY", "OFFLOAD"]
+                ).count()
+
+                closing = opening + in_count - out_count
+
+                summary_rows.append({
+                    "type": label,
+                    "opening": opening,
+                    "in": in_count,
+                    "out": out_count,
+                    "closing": closing
+                })
+
+        # ROUTE REPORT
+        else:
+
+            routes = RouteMaster.objects.all()
+
+            for route in routes:
+
+                qs = ledger.filter(route=route)
+
+                opening_plus = qs.filter(
+                    created_at__date__lt=from_date,
+                    action__in=["LOAD_TO_VAN", "RETURN"]
+                ).count()
+
+                opening_minus = qs.filter(
+                    created_at__date__lt=from_date,
+                    action__in=["SUPPLY", "OFFLOAD"]
+                ).count()
+
+                opening = opening_plus - opening_minus
+
+                period_qs = qs.filter(
+                    created_at__date__range=[from_date, to_date]
+                )
+
+                issued = period_qs.filter(
+                    action__in=["SUPPLY", "FOC"]
+                ).count()
+
+                removed = period_qs.filter(
+                    action__in=["SERVICE", "DAMAGE"]
+                ).count()
+
+                closing = opening + issued - removed
+
+                route_rows.append({
+                    "route": route.route_name,
+                    "opening": opening,
+                    "issued": issued,
+                    "removed": removed,
+                    "closing": closing
+                })
+
+    context = {
+        "report_type": report_type,
+        "from_date": from_date_str,   # keep string
+        "to_date": to_date_str,       # keep string
+        "summary_rows": summary_rows,
+        "route_rows": route_rows
+    }
+
+    return render(
+        request,
+        "bottle_management/bottle_stock_transfer_summary.html",
+        context
+    )

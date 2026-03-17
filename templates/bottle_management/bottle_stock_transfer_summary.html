@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Bottle Stock Transfer Summary{% endblock %}
+
+{% block content %}
+
+<!-- PAGE HEADER -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Bottle Stock Transfer Summary (Company)</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="javascript:void(0);">Bottle Management</a>
+        </li>
+        <li class="breadcrumb-item active">Stock Transfer Summary</li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+<div class="container-fluid">
+
+<div class="row">
+<div class="col-md-12">
+
+<div class="card custom-card">
+
+<div class="card-header">
+    <div class="card-title">
+        Bottle Stock Transfer Summary
+    </div>
+</div>
+
+<div class="card-body">
+
+<!-- FILTER FORM -->
+
+<form method="GET">
+
+<div class="row mb-4">
+
+<div class="col-md-3">
+<label class="form-label">From Date</label>
+<input type="date"
+       name="from_date"
+       class="form-control"
+       value="{{ from_date }}">
+</div>
+
+<div class="col-md-3">
+<label class="form-label">To Date</label>
+<input type="date"
+       name="to_date"
+       class="form-control"
+       value="{{ to_date }}">
+</div>
+
+<div class="col-md-6 d-flex align-items-end">
+
+<div class="form-check me-4">
+<input class="form-check-input"
+       type="radio"
+       name="report_type"
+       value="summary"
+       {% if report_type == "summary" %}checked{% endif %}>
+
+<label class="form-check-label">
+Summary
+</label>
+</div>
+
+<div class="form-check">
+<input class="form-check-input"
+       type="radio"
+       name="report_type"
+       value="route"
+       {% if report_type == "route" %}checked{% endif %}>
+
+<label class="form-check-label">
+Route Wise
+</label>
+</div>
+
+</div>
+
+</div>
+
+<div class="row mb-3">
+
+<div class="col-md-12 text-end">
+
+<button type="submit" class="btn btn-primary">
+<i class="fa fa-search"></i> Filter
+</button>
+
+<button type="button" class="btn btn-danger">
+<i class="fa fa-file-pdf"></i> PDF
+</button>
+
+<button type="button" class="btn btn-success">
+<i class="fa fa-file-excel"></i> Excel
+</button>
+
+</div>
+
+</div>
+
+</form>
+
+<!-- SUMMARY TABLE -->
+{% if report_type == "summary" %}
+
+<div class="table-responsive">
+
+<table class="table table-bordered text-nowrap w-100">
+
+<thead>
+<tr>
+<th>Sl No</th>
+<th>Type</th>
+<th>Opening</th>
+<th>In</th>
+<th>Out</th>
+<th>Closing</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for row in summary_rows %}
+
+<tr>
+
+<td>{{ forloop.counter }}</td>
+
+<td>{{ row.type }}</td>
+
+<td>{{ row.opening }}</td>
+
+<td>{{ row.in }}</td>
+
+<td>{{ row.out }}</td>
+
+<td>{{ row.closing }}</td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+<td colspan="6" class="text-center">
+No data found
+</td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% endif %}
+
+<!-- ROUTE WISE TABLE -->
+
+{% if report_type == "route" %}
+
+<div class="table-responsive">
+
+<table class="table table-bordered text-nowrap w-100">
+
+<thead>
+<tr>
+<th>Sl No</th>
+<th>Route</th>
+<th>Opening</th>
+<th>Issued (Fresh + Used)</th>
+<th>Removed (Service + Damaged)</th>
+<th>Closing</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for row in route_rows %}
+
+<tr>
+
+<td>{{ forloop.counter }}</td>
+
+<td>{{ row.route }}</td>
+
+<td>{{ row.opening }}</td>
+
+<td>{{ row.issued }}</td>
+
+<td>{{ row.removed }}</td>
+
+<td>{{ row.closing }}</td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+<td colspan="6" class="text-center">
+No route data available
+</td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% endif %}
+
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+</div>
+
+{% endblock %}
