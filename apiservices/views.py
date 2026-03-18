@@ -15738,10 +15738,10 @@ class EmptyBottleAllocationNFCAPIView(APIView):
                     # Create Bottle Ledger
                     BottleLedger.objects.create(
                         bottle=bottle,
-                        action="ALLOCATED_EMPTY_TO_VAN",
+                        action="EMPTY_BOTTLE_ALLOCATION",
                         van=van,
                         route=van_route,
-                        reference="Store Empty Bottle Allocation",
+                        reference="Empty Bottle Allocation",
                         created_by=request.user.username,
                     )
                     success_count += 1
