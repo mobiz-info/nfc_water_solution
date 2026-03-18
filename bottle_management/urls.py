@@ -21,4 +21,5 @@ path("bottle-cycle-report/", views.bottle_cycle_report, name="bottle_cycle_repor
 path("bottles/", views.bottles_report, name="bottles_report"),
 path('bottle-delete/<int:pk>/', views.bottle_delete, name='bottle_delete'),
 path("bottle-stock-transfer-summary/",views.bottle_stock_transfer_summary,name="bottle_stock_transfer_summary",)
+# path('bottle-delete/<int:pk>/', views.bottle_delete, name='bottle_delete'),
 ]

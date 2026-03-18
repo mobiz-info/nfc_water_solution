@@ -1,5 +1,9 @@
 import datetime
 
+import qrcode
+import io
+import base64
+
 from django import template
 from django.db.models import Q, Sum
 
@@ -11,6 +15,24 @@ from van_management.models import *
 from van_management.views import find_customers
 
 register = template.Library()
+
+@register.simple_tag
+def make_qr_b64_tag(text):
+    if not text:
+        return ""
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_H,
+        box_size=6,
+        border=2,
+    )
+    qr.add_data(text)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    return base64.b64encode(buf.getvalue()).decode()
+
 
 @register.simple_tag
 def get_next_visit_day(customer_pk):

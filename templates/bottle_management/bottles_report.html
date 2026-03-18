@@ -73,6 +73,7 @@
                                         <th>Serial Number</th>
                                         <th>Created Date</th>
                                         <th>Current Status</th>
+                                        <th>Is Filled</th>
                                         <th>Bottle Cycle</th>
                                         <th>Van</th>
                                         <th>Route</th>
@@ -100,6 +101,13 @@
                                                 <span class="badge bg-warning-transparent text-warning">{{ bottle.get_status_display }}</span>
                                             {% else %}
                                                 <span class="badge bg-light text-dark">{{ bottle.get_status_display }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if bottle.is_filled %}
+                                                <span class="badge bg-success-transparent text-success">Filled</span>
+                                            {% else %}
+                                                <span class="badge bg-warning-transparent text-warning">Empty</span>
                                             {% endif %}
                                         </td>
                                         <td>{{ bottle.bottle_cycle }}</td>
