@@ -694,6 +694,59 @@ def bottle_stock_report(request):
     return render(request, 'bottle_management/bottle_stock_report.html', context)
 
 @csrf_exempt
+def check_bottle_in_van(request):
+    """
+    Checks whether a bottle (identified by nfc_uid or qr_code) is already
+    present in the van (status == 'VAN'). Returns:
+        {"in_van": true,  "message": "Bottle already in van"}
+        {"in_van": false, "message": "Bottle not in van"}
+    Optionally accepts staff_order_details_id (unused currently, reserved for
+    future route / van scoping).
+    """
+    try:
+        data = json.loads(request.body)
+        nfc_uid = data.get("nfc_uid", "").strip()
+        qr_code = data.get("qr_code", "").strip()
+
+        if not nfc_uid and not qr_code:
+            return JsonResponse({"error": "nfc_uid or qr_code is required"}, status=400)
+
+        # Look up the bottle
+        bottle = None
+        if nfc_uid:
+            try:
+                bottle = Bottle.objects.get(nfc_uid=nfc_uid)
+            except Bottle.DoesNotExist:
+                pass
+        if bottle is None and qr_code:
+            try:
+                bottle = Bottle.objects.get(qr_code=qr_code)
+            except Bottle.DoesNotExist:
+                pass
+
+        if bottle is None:
+            return JsonResponse({"error": "Bottle not found"}, status=404)
+
+        # A bottle is "in van" if its status is VAN and has a current_van
+        in_van = bottle.status == "VAN" and bottle.current_van is not None
+
+        return JsonResponse({
+            "in_van": in_van,
+            "message": "Bottle already in van" if in_van else "Bottle not in van",
+            "bottle_id": bottle.id,
+            "serial_number": bottle.serial_number,
+            "status": bottle.status,
+            "is_filled": bottle.is_filled,
+            "current_van": str(bottle.current_van.van_id) if bottle.current_van else None,
+        }, status=200)
+
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+
+@csrf_exempt
 def get_van_by_route(request):
     try:
         data = json.loads(request.body)

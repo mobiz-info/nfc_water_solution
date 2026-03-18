@@ -2553,10 +2553,15 @@ class CustomersSupplysSerializer(serializers.ModelSerializer):
     supplied = serializers.SerializerMethodField()
     sales_mode = serializers.CharField(source='customer.sales_type')
     customer_code = serializers.SerializerMethodField() 
+    foc = serializers.SerializerMethodField()
+    empty_bottle = serializers.SerializerMethodField()
+    nfc_uids = serializers.SerializerMethodField()
+    foc_nfc_uids = serializers.SerializerMethodField()
+    empty_nfc_uids = serializers.SerializerMethodField()
     
     class Meta:
         model = CustomerSupply
-        fields = ['customer_code','customer_name', 'building_no', 'door_house_no', 'supplied', 'sales_mode']
+        fields = ['customer_code','customer_name', 'building_no', 'door_house_no', 'supplied', 'sales_mode', 'foc', 'empty_bottle', 'nfc_uids', 'foc_nfc_uids', 'empty_nfc_uids']
 
     def get_supplied(self, obj):
         coupon_products = CustomerSupplyItems.objects.filter(customer_supply=obj).exclude(customer_supply__customer__sales_type="CASH COUPON")
@@ -2569,6 +2574,33 @@ class CustomersSupplysSerializer(serializers.ModelSerializer):
     
     def get_customer_code(self, obj):
         return obj.customer.custom_id
+        
+    def get_foc(self, obj):
+        return CustomerSupplyItems.objects.filter(customer_supply=obj).aggregate(total_foc=Sum('foc'))['total_foc'] or 0
+
+    def get_empty_bottle(self, obj):
+        return obj.collected_empty_bottle
+
+    def get_nfc_uids(self, obj):
+        if obj.nfc_uids:
+            return obj.nfc_uids
+        from bottle_management.models import BottleLedger
+        ledgers = BottleLedger.objects.filter(reference=obj.invoice_no, action='SUPPLY', customer=obj.customer)
+        return [ledger.bottle.nfc_uid for ledger in ledgers if ledger.bottle]
+
+    def get_foc_nfc_uids(self, obj):
+        if obj.foc_nfc_uids:
+            return obj.foc_nfc_uids
+        from bottle_management.models import BottleLedger
+        ledgers = BottleLedger.objects.filter(reference=obj.invoice_no, action='FOC', customer=obj.customer)
+        return [ledger.bottle.nfc_uid for ledger in ledgers if ledger.bottle]
+
+    def get_empty_nfc_uids(self, obj):
+        if obj.empty_nfc_uids:
+            return obj.empty_nfc_uids
+        from bottle_management.models import BottleLedger
+        ledgers = BottleLedger.objects.filter(reference=obj.invoice_no, action='RETURN', customer=obj.customer)
+        return [ledger.bottle.nfc_uid for ledger in ledgers if ledger.bottle]
     
 
 class CustomersOutstandingAmountsSerializer(serializers.ModelSerializer):
@@ -3375,7 +3407,8 @@ class CustomerSupplyLatestSerializer(serializers.ModelSerializer):
             'reference_number', 'items',
             'collected_empty_bottle', 'allocate_bottle_to_pending', 'allocate_bottle_to_custody',
             'allocate_bottle_to_paid', 'allocate_bottle_to_free',
-            'total_coupon_collected', 'coupon_method', 'collected_coupon_ids', 'created_date','payment_mode','vat_amount','amount_before_vat'
+            'total_coupon_collected', 'coupon_method', 'collected_coupon_ids', 'created_date','payment_mode','vat_amount','amount_before_vat',
+            'nfc_uids', 'foc_nfc_uids', 'empty_nfc_uids'
         ]
 
     def create(self, validated_data):

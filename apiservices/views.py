@@ -14996,7 +14996,14 @@ class FreelanceIssueOrdersAPIView(APIView):
 def create_customer_supply_latest(request):
     try:
         print("working")
+        print(f"Received supply data: {request.data}")
         data = request.data.copy()
+        nfc_uids = data.get("nfc_uids", [])
+        foc_nfc_uids = data.get("foc_nfc_uids", [])
+        empty_nfc_uids = data.get("empty_nfc_uids", [])
+        print(f"NFC UIDs: {nfc_uids}")
+        print(f"FOC NFC UIDs: {foc_nfc_uids}")
+        print(f"Empty NFC UIDs: {empty_nfc_uids}")
         customer_supply_data = data.get("customer_supply", {})
         
         supply_date_str = data.get("supply_date")
@@ -15011,15 +15018,18 @@ def create_customer_supply_latest(request):
         customer_supply_data["created_date"] = supply_datetime
         customer_supply_data["supply_date"] = supply_datetime
         customer_supply_data["items"] = data.get("items", [])
-        customer_supply_data["collected_empty_bottle"] = data.get("collected_empty_bottle", 0)
+        customer_supply_data["collected_empty_bottle"] = len(empty_nfc_uids) if empty_nfc_uids else data.get("collected_empty_bottle", 0)
         customer_supply_data["allocate_bottle_to_pending"] = data.get("allocate_bottle_to_pending", 0)
         customer_supply_data["allocate_bottle_to_custody"] = data.get("allocate_bottle_to_custody", 0)
         customer_supply_data["allocate_bottle_to_paid"] = data.get("allocate_bottle_to_paid", 0)
-        customer_supply_data["allocate_bottle_to_free"] = data.get("allocate_bottle_to_free", 0)
+        customer_supply_data["allocate_bottle_to_free"] = len(foc_nfc_uids) if foc_nfc_uids else data.get("allocate_bottle_to_free", 0)
         customer_supply_data["reference_number"] = data.get("reference_number", "")
         customer_supply_data["coupon_method"] = data.get("coupon_method", "")
         customer_supply_data["total_coupon_collected"] = data.get("total_coupon_collected", 0)
         customer_supply_data["collected_coupon_ids"] = data.get("collected_coupon_ids", [])
+        customer_supply_data["nfc_uids"] = nfc_uids
+        customer_supply_data["foc_nfc_uids"] = foc_nfc_uids
+        customer_supply_data["empty_nfc_uids"] = empty_nfc_uids
 
         serializer = CustomerSupplyLatestSerializer(data=customer_supply_data, context={"request": request})
         
@@ -15031,6 +15041,7 @@ def create_customer_supply_latest(request):
             try:
                 from bottle_management.models import Bottle, BottleLedger
                 from accounts.models import Customers
+                from client_management.models import SupplyItemBottle, CustomerSupplyItems
 
                 customer_id = customer_supply_data.get("customer")
                 customer_obj = None
@@ -15053,7 +15064,6 @@ def create_customer_supply_latest(request):
                 salesman_name = request.user.get_full_name() or request.user.username
 
                 # Supply bottles → status CUSTOMER
-                nfc_uids = data.get("nfc_uids", [])
                 for nfc_uid in nfc_uids:
                     try:
                         bottle = Bottle.objects.get(nfc_uid=nfc_uid)
@@ -15073,13 +15083,19 @@ def create_customer_supply_latest(request):
                             reference=invoice_no,
                             created_by=salesman_name,
                         )
+                        # Link to SupplyItemBottle
+                        supply_item = CustomerSupplyItems.objects.filter(customer_supply=supply_obj, product=bottle.product).first()
+                        if supply_item:
+                            SupplyItemBottle.objects.create(supply_item=supply_item, bottle=bottle)
+                            print(f"Linked bottle {nfc_uid} to supply item {supply_item.id}")
+                        else:
+                            print(f"No supply item found for product {bottle.product} to link bottle {nfc_uid}")
                     except Bottle.DoesNotExist:
                         print(f"Bottle not found for NFC UID: {nfc_uid}")
                     except Exception as e:
                         print(f"Error updating bottle {nfc_uid}: {e}")
 
                 # FOC bottles → status CUSTOMER with FOC ledger action
-                foc_nfc_uids = data.get("foc_nfc_uids", [])
                 for nfc_uid in foc_nfc_uids:
                     try:
                         bottle = Bottle.objects.get(nfc_uid=nfc_uid)
@@ -15099,13 +15115,19 @@ def create_customer_supply_latest(request):
                             reference=invoice_no,
                             created_by=salesman_name,
                         )
+                        # Link to SupplyItemBottle
+                        supply_item = CustomerSupplyItems.objects.filter(customer_supply=supply_obj, product=bottle.product).first()
+                        if supply_item:
+                            SupplyItemBottle.objects.create(supply_item=supply_item, bottle=bottle)
+                            print(f"Linked FOC bottle {nfc_uid} to supply item {supply_item.id}")
+                        else:
+                            print(f"No supply item found for product {bottle.product} to link FOC bottle {nfc_uid}")
                     except Bottle.DoesNotExist:
                         print(f"FOC Bottle not found for NFC UID: {nfc_uid}")
                     except Exception as e:
                         print(f"Error updating FOC bottle {nfc_uid}: {e}")
 
                 # Empty bottles collected → back to VAN, ledger RETURN
-                empty_nfc_uids = data.get("empty_nfc_uids", [])
                 for nfc_uid in empty_nfc_uids:
                     try:
                         bottle = Bottle.objects.get(nfc_uid=nfc_uid)
@@ -15738,10 +15760,10 @@ class EmptyBottleAllocationNFCAPIView(APIView):
                     # Create Bottle Ledger
                     BottleLedger.objects.create(
                         bottle=bottle,
-                        action="ALLOCATED_EMPTY_TO_VAN",
+                        action="EMPTY_BOTTLE_ALLOCATION",
                         van=van,
                         route=van_route,
-                        reference="Store Empty Bottle Allocation",
+                        reference="Empty Bottle Allocation",
                         created_by=request.user.username,
                     )
                     success_count += 1

@@ -398,6 +398,7 @@ urlpatterns = [
     path('get_van_by_route/', bottle_views.get_van_by_route, name='get_van_by_route'),
     path('transfer_bottles_to_van/', bottle_views.transfer_bottles_to_van, name='transfer_bottles_to_van'),
     path('refill_bottles/', bottle_views.refill_bottles, name='refill_bottles'),
+    path('check_bottle_in_van/', bottle_views.check_bottle_in_van, name='check_bottle_in_van'),
     path('api_staffIssueOrdersCreateNFC/', StaffIssueOrdersNFCAPIView.as_view(), name='api_staffIssueOrdersCreateNFC'),
     path('order-damage-nfc/', OrderDamageNFCAPIView.as_view(), name='order_damage_nfc'),
     path('empty-bottle-allocation-nfc/', EmptyBottleAllocationNFCAPIView.as_view(), name='empty_bottle_allocation_nfc'),

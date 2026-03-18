@@ -531,6 +531,10 @@ class CustomerSupply(models.Model):
     vat_amount = models.DecimalField(default=0, max_digits=10, decimal_places=2)
     amount_before_vat = models.DecimalField(default=0, max_digits=10, decimal_places=2)
     
+    nfc_uids = models.JSONField(default=list, null=True, blank=True)
+    foc_nfc_uids = models.JSONField(default=list, null=True, blank=True)
+    empty_nfc_uids = models.JSONField(default=list, null=True, blank=True)
+    
     
     
     created_by = models.CharField(max_length=30, blank=True)

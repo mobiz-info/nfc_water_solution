@@ -537,7 +537,7 @@ def staffIssueOrdersCreate(request, staff_order_details_id):
                                         bottle=bottle,
                                         action="LOAD_TO_VAN",
                                         van=van,
-                                        reference=f"Order {issue.staff_order_id.order_number}",
+                                        reference="Load to van",
                                         created_by=request.user.username
                                     )
 

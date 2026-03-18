@@ -76,6 +76,7 @@ class BottleLedger(models.Model):
     ACTION_CHOICES = [
         ("CREATE", "Created"),
         ("LOAD_TO_VAN", "Loaded To Van"),
+        ("EMPTY_BOTTLE_ALLOCATION", "Empty Bottle Allocation"),
         ("SUPPLY", "Supplied To Customer"),
         ("RETURN", "Returned From Customer"),
         ("OFFLOAD", "Offloaded To Godown"),
