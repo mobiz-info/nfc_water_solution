@@ -133,10 +133,12 @@
                                             </button>
                                         </td>
                                         <td>
-                                            <button class="btn btn-sm btn-danger"
-                                                onclick="deleteBottle({{ bottle.id }})">
-                                                <i class="bx bx-trash"></i>
-                                            </button>
+                                            <a class=" btn btn-danger-light btn-sm ms-2" 
+                                                     href="javascript:void(0);"
+onclick="deleteBottle({{ bottle.pk }})">
+                                                        <span class="bi bi-trash3 fs-14"></span> <!-- Icon updated for 'Delete' -->
+                                                    </a>
+                                            
                                         </td>
                                     </tr>
                                     {% endwith %}
@@ -234,7 +236,9 @@ function deleteBottle(id) {
         return;
     }
 
-    fetch(`/bottle_management/bottle-delete/${id}/`, {
+    const url = "{% url 'bottle_management:bottle_delete' 0 %}".replace('0', id);
+
+    fetch(url, {
         method: "POST",
         headers: {
             "X-CSRFToken": "{{ csrf_token }}"
@@ -243,7 +247,10 @@ function deleteBottle(id) {
     .then(response => response.json())
     .then(data => {
         alert(data.message);
-        location.reload();
+
+        if (data.status === "success") {
+            location.reload();   // ✅ refresh page
+        }
     });
 }
 </script>

@@ -986,7 +986,7 @@ def bottle_delete(request, pk):
             "status": "error",
             "message": "Bottle not found"
         })
-        
+    
         
 @login_required
 def bottle_stock_transfer_summary(request):
