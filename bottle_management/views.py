@@ -12,6 +12,11 @@ from .models import Product, Bottle
 import json
 import re
 
+from datetime import timedelta
+from django.utils import timezone
+from django.db.models import Max, Count, Q
+from master.models import RouteMaster
+
 from bottle_management.models import Bottle, BottleLedger
 import base64
 from django.contrib.auth import authenticate
@@ -1112,3 +1117,61 @@ def bottle_stock_transfer_summary(request):
         "bottle_management/bottle_stock_transfer_summary.html",
         context
     )
+
+
+def bottle_missing_report(request):
+    days = int(request.GET.get('days', 30))  # 30 or 60
+    route_id = request.GET.get('route')
+
+    cutoff_date = timezone.now() - timedelta(days=days)
+
+    # Step 1: Get latest SUPPLY date per bottle
+    supply_qs = BottleLedger.objects.filter(
+        action="SUPPLY"
+    ).values('bottle').annotate(
+        last_supply_date=Max('created_at')
+    )
+
+    # Convert to dict for easy lookup
+    supply_dict = {
+        item['bottle']: item['last_supply_date']
+        for item in supply_qs
+    }
+
+    missing_bottle_ids = []
+
+    for bottle_id, supply_date in supply_dict.items():
+        # Check if returned after supply
+        returned = BottleLedger.objects.filter(
+            bottle_id=bottle_id,
+            action="RETURN",
+            created_at__gt=supply_date
+        ).exists()
+
+        if not returned and supply_date <= cutoff_date:
+            missing_bottle_ids.append(bottle_id)
+
+    # Final queryset
+    bottles = BottleLedger.objects.filter(
+        bottle_id__in=missing_bottle_ids,
+        action="SUPPLY"
+    )
+
+    if route_id:
+        bottles = bottles.filter(route_id=route_id)
+
+    # Group by route
+    report = bottles.values(
+        'route__route_name'
+    ).annotate(
+        missing_count=Count('bottle', distinct=True)
+    )
+
+    routes = RouteMaster.objects.all()
+
+    return render(request, 'bottle_management/bottle_missing.html', {
+        'report': report,
+        'routes': routes,
+        'selected_days': days,
+        'selected_route': route_id
+    })

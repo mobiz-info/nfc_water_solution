@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Page Header -->
+<div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
+    <h4 class="fw-medium mb-0">Bottle Missing Report</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="javascript:void(0);">Bottle Management</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+            Bottle Missing Report
+        </li>
+    </ol>
+</div>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">Missing Bottles</div>
+                    </div>
+
+                    <div class="card-body">
+
+                        <!-- 🔍 Filter Form -->
+                        <form method="get">
+                            <div class="row align-items-end">
+
+                                <!-- Days -->
+                                <div class="col-md-4">
+                                    <label class="form-label">Select Days</label>
+                                    <select name="days" class="form-control">
+                                        <option value="30" {% if selected_days == 30 %}selected{% endif %}>30 Days</option>
+                                        <option value="60" {% if selected_days == 60 %}selected{% endif %}>60 Days</option>
+                                    </select>
+                                </div>
+
+                                <!-- Route -->
+                                <div class="col-md-4">
+                                    <label class="form-label">Select Route</label>
+                                    <select name="route" class="form-control">
+                                        <option value="">All Routes</option>
+                                        {% for r in routes %}
+                                            <option value="{{ r.route_id }}"
+                                                {% if selected_route == r.route_id|stringformat:"s" %}selected{% endif %}>
+                                                {{ r.route_name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <!-- Button -->
+                                <div class="col-md-2">
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="bx bx-search"></i> Filter
+                                    </button>
+                                </div>
+
+                            </div>
+                        </form>
+
+                        <br>
+
+                        <!-- 📊 Report Table -->
+                        <div class="table-responsive">
+                            <table class="table table-bordered text-nowrap w-100">
+
+                                <thead >
+                                    <tr>
+                                        <th>SL No</th>
+                                        <th>Route</th>
+                                        <th>No. of Missing Bottles</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    {% for item in report %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>
+                                            <span class="badge bg-info-transparent text-info">
+                                                {{ item.route__route_name|default:"No Route" }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-danger fs-14">
+                                                {{ item.missing_count }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted">
+                                            No missing bottles found for selected filters.
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+
+                            </table>
+                        </div>
+
+                        <!-- 📌 Summary -->
+                        {% if report %}
+                        <div class="mt-3">
+                            <div class="alert alert-info">
+                                <strong>Total Routes:</strong> {{ report|length }}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
