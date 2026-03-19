@@ -18,7 +18,7 @@
                 <div class="card custom-card">
                     <div class="card-header">
                         <div class="card-title">
-                            Supplied Bottles List ({{ customer_supply.customer.customer_name }} - {{ customer_supply.created_date|date:'Y-m-d' }})
+                            {{ bottle_list_title }} ({{ customer_supply.customer.customer_name }} - {{ customer_supply.created_date|date:'Y-m-d' }})
                         </div>
                         <div class="ms-auto">
                             <a href="{% url 'customer_supply_list' %}" class="btn btn-secondary btn-sm">
@@ -58,7 +58,7 @@
                                     </tr>
                                     {% empty %}
                                     <tr>
-                                        <td colspan="5" class="text-center">No bottles found for this supply.</td>
+                                        <td colspan="5" class="text-center">{{ empty_message }}</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>

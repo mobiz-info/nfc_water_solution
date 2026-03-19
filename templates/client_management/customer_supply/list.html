@@ -140,12 +140,20 @@
                                     <td class="text-center" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>{{instance.customer.get_sales_type_display}}</td>
                                      <td class="text-center" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>{{instance.salesman.get_fullname}}</td>
                                     <td class="text-center" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>
-                                        <a href="{% url 'customer_supply_bottles_list' supply_id=instance.pk %}" class="text-primary text-decoration-underline fw-bold" data-bs-toggle="tooltip" title="View Supplied Bottles">
+                                        <a href="{% url 'customer_supply_bottles_list_by_type' supply_id=instance.pk bottle_type='supply' %}" class="text-primary text-decoration-underline fw-bold" data-bs-toggle="tooltip" title="View Supplied Bottles">
                                             {{instance.get_total_supply_qty}}
                                         </a>
                                     </td>
-                                    <td class="text-center" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>{{instance.allocate_bottle_to_free}}</td>
-                                    <td class="text-center" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>{{instance.collected_empty_bottle}}</td>
+                                    <td class="text-center" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>
+                                        <a href="{% url 'customer_supply_bottles_list_by_type' supply_id=instance.pk bottle_type='foc' %}" class="text-primary text-decoration-underline fw-bold" data-bs-toggle="tooltip" title="View FOC Bottles">
+                                            {{instance.allocate_bottle_to_free}}
+                                        </a>
+                                    </td>
+                                    <td class="text-center" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>
+                                        <a href="{% url 'customer_supply_bottles_list_by_type' supply_id=instance.pk bottle_type='collected' %}" class="text-primary text-decoration-underline fw-bold" data-bs-toggle="tooltip" title="View Collected Bottles">
+                                            {{instance.collected_empty_bottle}}
+                                        </a>
+                                    </td>
                                     <td class="text-center" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>{% if instance.subtotal == instance.amount_recieved %} Paid {% else %} Non Paid {% endif %}</td>
                                     {% comment %}<td class="text-center" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>{{instance.discount}}</td>
                                     <td class="text-center" {% if instance.is_edited %}style="background-color:#c0dfdf !important;"{% endif %}>{{instance.subtotal}}</td>

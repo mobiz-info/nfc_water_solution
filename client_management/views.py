@@ -18,7 +18,7 @@ from django.db.models import Q, Sum, Count, DecimalField, F, IntegerField, Value
 from django.urls import reverse
 from django.contrib import messages
 from django.db import transaction, IntegrityError
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, Http404
 from django.contrib.auth.decorators import login_required
 from django.forms import formset_factory, inlineformset_factory
 from django.shortcuts import get_object_or_404, redirect, render
@@ -4805,27 +4805,56 @@ def customer_outstanding_detail(request,customer_id):
 
 
 @login_required
-def customer_supply_bottles_list(request, supply_id):
+def customer_supply_bottles_list(request, supply_id, bottle_type="supply"):
     """
-    Displays a list of specific bottles supplied in a customer supply via NFC.
+    Displays bottle details for supply, FOC, or collected bottles tied to a supply.
     """
     from bottle_management.models import BottleLedger
+
     customer_supply = get_object_or_404(CustomerSupply, pk=supply_id)
-    
-    # Query BottleLedger instead of SupplyItemBottle, since the app's NFC supply API logs it there
-    bottles = BottleLedger.objects.filter(
-        reference=customer_supply.invoice_no, 
-        action__in=["SUPPLY", "FOC"]
-    ).select_related('bottle')
-    
-    context = {
-        'customer_supply': customer_supply,
-        'bottles': bottles,
-        'page_name': 'Supplied Bottles',
-        'page_title': f'Bottles - {customer_supply.customer.customer_name}',
+    bottle_type = (bottle_type or "supply").lower()
+
+    bottle_type_map = {
+        "supply": {
+            "action": "SUPPLY",
+            "page_name": "Supplied Bottles",
+            "list_title": "Supplied Bottles List",
+            "empty_message": "No supplied bottles found for this supply.",
+        },
+        "foc": {
+            "action": "FOC",
+            "page_name": "FOC Bottles",
+            "list_title": "FOC Bottles List",
+            "empty_message": "No FOC bottles found for this supply.",
+        },
+        "collected": {
+            "action": "RETURN",
+            "page_name": "Collected Bottles",
+            "list_title": "Collected Bottles List",
+            "empty_message": "No collected bottles found for this supply.",
+        },
     }
-    
-    return render(request, 'client_management/customer_supply/bottles_list.html', context)
+
+    config = bottle_type_map.get(bottle_type)
+    if not config:
+        raise Http404("Invalid bottle type")
+
+    bottles = BottleLedger.objects.filter(
+        reference=customer_supply.invoice_no,
+        action=config["action"],
+        customer=customer_supply.customer,
+    ).select_related("bottle").order_by("-created_at")
+
+    context = {
+        "customer_supply": customer_supply,
+        "bottles": bottles,
+        "page_name": config["page_name"],
+        "page_title": f'{config["page_name"]} - {customer_supply.customer.customer_name}',
+        "bottle_list_title": config["list_title"],
+        "empty_message": config["empty_message"],
+    }
+
+    return render(request, "client_management/customer_supply/bottles_list.html", context)
 
 def export_customer_outstanding_to_excel(request):
     instances = CustomerOutstanding.objects.filter(product_type='amount')
@@ -6067,5 +6096,4 @@ class CustomerCreditAPI(APIView):
             "status": True,
             "data": serializer.data
         }, status=200)
-
 
