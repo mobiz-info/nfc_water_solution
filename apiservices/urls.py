@@ -151,6 +151,7 @@ urlpatterns = [
     path('get_products/', GetProductAPI.as_view(), name='get_products'),
     path('add_custody_items/', CustodyCustomAPIView.as_view(), name='custody_item_add'),
     path('custody_item_list/' ,CustodyCustomItemListAPI.as_view(), name='custody_item_list'),
+    path('bottle_status_customers/', BottleStatusCustomerFilterAPIView.as_view(), name='bottle_status_customers'),
     path('custody_item_return/', CustodyItemReturnAPI.as_view(), name='custody_item_return'),
 
     path('outstanding_amount/',OutstandingAmountAPI.as_view(), name = 'outstanding_amount'),

@@ -5914,6 +5914,146 @@ class CustodyCustomItemListAPI(APIView):
             return Response({'status': True, 'data': [], 'message': 'No custody items'}, status=status.HTTP_200_OK)
     
 
+class BottleStatusCustomerFilterAPIView(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    customer_actions = ("SUPPLY", "FOC", "CUSTODY_ADD")
+
+    def get(self, request):
+        try:
+            days = int(request.GET.get("days", 30))
+        except (TypeError, ValueError):
+            days = 30
+
+        customer_filter = (request.GET.get("customer_id") or "").strip()
+        cutoff_date = timezone.now() - timedelta(days=days)
+
+        bottles_qs = Bottle.objects.filter(
+            status="CUSTOMER",
+            current_customer__isnull=False,
+            is_deleted=False,
+            current_customer__sales_staff=request.user,
+        ).select_related("current_customer", "product").order_by(
+            "current_customer__custom_id",
+            "serial_number",
+        )
+
+        if customer_filter:
+            bottles_qs = bottles_qs.filter(
+                Q(current_customer__customer_id=customer_filter)
+                | Q(current_customer__custom_id__iexact=customer_filter)
+            )
+
+        bottle_ids = list(bottles_qs.values_list("id", flat=True))
+        latest_customer_ledgers = {}
+
+        if bottle_ids:
+            customer_ledgers = BottleLedger.objects.filter(
+                bottle_id__in=bottle_ids,
+                action__in=self.customer_actions,
+            ).only("bottle_id", "created_at", "action").order_by(
+                "bottle_id",
+                "-created_at",
+            )
+
+            for ledger in customer_ledgers:
+                latest_customer_ledgers.setdefault(ledger.bottle_id, ledger)
+
+        if customer_filter:
+            customer_obj = Customers.objects.filter(
+                Q(customer_id=customer_filter) | Q(custom_id__iexact=customer_filter),
+                sales_staff=request.user,
+            ).first()
+
+            bottle_details = []
+            for bottle in bottles_qs:
+                last_customer_ledger = latest_customer_ledgers.get(bottle.id)
+                if not last_customer_ledger or last_customer_ledger.created_at > cutoff_date:
+                    continue
+
+                bottle_details.append(
+                    {
+                        "slno": len(bottle_details) + 1,
+                        "bottle_id": bottle.nfc_uid or bottle.serial_number,
+                        "bottle_count": 1,
+                        "serial_number": bottle.serial_number,
+                        "product_name": bottle.product.product_name if bottle.product else "",
+                        "days_in_customer": (timezone.now() - last_customer_ledger.created_at).days,
+                        "last_customer_action": last_customer_ledger.action,
+                        "last_customer_action_date": last_customer_ledger.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                    }
+                )
+
+            customer_payload = None
+            if customer_obj:
+                customer_payload = {
+                    "customer_id": str(customer_obj.customer_id),
+                    "customer_code": customer_obj.custom_id or "",
+                    "customer_name": customer_obj.customer_name or "",
+                }
+
+            log_activity(
+                created_by=request.user,
+                description=(
+                    f"Retrieved bottle status details for customer filter '{customer_filter}' "
+                    f"with bottles older than {days} days."
+                ),
+            )
+            return Response(
+                {
+                    "status": True,
+                    "message": "Bottle details fetched successfully",
+                    "days": days,
+                    "customer": customer_payload,
+                    "total_bottles": len(bottle_details),
+                    "data": bottle_details,
+                },
+                status=status.HTTP_200_OK,
+            )
+
+        customer_summary = {}
+        for bottle in bottles_qs:
+            last_customer_ledger = latest_customer_ledgers.get(bottle.id)
+            if not last_customer_ledger or last_customer_ledger.created_at > cutoff_date:
+                continue
+
+            customer = bottle.current_customer
+            customer_key = str(customer.customer_id)
+            if customer_key not in customer_summary:
+                customer_summary[customer_key] = {
+                    "customer_id": str(customer.customer_id),
+                    "customer_code": customer.custom_id or "",
+                    "customer_name": customer.customer_name or "",
+                    "bottle_count": 0,
+                }
+
+            customer_summary[customer_key]["bottle_count"] += 1
+
+        summary_data = sorted(
+            customer_summary.values(),
+            key=lambda item: (
+                item["customer_code"] or "",
+                item["customer_name"] or "",
+            ),
+        )
+
+        log_activity(
+            created_by=request.user,
+            description=f"Retrieved bottle status customer summary with bottles older than {days} days.",
+        )
+        return Response(
+            {
+                "status": True,
+                "message": "Bottle status customers fetched successfully",
+                "days": days,
+                "total_customers": len(summary_data),
+                "data": summary_data,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
 class CustodyItemReturnAPI(APIView):
     authentication_classes = [BasicAuthentication]
     permission_classes = [IsAuthenticated]

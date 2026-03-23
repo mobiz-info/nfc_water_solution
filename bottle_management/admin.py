@@ -28,16 +28,6 @@ class BottleLedgerAdmin(admin.ModelAdmin):
         "reference",
     )
 
-    readonly_fields = (
-        "bottle",
-        "action",
-        "van",
-        "route",
-        "customer",
-        "reference",
-        "created_at",
-    )
-
     ordering = ("-created_at",)
 
     

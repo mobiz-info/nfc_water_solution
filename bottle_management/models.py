@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 from accounts.models import Customers
 from product.models import Product, ProdutItemMaster
@@ -109,7 +110,7 @@ class BottleLedger(models.Model):
     )
 
     reference = models.CharField(max_length=100, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
     created_by = models.CharField(max_length=30, blank=True)
     
     route = models.ForeignKey(
