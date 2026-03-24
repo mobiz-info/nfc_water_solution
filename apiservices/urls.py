@@ -403,5 +403,7 @@ urlpatterns = [
     path('api_staffIssueOrdersCreateNFC/', StaffIssueOrdersNFCAPIView.as_view(), name='api_staffIssueOrdersCreateNFC'),
     path('order-damage-nfc/', OrderDamageNFCAPIView.as_view(), name='order_damage_nfc'),
     path('empty-bottle-allocation-nfc/', EmptyBottleAllocationNFCAPIView.as_view(), name='empty_bottle_allocation_nfc'),
+    path('route-bottle-allocation-nfc/', RouteBottleAllocationNFCAPIView.as_view(), name='route_bottle_allocation_nfc'),
+    path('route-empty-bottle-stock/', RouteEmptyBottleStockAPIView.as_view(), name='route_empty_bottle_stock'),
 
 ]

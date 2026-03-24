@@ -185,6 +185,7 @@ def refill_bottles(request):
         return JsonResponse({"error": str(e)}, status=500)
 
 
+
 def bottle_generator_page(request):
     products = ProdutItemMaster.objects.exclude(
     category__category_name__icontains="coupon"
