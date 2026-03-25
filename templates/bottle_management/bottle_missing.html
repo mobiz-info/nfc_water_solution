@@ -5,13 +5,13 @@
 
 <!-- Page Header -->
 <div class="page-header-breadcrumb d-md-flex d-block align-items-center justify-content-between">
-    <h4 class="fw-medium mb-0">Bottle Missing Report</h4>
+    <h4 class="fw-medium mb-0">Bottle Tracker Report</h4>
     <ol class="breadcrumb">
         <li class="breadcrumb-item">
             <a href="javascript:void(0);">Bottle Management</a>
         </li>
         <li class="breadcrumb-item active" aria-current="page">
-            Bottle Missing Report
+            Bottle Tracker Report
         </li>
     </ol>
 </div>
@@ -24,7 +24,7 @@
 
                 <div class="card custom-card">
                     <div class="card-header">
-                        <div class="card-title">Missing Bottles</div>
+                        <div class="card-title">Tracker Bottles</div>
                     </div>
 
                     <div class="card-body">
@@ -76,7 +76,7 @@
                                     <tr>
                                         <th>SL No</th>
                                         <th>Route</th>
-                                        <th>No. of Missing Bottles</th>
+                                        <th>No. of Bottles</th>
                                     </tr>
                                 </thead>
 
@@ -98,7 +98,7 @@
                                     {% empty %}
                                     <tr>
                                         <td colspan="3" class="text-center text-muted">
-                                            No missing bottles found for selected filters.
+                                            No bottles found for selected filters.
                                         </td>
                                     </tr>
                                     {% endfor %}
