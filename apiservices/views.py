@@ -5975,8 +5975,9 @@ class BottleStatusCustomerFilterAPIView(APIView):
                 bottle_details.append(
                     {
                         "slno": len(bottle_details) + 1,
-                        "bottle_id": bottle.nfc_uid or bottle.serial_number,
+                        "bottle_id": bottle.serial_number,
                         "bottle_count": 1,
+                        "bottle_cycle": bottle.bottle_cycle,
                         "serial_number": bottle.serial_number,
                         "product_name": bottle.product.product_name if bottle.product else "",
                         "days_in_customer": (timezone.now() - last_customer_ledger.created_at).days,
@@ -15947,6 +15948,188 @@ class EmptyBottleAllocationNFCAPIView(APIView):
                 'success_count': success_count,
                 'failed_bottles': failed_bottles
             }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class RouteBottleAllocationNFCAPIView(APIView):
+    """
+    Allocates empty bottles to a route's van via NFC/QR scan.
+    Same as EmptyBottleAllocationNFCAPIView but uses route_id instead of staff_order_details_id.
+    Updates bottle status to VAN, creates BottleLedger, and increments van empty_can_count in VanProductStock.
+
+    POST body:
+    {
+        "route_id": "<uuid>",
+        "nfc_uids": ["uid1", "uid2", ...]   // optional
+        "qr_codes": ["qr1", ...]            // optional
+    }
+    """
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    @transaction.atomic
+    def post(self, request):
+        try:
+            from bottle_management.models import Bottle, BottleLedger
+            from van_management.models import Van_Routes
+
+            data = request.data
+            route_id = data.get('route_id')
+            nfc_uids = data.get('nfc_uids', [])
+            qr_codes = data.get('qr_codes', [])
+
+            if not route_id:
+                return Response({'error': 'route_id is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+            if not nfc_uids and not qr_codes:
+                return Response({'error': 'No NFC UIDs or QR codes provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Resolve van from route
+            van_route_obj = Van_Routes.objects.filter(routes__pk=route_id).first()
+            if not van_route_obj:
+                return Response({'error': 'No van assigned to this route'}, status=status.HTTP_400_BAD_REQUEST)
+
+            van = van_route_obj.van
+            van_route = van_route_obj.routes
+
+            success_count = 0
+            failed_bottles = []
+
+            # Process NFC UIDs
+            for nfc in nfc_uids:
+                try:
+                    bottle = Bottle.objects.get(nfc_uid=nfc)
+
+                    # Mark as empty if filled
+                    bottle.is_filled = False
+                    bottle.status = "VAN"
+                    bottle.current_van = van
+                    bottle.current_customer = None
+                    bottle.current_route = van_route
+                    bottle.save()
+
+                    BottleLedger.objects.create(
+                        bottle=bottle,
+                        action="EMPTY_BOTTLE_ALLOCATION",
+                        van=van,
+                        route=van_route,
+                        reference="Route Bottle Allocation",
+                        created_by=request.user.username,
+                    )
+                    success_count += 1
+                except Bottle.DoesNotExist:
+                    failed_bottles.append({'nfc': nfc, 'reason': 'Bottle not found'})
+                except Exception as e:
+                    failed_bottles.append({'nfc': nfc, 'reason': str(e)})
+
+            # Process QR codes
+            for qr in qr_codes:
+                try:
+                    bottle = Bottle.objects.get(qr_code=qr)
+
+                    bottle.is_filled = False
+                    bottle.status = "VAN"
+                    bottle.current_van = van
+                    bottle.current_customer = None
+                    bottle.current_route = van_route
+                    bottle.save()
+
+                    BottleLedger.objects.create(
+                        bottle=bottle,
+                        action="EMPTY_BOTTLE_ALLOCATION",
+                        van=van,
+                        route=van_route,
+                        reference="Route Bottle Allocation",
+                        created_by=request.user.username,
+                    )
+                    success_count += 1
+                except Bottle.DoesNotExist:
+                    failed_bottles.append({'qr': qr, 'reason': 'Bottle not found'})
+                except Exception as e:
+                    failed_bottles.append({'qr': qr, 'reason': str(e)})
+
+            # Update VanProductStock (empty_can_count) — same as EmptyBottleAllocationNFCAPIView
+            if success_count > 0:
+                try:
+                    product = ProdutItemMaster.objects.get(product_name="5 Gallon")
+                    van_product_stock_qs = VanProductStock.objects.filter(
+                        created_date=datetime.today().date(),
+                        van=van,
+                        product=product
+                    )
+                    if van_product_stock_qs.exists():
+                        van_p_stock = van_product_stock_qs.first()
+                        van_p_stock.empty_can_count += success_count
+                        van_p_stock.save()
+                    else:
+                        VanProductStock.objects.create(
+                            created_date=datetime.today().date(),
+                            product=product,
+                            van=van,
+                            empty_can_count=success_count,
+                            stock=0
+                        )
+                except Exception:
+                    pass  # Non-critical, don't fail the whole allocation
+
+            return Response({
+                'message': f"Successfully allocated {success_count} empty bottles to route",
+                'success_count': success_count,
+                'failed_bottles': failed_bottles
+            }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class RouteEmptyBottleStockAPIView(APIView):
+    """
+    GET /api/route-empty-bottle-stock/
+    Returns today's empty_can_count from VanProductStock for each route.
+    Response:
+    [
+        {"route_id": "...", "route_name": "...", "empty_can_count": 5},
+        ...
+    ]
+    """
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            from van_management.models import Van_Routes
+
+            today = datetime.today().date()
+            product = ProdutItemMaster.objects.filter(product_name="5 Gallon").first()
+
+            result = []
+            van_routes = Van_Routes.objects.select_related('van', 'routes').all()
+
+            for vr in van_routes:
+                route = vr.routes
+                van = vr.van
+                if not route or not van:
+                    continue
+
+                empty_count = 0
+                if product:
+                    stock_qs = VanProductStock.objects.filter(
+                        created_date=today,
+                        van=van,
+                        product=product
+                    )
+                    if stock_qs.exists():
+                        empty_count = stock_qs.first().empty_can_count or 0
+
+                result.append({
+                    'route_id': str(route.pk),
+                    'route_name': route.route_name,
+                    'empty_can_count': empty_count,
+                })
+
+            return Response(result, status=status.HTTP_200_OK)
 
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
