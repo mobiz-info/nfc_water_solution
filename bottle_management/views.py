@@ -1176,3 +1176,62 @@ def bottle_missing_report(request):
         'selected_days': days,
         'selected_route': route_id
     })
+
+
+@csrf_exempt
+def edit_bottle_identifier(request):
+    """
+    Update a bottle's NFC UID or QR Code.
+    Requires bottle_id and either nfc_uid or qr_code.
+    """
+    try:
+        data = json.loads(request.body)
+        bottle_id = data.get("bottle_id")
+        nfc_uid = data.get("nfc_uid")
+        qr_code = data.get("qr_code")
+
+        if not bottle_id:
+            return JsonResponse({"error": "bottle_id is required"}, status=400)
+
+        if not nfc_uid and not qr_code:
+            return JsonResponse({"error": "Either nfc_uid or qr_code is required"}, status=400)
+
+        bottle = Bottle.objects.get(id=bottle_id)
+
+        # Check for duplicates before mapping
+        if nfc_uid:
+            if Bottle.objects.filter(nfc_uid=nfc_uid).exclude(id=bottle_id).exists():
+                return JsonResponse({"error": "This NFC UID is already mapped to another bottle"}, status=400)
+            bottle.nfc_uid = nfc_uid
+
+        if qr_code:
+            if Bottle.objects.filter(qr_code=qr_code).exclude(id=bottle_id).exists():
+                return JsonResponse({"error": "This QR Code is already mapped to another bottle"}, status=400)
+            bottle.qr_code = qr_code
+
+        bottle.save()
+
+        # Add ledger entry for traceability
+        BottleLedger.objects.create(
+            bottle=bottle,
+            action="MAP_NFC" if nfc_uid else "MAP_QR",
+            reference=f"Updated {'NFC' if nfc_uid else 'QR'}",
+            created_by=request.user.username if hasattr(request, 'user') and request.user.is_authenticated else "App User"
+        )
+
+        return JsonResponse({
+            "message": "Bottle updated successfully",
+            "bottle": {
+                "id": bottle.id,
+                "serial_number": bottle.serial_number,
+                "nfc_uid": bottle.nfc_uid,
+                "qr_code": bottle.qr_code
+            }
+        }, status=200)
+
+    except Bottle.DoesNotExist:
+        return JsonResponse({"error": "Bottle not found"}, status=404)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)

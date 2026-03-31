@@ -405,5 +405,6 @@ urlpatterns = [
     path('empty-bottle-allocation-nfc/', EmptyBottleAllocationNFCAPIView.as_view(), name='empty_bottle_allocation_nfc'),
     path('route-bottle-allocation-nfc/', RouteBottleAllocationNFCAPIView.as_view(), name='route_bottle_allocation_nfc'),
     path('route-empty-bottle-stock/', RouteEmptyBottleStockAPIView.as_view(), name='route_empty_bottle_stock'),
+    path('edit_bottle_identifier/', bottle_views.edit_bottle_identifier, name='edit_bottle_identifier'),
 
 ]
